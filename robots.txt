@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://construction.seemoneyproductions.com/sitemap.xml
