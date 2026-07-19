@@ -28,7 +28,9 @@
     <title>Handyman Painting L.L.C. | Serving Western MN & Eastern SD</title>
     <meta name="description" content="Professional painting and handyman services in Montevideo, Marshall, Willmar, and Gary, SD. Specializing in country homes, farmhouses, and ranches.">
 
-    <link href="./output.css" rel="stylesheet">
+    <!-- Tailwind Live CDN (Fixes the unstyled page issue) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -38,7 +40,6 @@
         .bg-brand-black { background-color: #1A1A1A; }
         .fade-slide { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
         
-        /* Forced Sticky/Fixed CSS Overrides */
         #privacy-banner {
             position: fixed !important;
             bottom: 0 !important;
@@ -61,7 +62,7 @@
         <div class="container mx-auto px-6 flex justify-between items-center">
             <img src="logo.jpg" alt="Handyman Painting L.L.C." class="h-24 md:h-32 w-auto">
             <div class="text-right">
-                <a href="history.html" class="text-sm font-bold uppercase tracking-widest mr-6 hover:brand-red transition">Our Story</a>
+                <a href="history.html" class="text-sm font-bold uppercase tracking-widest mr-6 hover:text-red-600 transition">Our Story</a>
                 <a href="#bid" class="bg-brand-red text-white px-8 py-3 rounded-sm font-black hover:bg-red-700 transition uppercase italic text-sm">Request a Bid</a>
             </div>
         </div>
@@ -86,7 +87,6 @@
 
             <div class="lg:col-span-6 bg-white rounded-md border-2 border-zinc-200 p-8 md:p-12 shadow-md min-h-[280px] flex items-center justify-center text-center overflow-hidden">
                 <div id="rotator-item" class="fade-slide opacity-100 transform translate-y-0 w-full">
-                    <!-- Dynamic updates populate here -->
                 </div>
             </div>
 
@@ -198,7 +198,6 @@
         <p class="text-xs text-slate-600 mt-6 uppercase tracking-[0.4em]">© 2026 Jesse Bautista III | Based in Montevideo, MN</p>
     </footer>
 
-    <!-- Fixed Core HTML Layout container for Privacy Policy -->
     <div id="privacy-banner" class="bg-zinc-900 text-white p-4 shadow-2xl hidden flex-col md:flex-row justify-between items-center gap-4 border-t border-brand-red">
         <p class="text-xs md:text-sm font-medium text-zinc-300 text-center md:text-left">
             We use cookies and analyze onsite actions to tailor banner updates and enhance your experience. See our digital logs via the accountability file below.
@@ -235,7 +234,6 @@
             });
         });
 
-        // Dynamic Rotator Slides
         const slides = [
             `<div class="max-w-xl mx-auto">
                 <div class="flex justify-center text-red-600 text-xl mb-2">★★★★☆</div>
