@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application | Handyman Painting L.L.C.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen">
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-black text-white text-xs sm:text-sm font-semibold py-2 px-4 border-b-2 border-red-600 flex justify-between items-center">
+    <span>📍 Licensed in MN & SD | Expanding to WI</span>
+    <a href="tel:3203219359" class="hover:text-red-500 transition-colors">📞 320-321-9359</a>
+  </div>
+
+  <!-- Header / Nav -->
+  <header class="bg-white shadow-sm border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 text-xl font-black tracking-tight text-slate-900 uppercase">
+        <img src="logo.jpg" alt="Logo" class="h-10 w-auto rounded" onerror="this.style.display='none'">
+        <span>Handyman Painting L.L.C.</span>
+      </a>
+      <a href="index.html" class="text-sm font-bold text-red-600 hover:text-red-800 transition-colors">
+        &larr; Back to Home
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-4xl mx-auto px-4 py-10 w-full">
+    
+    <div id="formContainer" class="bg-white rounded-xl shadow-lg p-6 sm:p-10 border border-slate-200">
+      
+      <!-- Top Title -->
+      <div class="border-b border-slate-200 pb-6 mb-8">
+        <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Employment Application</h1>
+        <p class="text-slate-600 mt-1">Join our professional crew. Fill out the application form below.</p>
+      </div>
+
+      <!-- Open Positions Showcase -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-red-600 border-t border-r border-b border-slate-200">
+          <h3 class="font-extrabold text-slate-900 text-base">Lead Painter / Foreman</h3>
+          <p class="text-xs text-slate-600 mt-1">Oversees job sites, manages crew, quality control, and client updates.</p>
+          <span class="inline-block mt-2 text-[11px] font-bold text-slate-800 bg-slate-200 px-2 py-0.5 rounded">Req: 3+ yrs exp + Driver's License</span>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-red-600 border-t border-r border-b border-slate-200">
+          <h3 class="font-extrabold text-slate-900 text-base">Journeyman Painter</h3>
+          <p class="text-xs text-slate-600 mt-1">Skilled in interior/exterior prep, spraying, brushing, and cleanup with minimal oversight.</p>
+          <span class="inline-block mt-2 text-[11px] font-bold text-slate-800 bg-slate-200 px-2 py-0.5 rounded">Req: 1–3 yrs trade exp</span>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-lg border-l-4 border-red-600 border-t border-r border-b border-slate-200">
+          <h3 class="font-extrabold text-slate-900 text-base">Apprentice / Helper</h3>
+          <p class="text-xs text-slate-600 mt-1">Entry-level role assisting lead painters, setting up gear, and learning the trade.</p>
+          <span class="inline-block mt-2 text-[11px] font-bold text-slate-800 bg-slate-200 px-2 py-0.5 rounded">Req: Reliable, lift 50+ lbs</span>
+        </div>
+      </div>
+
+      <!-- Application Form -->
+      <form id="appForm" class="space-y-6">
+        
+        <!-- Section 1 -->
+        <div class="border-b border-slate-200 pb-6">
+          <h2 class="text-lg font-extrabold uppercase tracking-wide mb-4 text-red-600">Section 1: Basic Information</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-bold text-slate-700 mb-1">Full Name *</label>
+              <input type="text" id="fullName" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Phone Number *</label>
+              <input type="tel" id="phone" required placeholder="320-000-0000" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Email Address *</label>
+              <input type="email" id="email" required placeholder="you@example.com" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">City / State of Residence *</label>
+              <input type="text" id="location" required placeholder="e.g. Montevideo, MN" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Position Applied For *</label>
+              <select id="position" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white">
+                <option value="">Select a position...</option>
+                <option value="Lead Painter / Foreman">Lead Painter / Foreman</option>
+                <option value="Journeyman Painter">Journeyman Painter</option>
+                <option value="Apprentice / Painter Helper">Apprentice / Painter Helper</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="border-b border-slate-200 pb-6">
+          <h2 class="text-lg font-extrabold uppercase tracking-wide mb-4 text-red-600">Section 2: Experience & Skills</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Years of Painting or Construction Experience *</label>
+              <select id="experienceYears" required class="w-full sm:w-1/2 px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white">
+                <option value="">Select experience...</option>
+                <option value="0 (Entry Level)">0 Years (Entry Level)</option>
+                <option value="1-3 Years">1–3 Years</option>
+                <option value="3-5 Years">3–5 Years</option>
+                <option value="5+ Years">5+ Years</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Most Recent Painting / Trade Role *</label>
+              <textarea id="recentRole" rows="3" required placeholder="Company name, main duties, duration..." class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Equipment & Skills Experience (Check all that apply):</label>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="skills" value="Airless Sprayers" class="rounded text-red-600 focus:ring-red-500"> Airless Sprayers</label>
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="skills" value="Pressure Washers" class="rounded text-red-600 focus:ring-red-500"> Pressure Washers</label>
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="skills" value="Drywall Patching/Texturing" class="rounded text-red-600 focus:ring-red-500"> Drywall Patching / Texturing</label>
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="skills" value="Scaffolding/Ladders 24ft+" class="rounded text-red-600 focus:ring-red-500"> Scaffolding / Ladders 24ft+</label>
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="skills" value="Cabinet Refinishing" class="rounded text-red-600 focus:ring-red-500"> Cabinet Refinishing</label>
+                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="skills" value="Exterior Staining" class="rounded text-red-600 focus:ring-red-500"> Exterior Staining</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div>
+          <h2 class="text-lg font-extrabold uppercase tracking-wide mb-4 text-red-600">Section 3: Quality & Readiness</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Work Ethic & Problem Solving: Describe a time on site when something didn't go as planned. How did you handle it? *</label>
+              <textarea id="workEthic" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1">Quality Control: How do you ensure high-quality surface preparation before applying the first coat? *</label>
+              <textarea id="qualityControl" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1">Driver's License & Reliable Transport? *</label>
+                <select id="logistics" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white">
+                  <option value="">Select...</option>
+                  <option value="Yes (License & Vehicle)">Yes (Valid License & Reliable Vehicle)</option>
+                  <option value="License Only">Valid License Only</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1">Target Start Date & Available Hours *</label>
+                <input type="text" id="availability" required placeholder="e.g. Immediate, Mon-Fri 7am-5pm" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Button -->
+        <div class="pt-4">
+          <button type="button" onclick="reviewApplication()" class="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wider text-base rounded-md shadow-md transition-colors">
+            Review Application
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 items-center justify-center p-4">
+      <div class="bg-white rounded-xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+        <h2 class="text-2xl font-black text-slate-900 border-b pb-3 mb-4 uppercase">Review Your Submission</h2>
+        <div id="modalSummary" class="space-y-2 text-sm text-slate-700"></div>
+        <div class="flex gap-3 mt-6 pt-4 border-t">
+          <button onclick="closeModal()" class="w-1/3 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-md transition-colors">Edit</button>
+          <button id="btnConfirmSubmit" onclick="submitApplication()" class="w-2/3 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black uppercase rounded-md transition-colors">Confirm & Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Screen -->
+    <div id="thankYouScreen" class="hidden bg-white rounded-xl shadow-lg p-8 sm:p-12 text-center border border-slate-200">
+      <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">✓</div>
+      <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight mb-4">Application Received!</h2>
+      <p class="text-slate-700 leading-relaxed max-w-2xl mx-auto">
+        Thank you for applying to <strong>Handyman Painting L.L.C.</strong>! We have received your application details. Our hiring team will review your qualifications and reach out if your background fits our current openings. If you have immediate questions, feel free to contact us at <strong>320-321-9359</strong> or via email at <a href="mailto:construction@seemoneyproductions.com" class="text-red-600 font-bold hover:underline">construction@seemoneyproductions.com</a>.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-black text-slate-400 py-6 text-center text-sm border-t border-slate-800">
+    <p>&copy; Handyman Painting L.L.C. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const API_URL = 'http://52.2.47.109:4000/api/apply';
+    let formDataObject = {};
+
+    function reviewApplication() {
+      const form = document.getElementById('appForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const skillsChecked = Array.from(document.querySelectorAll('input[name="skills"]:checked'))
+        .map(cb => cb.value)
+        .join(', ') || 'None selected';
+
+      formDataObject = {
+        fullName: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        location: document.getElementById('location').value,
+        position: document.getElementById('position').value,
+        experienceYears: document.getElementById('experienceYears').value,
+        recentRole: document.getElementById('recentRole').value,
+        skills: skillsChecked,
+        workEthic: document.getElementById('workEthic').value,
+        qualityControl: document.getElementById('qualityControl').value,
+        logistics: document.getElementById('logistics').value,
+        availability: document.getElementById('availability').value
+      };
+
+      document.getElementById('modalSummary').innerHTML = 
+        <div><strong>Full Name:</strong> \</div>
+        <div><strong>Phone:</strong> \</div>
+        <div><strong>Email:</strong> \</div>
+        <div><strong>Location:</strong> \</div>
+        <div><strong>Position:</strong> \</div>
+        <div><strong>Experience:</strong> \</div>
+        <div><strong>Recent Role:</strong> \</div>
+        <div><strong>Skills:</strong> \</div>
+        <div><strong>Work Ethic:</strong> \</div>
+        <div><strong>Quality Control:</strong> \</div>
+        <div><strong>Logistics:</strong> \</div>
+        <div><strong>Availability:</strong> \</div>
+      ;
+
+      const modal = document.getElementById('reviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('reviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function submitApplication() {
+      const btn = document.getElementById('btnConfirmSubmit');
+      btn.disabled = true;
+      btn.innerText = 'Submitting...';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formDataObject)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          closeModal();
+          document.getElementById('formContainer').classList.add('hidden');
+          document.getElementById('thankYouScreen').classList.remove('hidden');
+        } else {
+          alert('Error: ' + (data.error || data.message || 'Could not submit application.'));
+          btn.disabled = false;
+          btn.innerText = 'Confirm & Submit';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error connecting to VPS server.');
+        btn.disabled = false;
+        btn.innerText = 'Confirm & Submit';
+      }
+    }
+  </script>
+
+</body>
+</html>

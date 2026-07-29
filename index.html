@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>Handyman Services & Painting Contractors | Montevideo, Marshall, Willmar MN</title>
+    <title>Handyman Services & Painting Contractors | Montevideo, Marshall, Willmar MN</title>
     <meta name="description" content="Professional interior/exterior house painters and commercial painting contractors serving Montevideo, Marshall, Willmar, MN, and Gary, SD. Specializing in farmhouse painting and local handyman repairs.">
     <meta name="keywords" content="handyman services montevideo mn, house painters marshall mn, farmhouse painting willmar mn, commercial painting gary sd, residential painters minnesota">
     
@@ -103,8 +103,8 @@
     }
     </script>
 
-    <!-- Tailwind Live CDN (Fixes the unstyled page issue) -->
-        <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <!-- Tailwind Live CDN -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -130,18 +130,40 @@
 <body class="bg-white text-slate-900 pb-24 md:pb-16">
 
     <div class="bg-brand-black py-2 border-b border-red-700">
-        <div class="container mx-auto px-6 flex justify-between text-sm font-bold text-white">
-            <span>📍 Licensed in MN & SD | Expanding to WI</span>
-            <a href="tel:3203219359" class="hover:text-red-500 underline transition">📞 320-321-9359</a>
+        <div class="container mx-auto px-6 flex justify-between items-center text-sm font-bold text-white">
+            <span class="text-xs md:text-sm">📍 Licensed in MN & SD | Expanding to WI</span>
+            <a href="tel:3203219359" class="hover:text-red-500 underline transition text-xs md:text-sm">📞 320-321-9359</a>
         </div>
     </div>
 
-    <nav class="py-4 bg-white sticky top-0 z-50 shadow-xl">
+    <!-- Glassmorphic Transparent Navigation Bar -->
+    <nav class="py-3 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-slate-200/50 transition-all">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <img src="logo.jpg" alt="Handyman Painting L.L.C." class="h-24 md:h-32 w-auto" width="128" height="96">
-            <div class="text-right">
-                <a href="history.html" class="text-sm font-bold uppercase tracking-widest mr-6 hover:text-red-600 transition">Our Story</a>
-                <a href="#bid" class="bg-brand-red text-white px-8 py-3 rounded-sm font-black hover:bg-red-700 transition uppercase italic text-sm">Request a Bid</a>
+            <a href="index.html" class="flex items-center">
+                <img src="logo.jpg" alt="Handyman Painting L.L.C." class="h-16 md:h-20 w-auto" width="128" height="96">
+            </a>
+            
+            <div class="flex items-center gap-6">
+                <!-- Company Dropdown Menu -->
+                <div class="relative group">
+                    <button class="text-sm font-bold uppercase tracking-widest text-slate-800 hover:text-red-600 transition flex items-center gap-1 py-2">
+                        Company
+                        <svg class="w-4 h-4 text-slate-500 group-hover:text-red-600 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <!-- Glassmorphic Dropdown Menu -->
+                    <div class="absolute right-0 w-52 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-md shadow-2xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <a href="history.html" class="block px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-slate-100/70 hover:text-red-600 transition">Our Story</a>
+                        <a href="apply.html" class="block px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-slate-100/70 hover:text-red-600 transition">Careers & Application</a>
+                        <a href="transparency.html" class="block px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-800 hover:bg-slate-100/70 hover:text-red-600 transition">Transparency Report</a>
+                    </div>
+                </div>
+
+                <!-- Primary Call to Action Button -->
+                <a href="#bid" class="bg-brand-red text-white px-6 py-2.5 rounded-sm font-black hover:bg-red-700 transition uppercase italic text-sm shadow-sm hover:shadow-md">
+                    Request a Bid
+                </a>
             </div>
         </div>
     </nav>
@@ -224,9 +246,9 @@
                             <p class="text-xs font-black uppercase text-zinc-400">Rural Specialists</p>
                             <p class="text-xs mt-1">We specialize in remote farmsteads and large acreage ranches.</p>
                         </div>
-                    </div>                </div> <!-- Closes the upper city grid -->
+                    </div>
+                </div>
 
-                <!-- New Southern & Eastern Expansion Row -->
                 <div class="mt-12 pt-10 border-t border-slate-200">
                     <h3 class="text-xl font-black brand-red mb-6 uppercase tracking-widest text-center md:text-left">Southern & Eastern MN Expansion</h3>
                     <div class="flex flex-wrap justify-center md:justify-start gap-4 md:gap-5 font-bold text-slate-700 text-sm md:text-base">
@@ -281,24 +303,27 @@
             <a href="feedback.html" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-red-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all inline-block border border-zinc-200 ml-2">
                 Submit Feedback
             </a>
+            <a href="apply.html" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-red-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all inline-block border border-zinc-200 ml-2">
+                Apply Online
+            </a>
         </div>
         <p class="font-black text-black uppercase tracking-tighter text-2xl">Handyman Painting L.L.C.</p>
         <p class="text-xs text-slate-600 mt-6 uppercase tracking-[0.4em]">© 2026 Jesse Bautista III | Based in Montevideo, MN</p>
-        <!-- Procurement & Corporate Compliance Metadata Footer Block -->
-    <div class="bg-zinc-900 border-t border-zinc-800 text-zinc-400 py-6 text-xs font-mono">
-        <div class="max-w-6xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
-            <div>
-                <span class="text-zinc-200 font-bold block uppercase tracking-wider mb-1">Institutional & Government Procurement</span>
-                <p>Handyman Painting L.L.C. is fully registered to receive corporate, state, and federal contract rewards.</p>
-            </div>
-            <div class="flex flex-wrap gap-x-6 gap-y-2 bg-zinc-950 p-3 border border-zinc-800 rounded">
-                <div><span class="text-red-500 font-bold">SAM.gov UEI:</span> HWYRMVYT2RT6</div>
-                <div><span class="text-red-500 font-bold">NAICS 238320:</span> Painting & Wall Covering</div>
-                <div><span class="text-red-500 font-bold">NAICS 238310:</span> Drywall & Insulation</div>
+        
+        <div class="bg-zinc-900 border-t border-zinc-800 text-zinc-400 py-6 text-xs font-mono">
+            <div class="max-w-6xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <span class="text-zinc-200 font-bold block uppercase tracking-wider mb-1">Institutional & Government Procurement</span>
+                    <p>Handyman Painting L.L.C. is fully registered to receive corporate, state, and federal contract rewards.</p>
+                </div>
+                <div class="flex flex-wrap gap-x-6 gap-y-2 bg-zinc-950 p-3 border border-zinc-800 rounded">
+                    <div><span class="text-red-500 font-bold">SAM.gov UEI:</span> HWYRMVYT2RT6</div>
+                    <div><span class="text-red-500 font-bold">NAICS 238320:</span> Painting & Wall Covering</div>
+                    <div><span class="text-red-500 font-bold">NAICS 238310:</span> Drywall & Insulation</div>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
     <div id="privacy-banner" class="bg-zinc-900 text-white p-4 shadow-2xl hidden flex-col md:flex-row justify-between items-center gap-4 border-t border-brand-red">
         <p class="text-xs md:text-sm font-medium text-zinc-300 text-center md:text-left">
@@ -342,70 +367,39 @@
                 <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Reasonable price</p>
                 <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-900 leading-snug">"Great work ethic ..very particular..wants it correct. Jesse's the guy for you."</h3>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mt-4">— Mike Ohliger, Verified Client (Metal & Exterior Painting)</p>
-             </div>`,
+            </div>`,
             
             `<div class="max-w-xl mx-auto">
                 <span class="text-xs font-black bg-zinc-900 text-white px-3 py-1 rounded-sm uppercase tracking-wider">Corporate Vendor Accounts</span>
                 <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-4 text-slate-900 leading-snug">Need regional commercial deployment for franchises or large scale facilities?</h3>
                 <p class="text-slate-600 mt-3 text-sm font-medium leading-relaxed">We partner directly with property groups and major networks like Walmart & McDonald's. Fully set up for standard Net 30 and Net 45 billing options.</p>
-             </div>`,
+            </div>`,
 
             `<div class="max-w-xl mx-auto">
                 <span class="text-xs font-black bg-brand-red text-white px-3 py-1 rounded-sm uppercase tracking-wider">Exterior Protection</span>
                 <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-4 text-slate-900 leading-snug">Is harsh local weather causing your exterior paint to peel or flake?</h3>
-                <p class="text-slate-600 mt-3 text-sm font-medium leading-relaxed"><strong>Our Solution:</strong> Unprotected raw wood forms rot quickly. We use multi-layer structural weather-sealing to lock out moisture and extend siding lifespans.</p>
-             </div>`,
-
-            `<div class="max-w-xl mx-auto">
-                <span class="text-xs font-black bg-zinc-900 text-white px-3 py-1 rounded-sm uppercase tracking-wider italic">Flexible Billing</span>
-                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-4 text-slate-900 leading-snug">Flexible Payment Structures Built For Your Budget</h3>
-                <p class="text-slate-600 mt-3 text-sm font-medium leading-relaxed">Get a true <strong>0% Down plan</strong> when you supply all raw project materials and complete a collateral layout. Or choose low 25% down plans with weekly, monthly, or milestone terms.</p>
-             </div>`,
-
-            `<div class="max-w-xl mx-auto">
-                <span class="text-xs font-black bg-brand-red text-white px-3 py-1 rounded-sm uppercase tracking-wider">South Dakota Focus</span>
-                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-4 text-slate-900 leading-snug">Serving East River & The Border Range</h3>
-                <p class="text-slate-600 mt-3 text-sm font-medium leading-relaxed">From ranch houses near Gary, SD to properties right along the state line, we clear the distance gaps to provide premium interior coatings and exterior structural painting.</p>
-             </div>`
+                <p class="text-slate-600 mt-3 text-sm font-medium leading-relaxed"><strong>Our Solution:</strong> Industrial-grade surface preps and weather-shield acrylic coatings designed for Midwest winters.</p>
+            </div>`
         ];
-        
-        let currentIdx = 0;
-        const savedRegion = localStorage.getItem("preferredRegion");
-        if (savedRegion === "sd") {
-            currentIdx = 4;
+
+        let index = 0;
+        const rotator = document.getElementById("rotator-item");
+
+        function updateSlide() {
+            if (!rotator) return;
+            rotator.style.opacity = 0;
+            rotator.style.transform = "translateY(10px)";
+            setTimeout(() => {
+                rotator.innerHTML = slides[index];
+                rotator.style.opacity = 1;
+                rotator.style.transform = "translateY(0)";
+                index = (index + 1) % slides.length;
+            }, 500);
         }
 
-        const container = document.getElementById("rotator-item");
-        if(container) {
-            container.innerHTML = slides[currentIdx];
-            
-            setInterval(() => {
-                container.style.opacity = 0;
-                container.style.transform = "translateY(10px)";
-                
-                setTimeout(() => {
-                    currentIdx = (currentIdx + 1) % slides.length;
-                    container.innerHTML = slides[currentIdx];
-                    
-                    container.style.transform = "translateY(-10px)";
-                    setTimeout(() => {
-                        container.style.opacity = 1;
-                        container.style.transform = "translateY(0)";
-                    }, 50);
-                }, 500);
-            }, 11000);
-        }
+        updateSlide();
+        setInterval(updateSlide, 6000);
     });
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
