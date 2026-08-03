@@ -1,25 +1,47 @@
-<!DOCTYPE html>
+const fs = require('fs');
+const path = require('path');
+
+const citiesDir = path.join(__dirname, 'cities');
+
+// Helper to convert filename into clean City Name
+function formatCityName(filename) {
+  let name = filename.replace('.html', '').replace('-painting-services', '').replace(/-/g, ' ');
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+if (!fs.existsSync(citiesDir)) {
+  console.error('Error: cities directory not found at', citiesDir);
+  process.exit(1);
+}
+
+const files = fs.readdirSync(citiesDir).filter(file => file.endsWith('.html'));
+
+files.forEach(file => {
+  const cityName = formatCityName(file);
+  const filePath = path.join(citiesDir, file);
+
+  const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Professional Painters & Subcontractors in Willmar, MN</title>
-     <meta name="description" content="Looking for trusted local house painters, handyman repairs, or subcontractor work in Willmar, MN? View our local work standards and apply today.">
-     <meta name="keywords" content="painters Willmar, handyman services Willmar, painting subcontractor Willmar, contractor jobs Willmar MN">
+     <title>Professional Painters & Subcontractors in ${cityName}, MN</title>
+     <meta name="description" content="Looking for trusted local house painters, handyman repairs, or subcontractor work in ${cityName}, MN? View our local work standards and apply today.">
+     <meta name="keywords" content="painters ${cityName}, handyman services ${cityName}, painting subcontractor ${cityName}, contractor jobs ${cityName} MN">
      
      <script type="application/ld+json">
      {
        "@context": "https://schema.org",
        "@type": "HomeAndConstructionBusiness",
-       "name": "Handyman Painting L.L.C. - Willmar Regional Division",
+       "name": "Handyman Painting L.L.C. - ${cityName} Regional Division",
        "image": "https://construction.seemoneyproductions.com/logo.jpg",
        "telePhone": "320-321-9359",
-       "url": "https://construction.seemoneyproductions.com/cities/willmar.html",
+       "url": "https://construction.seemoneyproductions.com/cities/${file}",
        "areaServed": {
          "@type": "AdministrativeArea",
-         "name": "Willmar"
+         "name": "${cityName}"
        },
-       "description": "Professional residential painting, exterior farmstead protective texturing, and handyman subcontractor operations throughout Willmar, MN."
+       "description": "Professional residential painting, exterior farmstead protective texturing, and handyman subcontractor operations throughout ${cityName}, MN."
      }
      </script>
      <link href="../output.css" rel="stylesheet">
@@ -36,14 +58,14 @@
      <nav class="py-4 bg-white shadow-md border-b border-zinc-200">
          <div class="container mx-auto px-6 flex justify-between items-center">
              <a href="../index.html" class="text-sm font-black uppercase tracking-wider hover:brand-red transition">← Back to Home</a>
-             <span class="text-xs font-black uppercase bg-zinc-100 text-zinc-500 px-3 py-1 rounded">Willmar Division</span>
+             <span class="text-xs font-black uppercase bg-zinc-100 text-zinc-500 px-3 py-1 rounded">${cityName} Division</span>
          </div>
      </nav>
 
      <main class="flex-grow container mx-auto px-6 py-12 max-w-4xl">
          <div class="mb-8 border-b border-zinc-200 pb-6">
              <h1 class="text-4xl md:text-5xl font-black text-black uppercase tracking-tight mb-2">
-                 Projects & Contracting in <span class="brand-red">Willmar</span>
+                 Projects & Contracting in <span class="brand-red">${cityName}</span>
              </h1>
              <p class="text-sm font-bold uppercase tracking-widest text-slate-400">Handyman Painting L.L.C.</p>
          </div>
@@ -52,7 +74,7 @@
              <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 pb-4 mb-6 gap-2">
                  <div>
                      <span class="text-xs font-black uppercase text-brand-red tracking-wider">Local Work Standards</span>
-                     <h2 class="text-2xl font-black uppercase text-black">Willmar Project Hub</h2>
+                     <h2 class="text-2xl font-black uppercase text-black">${cityName} Project Hub</h2>
                  </div>
                  <div>
                      <span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
@@ -67,7 +89,7 @@
                      <ul class="space-y-3 text-sm text-slate-700">
                          <li class="flex items-start gap-2">
                              <span class="text-brand-red font-bold">✓</span>
-                             <span><strong>Farmstead & Agricultural Coatings:</strong> Protective texturing and barn exterior painting across Willmar area.</span>
+                             <span><strong>Farmstead & Agricultural Coatings:</strong> Protective texturing and barn exterior painting across ${cityName} area.</span>
                          </li>
                          <li class="flex items-start gap-2">
                              <span class="text-brand-red font-bold">✓</span>
@@ -85,11 +107,11 @@
                          <ul class="space-y-2 text-xs text-zinc-600 mb-6">
                              <li>⚡ <strong>Prompt Payouts:</strong> Reliable weekly compensation upon job sign-off.</li>
                              <li>📋 <strong>Ready Scopes:</strong> Clear project specs without bidding friction.</li>
-                             <li>🛠️ <strong>Flexible Jobs:</strong> Select local Willmar projects that match your schedule.</li>
+                             <li>🛠️ <strong>Flexible Jobs:</strong> Select local ${cityName} projects that match your schedule.</li>
                          </ul>
                      </div>
 
-                     <a href="../apply.html?city=Willmar&role=subcontractor" 
+                     <a href="../apply.html?city=${encodeURIComponent(cityName)}&role=subcontractor" 
                         class="block text-center bg-brand-black text-white text-xs font-black uppercase tracking-widest py-3 px-4 hover:bg-brand-red transition rounded-sm shadow">
                          Apply / Submit Subcontractor Info →
                      </a>
@@ -99,8 +121,12 @@
      </main>
 
      <footer class="py-8 bg-brand-black text-center text-white border-t-4 border-brand-red">
-         <p class="text-xs uppercase tracking-[0.3em]">© 2026 Handyman Painting L.L.C. | Willmar, MN</p>
+         <p class="text-xs uppercase tracking-[0.3em]">© 2026 Handyman Painting L.L.C. | ${cityName}, MN</p>
      </footer>
 
 </body>
-</html>
+</html>`;
+
+  fs.writeFileSync(filePath, htmlContent);
+  console.log(`Updated ${file} with high-quality SEO & Subcontractor Hub!`);
+});
