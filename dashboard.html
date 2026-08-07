@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | Handyman Painting L.L.C.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .brand-red { color: #E31E24; }
+        .bg-brand-red { background-color: #E31E24; }
+        .bg-brand-black { background-color: #1A1A1A; }
+    </style>
+</head>
+<body class="bg-zinc-100 min-h-screen text-slate-900 flex flex-col justify-between">
+
+    <!-- Auth Protection & Token Parser -->
+    <script>
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+
+        function getUserClaims() {
+            const token = localStorage.getItem("userToken");
+            if (!token) return { name: "Valued Customer", email: "N/A" };
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const payload = JSON.parse(jsonPayload);
+                return {
+                    name: payload.name || payload.given_name || payload.email?.split('@')[0] || "Valued Customer",
+                    email: payload.email || "N/A"
+                };
+            } catch (e) {
+                return { name: "Valued Customer", email: "N/A" };
+            }
+        }
+    </script>
+
+    <!-- Navigation Header -->
+    <header>
+        <nav class="bg-brand-black text-white py-4 border-b-4 border-brand-red shadow-md">
+            <div class="container mx-auto px-6 flex justify-between items-center">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="logo.jpg" alt="Handyman Painting L.L.C." class="h-10 w-auto">
+                    <span class="font-black text-lg uppercase tracking-tight hidden sm:inline">Client Portal</span>
+                </a>
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="text-xs font-bold uppercase tracking-wider text-zinc-300 hover:text-white transition">Main Site</a>
+                    <button id="portal-logout-btn" class="bg-brand-red text-white text-xs font-black uppercase px-4 py-2 rounded-sm hover:bg-red-700 transition">Log Out</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Portal Content -->
+    <main class="container mx-auto px-6 py-10 max-w-6xl">
+        
+        <!-- Welcome Banner -->
+        <div class="bg-white rounded-lg border border-slate-200 p-8 shadow-sm mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-black uppercase text-green-700 tracking-wider">Account Active</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black uppercase text-slate-900 tracking-tight">
+                    <span id="time-greeting">Welcome</span>, <span id="user-display-name" class="brand-red">Customer</span>
+                </h1>
+                <p class="text-sm text-slate-600 mt-1 font-medium">Keep your account and property details up-to-date to ensure accurate project estimates and fast scheduling.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <a href="index.html#bid" class="bg-brand-red text-white font-black uppercase text-xs tracking-wider px-6 py-3 rounded-sm hover:bg-red-700 transition shadow-md text-center">
+                    + Request Project Bid
+                </a>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Bids, Profile Form & Billing (2 cols) -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Active Bids Tracker -->
+                <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                        <h2 class="text-lg font-black uppercase tracking-wide text-slate-800">Your Project Bids</h2>
+                        <span class="text-xs font-bold text-slate-400 uppercase">Updated Today</span>
+                    </div>
+                    
+                    <div class="py-8 text-center">
+                        <div class="w-12 h-12 mx-auto bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-3">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="font-black text-slate-800 uppercase text-sm">No Open Bid Requests</h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">Submit a bid request from the main site to track itemized estimates and project approvals here.</p>
+                    </div>
+                </div>
+
+                <!-- INTEGRATED BILLING & PAYMENT OPTIONS SECTION -->
+                <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h2 class="text-lg font-black uppercase tracking-wide text-slate-800">Invoices & Payment Options</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Select a payment method below to settle balances or structural deposits.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Digital Payments -->
+                        <div class="bg-zinc-50 p-5 rounded border border-slate-200 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-black text-sm uppercase text-slate-900 mb-2">Online Digital Payment</h3>
+                                <p class="text-xs text-slate-600 mb-4">Pay invoices securely using digital payment solutions.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <button onclick="alert('PayPal integration pending. Please contact dispatch for direct invoicing.');" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded text-xs transition uppercase tracking-wider">Pay with PayPal</button>
+                                <button onclick="alert('ACH Bank Transfer details available upon request.');" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded text-xs transition uppercase tracking-wider">ACH Bank Transfer</button>
+                            </div>
+                        </div>
+
+                        <!-- Mail & Direct Options -->
+                        <div class="bg-zinc-50 p-5 rounded border border-slate-200">
+                            <h3 class="font-black text-sm uppercase text-slate-900 mb-2">Offline / Direct Methods</h3>
+                            <ul class="space-y-3 text-xs text-slate-700">
+                                <li class="border-b border-slate-200 pb-2">
+                                    <strong class="block text-slate-900 uppercase">💵 Cash Payments:</strong>
+                                    Must be handed directly to an authorized field supervisor.
+                                </li>
+                                <li>
+                                    <strong class="block text-slate-900 uppercase">✉️ Check Payments:</strong>
+                                    Make checks payable to: <strong class="text-slate-900">Handyman Painting L.L.C.</strong><br>
+                                    Mail or drop off to:<br>
+                                    <span class="font-semibold text-slate-900">1012 North 6th Street, Montevideo, MN 56265</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Account & Property Information Form -->
+                <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                    <div class="border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-black uppercase tracking-wide text-slate-800">Update Profile & Property Details</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Please provide accurate information so our crew can prepare bids and access job sites smoothly.</p>
+                        </div>
+                        <span id="save-status" class="hidden text-xs font-black bg-green-100 text-green-800 px-3 py-1 rounded-full uppercase">Saved ✓</span>
+                    </div>
+
+                    <form id="profile-form" onsubmit="return false;" class="space-y-6">
+                        
+                        <!-- 1. REQUIRED INFORMATION -->
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider brand-red border-b border-red-100 pb-1 mb-3">1. Required Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold">
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Full Name <span class="text-red-600">*</span></label>
+                                    <input type="text" id="prof-fullname" placeholder="John Doe" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Primary Phone <span class="text-red-600">*</span></label>
+                                    <input type="tel" id="prof-phone" placeholder="(320) 555-0199" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-slate-700 mb-1">Primary Service Street Address <span class="text-red-600">*</span></label>
+                                    <input type="text" id="prof-address" placeholder="123 Main St" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-700 mb-1">City <span class="text-red-600">*</span></label>
+                                    <input type="text" id="prof-city" placeholder="Montevideo" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-slate-700 mb-1">State <span class="text-red-600">*</span></label>
+                                        <input type="text" id="prof-state" placeholder="MN" value="MN" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                    </div>
+                                    <div>
+                                        <label class="block text-slate-700 mb-1">ZIP Code <span class="text-red-600">*</span></label>
+                                        <input type="text" id="prof-zip" placeholder="56265" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. BUSINESS & OPERATIONS INFORMATION -->
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-1 mb-3">2. Property & Operational Details <span class="text-slate-400 font-normal">(Helps us estimate)</span></h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold">
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Property Type</label>
+                                    <select id="prof-property-type" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600 bg-white">
+                                        <option value="Residential Home">Residential Home</option>
+                                        <option value="Commercial Facility">Commercial Facility</option>
+                                        <option value="Farmstead / Agricultural">Farmstead / Agricultural</option>
+                                        <option value="Outbuilding / Detached Structure">Outbuilding / Detached Structure</option>
+                                        <option value="Multi-Family Property">Multi-Family Property</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Estimated Target Timeline</label>
+                                    <select id="prof-timeline" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600 bg-white">
+                                        <option value="Immediate (As Soon As Possible)">Immediate (As Soon As Possible)</option>
+                                        <option value="Within 1 Month">Within 1 Month</option>
+                                        <option value="1 to 3 Months out">1 to 3 Months out</option>
+                                        <option value="Planning & Budgeting Phase">Planning & Budgeting Phase</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-700 mb-1">How Did You Hear About Us?</label>
+                                    <select id="prof-referral" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600 bg-white">
+                                        <option value="Word of Mouth / Referral">Word of Mouth / Referral</option>
+                                        <option value="Google Search">Google Search</option>
+                                        <option value="Facebook / Social Media">Facebook / Social Media</option>
+                                        <option value="Yard Sign / Truck Marking">Yard Sign / Truck Marking</option>
+                                        <option value="Repeat Client">Repeat Client</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Preferred Contact Method</label>
+                                    <select id="prof-contact-pref" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600 bg-white">
+                                        <option value="Phone Call">Phone Call</option>
+                                        <option value="Text Message">Text Message</option>
+                                        <option value="Email">Email</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-slate-700 mb-1">Site Access Notes & Special Instructions</label>
+                                    <textarea id="prof-notes" rows="3" placeholder="e.g. Gate code #1234, watch for pets in back yard, parking instructions, ladders required, etc." class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. OPTIONAL INFORMATION -->
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-1 mb-3">3. Optional Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold">
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Secondary / Alternate Phone</label>
+                                    <input type="tel" id="prof-alt-phone" placeholder="(320) 555-0198" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-700 mb-1">Billing Address (If Different)</label>
+                                    <input type="text" id="prof-billing-address" placeholder="P.O. Box or alternate address" class="w-full p-2.5 border border-slate-300 rounded focus:outline-none focus:border-red-600">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button id="save-btn" type="button" class="bg-brand-red text-white font-black uppercase text-xs tracking-wider px-8 py-3 rounded-sm hover:bg-red-700 transition shadow-sm w-full sm:w-auto">
+                                Save Profile Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Personal Account Info -->
+            <div class="space-y-6">
+                
+                <!-- Account Profile Summary -->
+                <div class="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                    <h2 class="text-lg font-black uppercase tracking-wide border-b border-slate-100 pb-3 text-slate-800">Account Overview</h2>
+                    
+                    <div class="mt-4 space-y-4 text-xs font-bold text-slate-700">
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase font-black tracking-wider">Account Owner</span>
+                            <span id="card-user-name" class="text-sm font-black text-slate-900">Loading...</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase font-black tracking-wider">Email Address</span>
+                            <span id="card-user-email" class="text-slate-800 font-mono">Loading...</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase font-black tracking-wider">Saved Primary Phone</span>
+                            <span id="card-user-phone" class="text-slate-800">Not set</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase font-black tracking-wider">Primary Property Location</span>
+                            <span id="card-user-location" class="text-slate-800">Not set</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[10px] uppercase font-black tracking-wider">Lead Contractor</span>
+                            <span class="text-slate-800">Jesse Bautista III (Montevideo, MN)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direct Support Card -->
+                <div class="bg-zinc-900 text-white rounded-lg p-6 shadow-md border-t-4 border-brand-red">
+                    <h3 class="font-black uppercase text-base tracking-wide">Direct Line & Dispatch</h3>
+                    <p class="text-xs text-zinc-400 mt-2 leading-relaxed">
+                        Need immediate assistance with an existing job or estimate? Call or text dispatch directly.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-zinc-800">
+                        <a href="tel:3203219359" class="text-lg font-black brand-red block hover:underline">📞 320-321-9359</a>
+                        <span class="text-[10px] text-zinc-500 font-mono block mt-1">Mon–Fri: 7:00 AM – 6:00 PM CST</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 font-bold uppercase tracking-wider mt-12">
+        <p>© 2026 Handyman Painting L.L.C. | Authenticated Client Session</p>
+    </footer>
+
+    <!-- Form Handling & Data Persistence -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const user = getUserClaims();
+
+            // 1. Set Welcome Text & Headers
+            document.getElementById("user-display-name").textContent = user.name;
+            document.getElementById("card-user-name").textContent = user.name;
+            document.getElementById("card-user-email").textContent = user.email;
+
+            const hour = new Date().getHours();
+            let greeting = "Welcome";
+            if (hour < 12) greeting = "Good Morning";
+            else if (hour < 18) greeting = "Good Afternoon";
+            else greeting = "Good Evening";
+            document.getElementById("time-greeting").textContent = greeting;
+
+            // 2. Load Saved Profile from LocalStorage (if present)
+            const savedData = JSON.parse(localStorage.getItem("customerProfile") || "{}");
+            
+            document.getElementById("prof-fullname").value = savedData.fullName || user.name || "";
+            document.getElementById("prof-phone").value = savedData.phone || "";
+            document.getElementById("prof-address").value = savedData.address || "";
+            document.getElementById("prof-city").value = savedData.city || "";
+            document.getElementById("prof-state").value = savedData.state || "MN";
+            document.getElementById("prof-zip").value = savedData.zip || "";
+            document.getElementById("prof-property-type").value = savedData.propertyType || "Residential Home";
+            document.getElementById("prof-timeline").value = savedData.timeline || "Immediate (As Soon As Possible)";
+            document.getElementById("prof-referral").value = savedData.referral || "Word of Mouth / Referral";
+            document.getElementById("prof-contact-pref").value = savedData.contactPref || "Phone Call";
+            document.getElementById("prof-notes").value = savedData.notes || "";
+            document.getElementById("prof-alt-phone").value = savedData.altPhone || "";
+            document.getElementById("prof-billing-address").value = savedData.billingAddress || "";
+
+            // Update Summary Card
+            updateCardDisplay(savedData);
+
+            // 3. Direct Button Click Handler for Reliable Saving
+            document.getElementById("save-btn").addEventListener("click", saveProfileData);
+
+            function saveProfileData() {
+                const fullName = document.getElementById("prof-fullname").value.trim();
+                const phone = document.getElementById("prof-phone").value.trim();
+                const address = document.getElementById("prof-address").value.trim();
+                const city = document.getElementById("prof-city").value.trim();
+
+                if (!fullName || !phone || !address || !city) {
+                    alert("Please fill in all required fields (Full Name, Phone, Address, and City).");
+                    return;
+                }
+
+                const profileData = {
+                    fullName: fullName,
+                    phone: phone,
+                    address: address,
+                    city: city,
+                    state: document.getElementById("prof-state").value,
+                    zip: document.getElementById("prof-zip").value,
+                    propertyType: document.getElementById("prof-property-type").value,
+                    timeline: document.getElementById("prof-timeline").value,
+                    referral: document.getElementById("prof-referral").value,
+                    contactPref: document.getElementById("prof-contact-pref").value,
+                    notes: document.getElementById("prof-notes").value,
+                    altPhone: document.getElementById("prof-alt-phone").value,
+                    billingAddress: document.getElementById("prof-billing-address").value,
+                    updatedAt: new Date().toISOString()
+                };
+
+                localStorage.setItem("customerProfile", JSON.stringify(profileData));
+                updateCardDisplay(profileData);
+
+                // Show alert & green status badge
+                alert("Profile changes saved successfully!");
+                const statusBadge = document.getElementById("save-status");
+                statusBadge.classList.remove("hidden");
+                setTimeout(() => statusBadge.classList.add("hidden"), 3000);
+            }
+
+            function updateCardDisplay(data) {
+                if (data.fullName) document.getElementById("card-user-name").textContent = data.fullName;
+                if (data.phone) document.getElementById("card-user-phone").textContent = data.phone;
+                if (data.city && data.state) {
+                    document.getElementById("card-user-location").textContent = `${data.city}, ${data.state}`;
+                }
+            }
+
+            // Logout Handler
+            document.getElementById("portal-logout-btn").addEventListener("click", function () {
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("userToken");
+                alert("You have been logged out.");
+                window.location.href = "index.html?v=" + new Date().getTime();
+            });
+        });
+    </script>
+</body>
+</html>

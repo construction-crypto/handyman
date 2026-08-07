@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accountability Manager | Handyman Painting L.L.C.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-100 text-slate-900 p-8">
+    <!-- Login Screen -->
+    <div id="login-screen" class="max-w-md mx-auto bg-white p-8 rounded shadow mt-20">
+        <h1 class="text-2xl font-black uppercase mb-4">Admin Login</h1>
+        <form onsubmit="handleLogin(event)" class="space-y-4 text-sm">
+            <div>
+                <label class="block font-bold">Username</label>
+                <input type="text" id="username" required class="w-full border p-2 rounded">
+            </div>
+            <div>
+                <label class="block font-bold">Password</label>
+                <input type="password" id="password" required class="w-full border p-2 rounded">
+            </div>
+            <button type="submit" class="w-full bg-black text-white font-bold p-2 rounded uppercase">Login</button>
+        </form>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard" class="max-w-6xl mx-auto bg-white p-8 rounded shadow hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-black uppercase">Accountability Case File Manager</h1>
+            <button onclick="logout()" class="text-xs font-bold text-red-600 uppercase border border-red-200 px-3 py-1 rounded">Logout</button>
+        </div>
+        
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Existing Projects</h2>
+            <button onclick="openModal()" class="bg-red-600 text-white text-sm font-bold uppercase px-4 py-2 rounded">
+                + Create New Case File
+            </button>
+        </div>
+
+        <table class="w-full text-left border-collapse border border-zinc-200 text-sm">
+            <thead>
+                <tr class="bg-zinc-50 border-b">
+                    <th class="p-3">ID</th>
+                    <th class="p-3">Title</th>
+                    <th class="p-3">Client</th>
+                    <th class="p-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="projects-table"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
+        <div class="bg-white max-w-2xl w-full p-6 rounded max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-black uppercase mb-4">Case File Form</h3>
+            <form id="project-form" onsubmit="saveProject(event)" class="space-y-4 text-sm">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block font-bold">Slug ID (e.g. rivercrest-apartments)</label>
+                    <input type="text" id="id" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block font-bold">Registry ID (e.g. TR-MAD-01)</label>
+                    <input type="text" id="registryId" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block font-bold">Project Title</label>
+                    <input type="text" id="title" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block font-bold">Client Name</label>
+                    <input type="text" id="client" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block font-bold">Location</label>
+                    <input type="text" id="location" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block font-bold">Category</label>
+                    <select id="category" class="w-full border p-2 rounded">
+                        <option value="commercial">Multi-Family / Commercial</option>
+                        <option value="residential">Residential Property</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold">Badges (comma separated)</label>
+                    <input type="text" id="badges" class="w-full border p-2 rounded" placeholder="Commercial, Substrate Issue">
+                </div>
+                <div>
+                    <label class="block font-bold">Narrative / Scope Breakdown</label>
+                    <textarea id="narrative" rows="3" class="w-full border p-2 rounded"></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold">Internal Retrospective</label>
+                    <textarea id="retrospective" rows="2" class="w-full border p-2 rounded"></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold">Client Statement</label>
+                    <textarea id="clientStatement" rows="2" class="w-full border p-2 rounded"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-black text-white font-bold rounded">Save & Rebuild Site</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentProjects = [];
+        const TOKEN_KEY = "admin_token";
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem(TOKEN_KEY, data.token);
+                checkAuth();
+            } else {
+                alert('Invalid username or password.');
+            }
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                loadProjects();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem(TOKEN_KEY);
+            checkAuth();
+        }
+
+        async function loadProjects() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            const res = await fetch('/api/projects', {
+                headers: { 'x-admin-token': token }
+            });
+
+            if (!res.ok) {
+                logout();
+                return;
+            }
+
+            currentProjects = await res.json();
+            const tbody = document.getElementById('projects-table');
+            tbody.innerHTML = currentProjects.map(p => `
+                <tr class="border-b">
+                    <td class="p-3 font-mono">${p.registryId}</td>
+                    <td class="p-3 font-bold">${p.title}</td>
+                    <td class="p-3">${p.client}</td>
+                    <td class="p-3 space-x-2">
+                        <button onclick="deleteProject('${p.id}')" class="text-red-600 font-bold">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('project-form').reset();
+            document.getElementById('edit-id').value = '';
+        }
+
+        async function saveProject(e) {
+            e.preventDefault();
+            const token = localStorage.getItem(TOKEN_KEY);
+            const data = {
+                id: document.getElementById('id').value,
+                registryId: document.getElementById('registryId').value,
+                title: document.getElementById('title').value,
+                client: document.getElementById('client').value,
+                location: document.getElementById('location').value,
+                category: document.getElementById('category').value,
+                badges: document.getElementById('badges').value.split(',').map(b => b.trim()).filter(Boolean),
+                status: "Open Case File",
+                narrative: document.getElementById('narrative').value,
+                retrospective: document.getElementById('retrospective').value,
+                clientStatement: document.getElementById('clientStatement').value,
+            };
+
+            const res = await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-admin-token': token
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                closeModal();
+                loadProjects();
+            } else {
+                alert('Error saving project.');
+            }
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('Are you sure you want to delete this case file?')) return;
+            const token = localStorage.getItem(TOKEN_KEY);
+            const res = await fetch(`/api/projects/${id}`, { 
+                method: 'DELETE',
+                headers: { 'x-admin-token': token }
+            });
+            if (res.ok) {
+                loadProjects();
+            } else {
+                alert('Error deleting project.');
+            }
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>

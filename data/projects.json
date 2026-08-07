@@ -1,0 +1,30 @@
+[
+  {
+    "id": "rivercrest-apartments",
+    "registryId": "TR-MAD-01",
+    "title": "Rivercrest Apartments",
+    "client": "Jay Jewson",
+    "location": "Madison, MN",
+    "category": "commercial",
+    "badges": ["Multi-Family / Commercial", "Subcontractor / Substrate Issue"],
+    "status": "Open Case File",
+    "narrative": "Full operational narrative for Rivercrest Apartments in Madison, MN under review. Complete breakdown of initial agreed scope, scheduling milestones, material performance, and key project challenges will be documented here.",
+    "evidence": [],
+    "retrospective": "Our internal review and operational changes regarding Rivercrest Apartments.",
+    "clientStatement": "[Client statement and direct input section reserved for Jay Jewson.]"
+  },
+  {
+    "id": "117-black-oak-avenue",
+    "registryId": "TR-MNT-01",
+    "title": "117 Black Oak Avenue",
+    "client": "Kevin Wald",
+    "location": "Montevideo, MN",
+    "category": "residential",
+    "badges": ["Residential Property", "Prep & Prep Curing Dispute"],
+    "status": "Open Case File",
+    "narrative": "Full operational story for 117 Black Oak Avenue in Montevideo, MN. Details surrounding surface prep, historic paint layer adhesion, job conditions, and timeline events will be fully documented here.",
+    "evidence": [],
+    "retrospective": "Our internal review and operational changes regarding 117 Black Oak Avenue.",
+    "clientStatement": "[Client statement and direct input section reserved for Kevin Wald.]"
+  }
+]

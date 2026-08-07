@@ -8,10 +8,78 @@
     <link href="../output.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; perspective: 1000px; }
         .brand-red { color: #E31E24; }
         .bg-brand-red { background-color: #E31E24; }
         .border-brand-red { border-color: #E31E24; }
+        
+        /* HD Asset Optimization */
+        .hd-img {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            filter: contrast(1.05) saturate(1.08);
+        }
+
+        /* 3D Transform Base Classes */
+        .perspective-container {
+            perspective: 1200px;
+        }
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+            will-change: transform;
+        }
+        .layer-float-sm {
+            transform: translateZ(20px);
+        }
+        .layer-float-md {
+            transform: translateZ(35px);
+        }
+        .layer-float-lg {
+            transform: translateZ(50px);
+        }
+
+        /* Interactive Comparison Slider */
+        .comparison-slider {
+            position: relative;
+            display: grid;
+            grid-template-areas: "stack";
+            overflow: hidden;
+            border-radius: 0.75rem;
+            transform-style: preserve-3d;
+        }
+        .comparison-slider > * {
+            grid-area: stack;
+        }
+        .before-layer {
+            clip-path: polygon(0 0, var(--pos, 50%) 0, var(--pos, 50%) 100%, 0 100%);
+        }
+        .slider-control {
+            appearance: none;
+            background: transparent;
+            cursor: ew-resize;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            margin: 0;
+        }
+        .slider-control::-webkit-slider-thumb {
+            appearance: none;
+            width: 4px;
+            height: 100%;
+            background: #ffffff;
+            cursor: ew-resize;
+            box-shadow: 0 0 18px rgba(227, 30, 36, 0.9), 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* Floating 3D Ambient Glow Keyframes */
+        @keyframes floatGlow {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.15; }
+            50% { transform: translateY(-15px) scale(1.05); opacity: 0.3; }
+        }
+        .ambient-3d-glow {
+            animation: floatGlow 6s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-black text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-brand-red selection:text-white">
@@ -21,96 +89,149 @@
         <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <a href="../index.html" class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition">← Back to Portal</a>
             <div class="flex items-center gap-3">
-                <span class="w-2 h-2 rounded-full bg-brand-red animate-pulse"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-brand-red animate-ping"></span>
                 <span class="text-xs font-black uppercase tracking-wider text-white">Granite Falls, MN</span>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow pt-28 pb-20 px-6 max-w-6xl mx-auto w-full space-y-16">
+    <main class="flex-grow pt-28 pb-20 px-6 max-w-6xl mx-auto w-full space-y-16 perspective-container">
         
-        <!-- Hero Section -->
-        <div class="text-center space-y-4 max-w-3xl mx-auto">
-            <span class="text-xs font-black uppercase tracking-[0.3em] brand-red">Field Operations & Documentation</span>
-            <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tight text-white">Granite Falls</h1>
-            <p class="text-sm text-zinc-400">Professional coatings, meticulous job-site standards, and verified regional project portfolios.</p>
+        <!-- Hero Section with 3D Depth Float -->
+        <div class="text-center space-y-4 max-w-3xl mx-auto card-3d py-4" onmousemove="tilt3D(event, this)" onmouseleave="reset3D(this)">
+            <span class="inline-block text-xs font-black uppercase tracking-[0.3em] brand-red layer-float-sm">Field Operations & Documentation</span>
+            <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tight text-white layer-float-md">Granite Falls</h1>
+            <p class="text-sm text-zinc-400 layer-float-sm">Professional coatings, meticulous job-site standards, and verified regional project portfolios.</p>
         </div>
 
-        <!-- Cinematic Drone Video Feature -->
-        <div class="bg-zinc-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-            <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40">
-                <h2 class="text-xs font-black uppercase tracking-widest text-zinc-300">Live Aerial Job-Site View</h2>
-                <span class="text-[10px] font-bold uppercase tracking-widest bg-brand-red text-white px-2.5 py-1 rounded">Active Footage</span>
-            </div>
-            <div class="relative aspect-video w-full bg-black">
-                <video autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover">
-                    <source src="../videos/received_959293106985883.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+        <!-- Cinematic Drone Video Feature with 3D Parallax Tilt -->
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-brand-red/30 via-zinc-800 to-brand-red/30 rounded-2xl blur-xl ambient-3d-glow"></div>
+            <div class="relative bg-zinc-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl card-3d" onmousemove="tilt3D(event, this)" onmouseleave="reset3D(this)">
+                <div class="p-4 border-b border-white/10 flex items-center justify-between bg-black/40 layer-float-sm">
+                    <h2 class="text-xs font-black uppercase tracking-widest text-zinc-300">Live Aerial Job-Site View</h2>
+                    <span class="text-[10px] font-bold uppercase tracking-widest bg-brand-red text-white px-2.5 py-1 rounded shadow-lg layer-float-md">Active Footage</span>
+                </div>
+                <div class="relative aspect-video w-full bg-black">
+                    <video autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover">
+                        <source src="../videos/received_959293106985883.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
             </div>
         </div>
 
-        <!-- Project Photo Gallery -->
+        <!-- Interactive Comparison Gallery Section -->
         <div class="space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-2">
                 <div>
-                    <h3 class="text-lg font-black uppercase tracking-wider text-white">Project Progress Gallery</h3>
-                    <p class="text-xs text-zinc-400">Exact documentation for the active Granite Falls project.</p>
+                    <h3 class="text-lg font-black uppercase tracking-wider text-white">Interactive 3D Field Inspection</h3>
+                    <p class="text-xs text-zinc-400">Drag sliders left/right to compare. Hover cards to activate 3D spatial depth.</p>
                 </div>
-                <span class="text-xs font-bold uppercase text-zinc-500">6 Verified Images</span>
+                <span class="text-xs font-bold uppercase text-zinc-500">3 Interactive Sets</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 cursor-pointer shadow-lg" onclick="openModal('../images/IMG_20260507_191544.jpg')">
-                    <img src="../images/IMG_20260507_191544.jpg" alt="Project view" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-white">View Full Size →</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- SET 1 -->
+                <div class="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl flex flex-col card-3d" onmousemove="tilt3D(event, this)" onmouseleave="reset3D(this)">
+                    <div class="p-3 border-b border-white/10 bg-black/60 flex items-center justify-between text-xs font-bold uppercase layer-float-sm">
+                        <span class="text-zinc-300">Gable & Side Siding</span>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openModal('../images/IMG_20260612_194211.jpg')" class="text-[10px] text-zinc-400 hover:text-white transition underline">Inspect HD</button>
+                            <span class="text-zinc-500 text-[10px]">3D Interactive</span>
+                        </div>
+                    </div>
+                    <div class="comparison-slider aspect-[16/10]" style="--pos: 50%;">
+                        <div class="relative w-full h-full">
+                            <img src="../images/IMG_20260612_194211.jpg" alt="After View" class="hd-img w-full h-full object-cover">
+                            <span class="absolute top-3 right-3 z-10 bg-brand-red text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg layer-float-md">After</span>
+                        </div>
+                        <div class="before-layer relative w-full h-full">
+                            <img src="../images/IMG_20260507_191544.jpg" alt="Before View" class="hd-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 z-10 bg-black/80 border border-white/20 text-zinc-300 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded layer-float-md">Before</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider-control" oninput="this.parentElement.style.setProperty('--pos', this.value + '%')">
                     </div>
                 </div>
-                <div class="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 cursor-pointer shadow-lg" onclick="openModal('../images/IMG_20260508_171751.jpg')">
-                    <img src="../images/IMG_20260508_171751.jpg" alt="Project view" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-white">View Full Size →</span>
+
+                <!-- SET 2 -->
+                <div class="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl flex flex-col card-3d" onmousemove="tilt3D(event, this)" onmouseleave="reset3D(this)">
+                    <div class="p-3 border-b border-white/10 bg-black/60 flex items-center justify-between text-xs font-bold uppercase layer-float-sm">
+                        <span class="text-zinc-300">Garage Exterior</span>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openModal('../images/IMG_20260509_134933.jpg')" class="text-[10px] text-zinc-400 hover:text-white transition underline">Inspect HD</button>
+                            <span class="text-zinc-500 text-[10px]">3D Interactive</span>
+                        </div>
+                    </div>
+                    <div class="comparison-slider aspect-[16/10]" style="--pos: 50%;">
+                        <div class="relative w-full h-full">
+                            <img src="../images/IMG_20260509_134933.jpg" alt="After View" class="hd-img w-full h-full object-cover">
+                            <span class="absolute top-3 right-3 z-10 bg-brand-red text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg layer-float-md">After</span>
+                        </div>
+                        <div class="before-layer relative w-full h-full">
+                            <img src="../images/IMG_20260508_171751.jpg" alt="Before View" class="hd-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 z-10 bg-black/80 border border-white/20 text-zinc-300 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded layer-float-md">Before</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider-control" oninput="this.parentElement.style.setProperty('--pos', this.value + '%')">
                     </div>
                 </div>
-                <div class="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 cursor-pointer shadow-lg" onclick="openModal('../images/IMG_20260509_134926.jpg')">
-                    <img src="../images/IMG_20260509_134926.jpg" alt="Project view" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-white">View Full Size →</span>
+
+                <!-- SET 3 -->
+                <div class="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl flex flex-col md:col-span-2 max-w-2xl mx-auto w-full card-3d" onmousemove="tilt3D(event, this)" onmouseleave="reset3D(this)">
+                    <div class="p-3 border-b border-white/10 bg-black/60 flex items-center justify-between text-xs font-bold uppercase layer-float-sm">
+                        <span class="text-zinc-300">Front Entryway & Porch</span>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openModal('../images/IMG_20260511_190955.jpg')" class="text-[10px] text-zinc-400 hover:text-white transition underline">Inspect HD</button>
+                            <span class="text-zinc-500 text-[10px]">3D Interactive</span>
+                        </div>
+                    </div>
+                    <div class="comparison-slider aspect-[16/10]" style="--pos: 50%;">
+                        <div class="relative w-full h-full">
+                            <img src="../images/IMG_20260511_190955.jpg" alt="After View" class="hd-img w-full h-full object-cover">
+                            <span class="absolute top-3 right-3 z-10 bg-brand-red text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg layer-float-md">After</span>
+                        </div>
+                        <div class="before-layer relative w-full h-full">
+                            <img src="../images/IMG_20260509_194218.jpg" alt="Before View" class="hd-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 z-10 bg-black/80 border border-white/20 text-zinc-300 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded layer-float-md">Before</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider-control" oninput="this.parentElement.style.setProperty('--pos', this.value + '%')">
                     </div>
                 </div>
-                <div class="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 cursor-pointer shadow-lg" onclick="openModal('../images/IMG_20260509_134933.jpg')">
-                    <img src="../images/IMG_20260509_134933.jpg" alt="Project view" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-white">View Full Size →</span>
-                    </div>
-                </div>
-                <div class="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 cursor-pointer shadow-lg" onclick="openModal('../images/IMG_20260509_194218.jpg')">
-                    <img src="../images/IMG_20260509_194218.jpg" alt="Project view" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-white">View Full Size →</span>
-                    </div>
-                </div>
-                <div class="group relative bg-zinc-900 rounded-xl overflow-hidden border border-white/10 cursor-pointer shadow-lg" onclick="openModal('../images/IMG_20260511_190955.jpg')">
-                    <img src="../images/IMG_20260511_190955.jpg" alt="Project view" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-white">View Full Size →</span>
-                    </div>
-                </div>
+
             </div>
         </div>
 
     </main>
 
-    <!-- Image Modal Viewer -->
+    <!-- Full-Screen Inspector Modal -->
     <div id="imageModal" class="fixed inset-0 z-50 bg-black/95 hidden items-center justify-center p-4 backdrop-blur-md" onclick="closeModal()">
-        <div class="relative max-w-5xl max-h-[90vh]">
-            <button class="absolute -top-12 right-0 text-white text-xs font-black uppercase tracking-wider bg-brand-red px-4 py-2 rounded shadow">Close [X]</button>
-            <img id="modalImg" src="" alt="Expanded View" class="max-w-full max-h-[85vh] object-contain rounded-xl border border-white/10 shadow-2xl">
+        <div class="relative max-w-5xl max-h-[90vh] flex flex-col items-center">
+            <button class="absolute -top-12 right-0 text-white text-xs font-black uppercase tracking-wider bg-brand-red px-4 py-2 rounded shadow-2xl">Close [X]</button>
+            <img id="modalImg" src="" alt="HD Field View" class="max-w-full max-h-[85vh] object-contain rounded-xl border border-white/10 shadow-2xl hd-img">
         </div>
     </div>
 
+    <!-- 3D Interactive Controller Script -->
     <script>
+        function tilt3D(event, card) {
+            const rect = card.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -8;
+            const rotateY = ((x - centerX) / centerX) * 8;
+            
+            card.style.transform = perspective(1000px) rotateX(deg) rotateY(deg) scale3d(1.02, 1.02, 1.02);
+        }
+
+        function reset3D(card) {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        }
+
         function openModal(src) {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImg');
@@ -118,6 +239,7 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
+
         function closeModal() {
             const modal = document.getElementById('imageModal');
             modal.classList.remove('flex');

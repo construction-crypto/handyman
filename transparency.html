@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accountability & Transparency Report | Handyman Painting L.L.C.</title>
-        <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <title>Accountability & Unfinished Projects Registry | Handyman Painting L.L.C.</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,41 +25,101 @@
         </div>
     </nav>
 
-    <main class="flex-grow container mx-auto px-6 py-16 max-w-3xl">
+    <main class="flex-grow container mx-auto px-6 py-16 max-w-5xl">
         <h1 class="text-4xl md:text-5xl font-black text-black uppercase tracking-tight mb-2">
-            Accountability & <span class="brand-red">Transparency</span>
+            Public Accountability & <span class="brand-red">Project Registry</span>
         </h1>
-        <p class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-8">Operational Standard Compliance Report</p>
+        <p class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-8">Unfinished Projects, Disputed Outcomes & Operational Records</p>
 
-        <div class="space-y-8 bg-white rounded border border-zinc-200 p-8 md:p-12 shadow-sm">
-            <section>
-                <h2 class="text-lg font-black uppercase text-black border-b pb-2 mb-3">1. Business Operations & Status</h2>
-                <p class="text-slate-700 text-sm leading-relaxed">
-                    Handyman Painting L.L.C. operates as a fully registered, active corporate entity under the laws of the State of Minnesota. We maintain active compliance status across all regional operating borders, providing certified craftsmanship to rural, residential, and commercial locations across Minnesota and South Dakota.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-lg font-black uppercase text-black border-b pb-2 mb-3">2. Service Guarantee & Bidding Policy</h2>
-                <p class="text-slate-700 text-sm leading-relaxed">
-                    We maintain absolute clarity in our structural estimating processes. Every project proposal is issued with detailed descriptions of materials, timeline milestones, and fixed pricing specifications. We ensure that our materials meet regional code requirements to guarantee durable outcomes on residential homes, remote farmsteads, and commercial facilities.
-                </p>
-            </section>
-
-            <section>
-                <h2 class="text-lg font-black uppercase text-black border-b pb-2 mb-3">3. Regional Service Pledge</h2>
-                <p class="text-slate-700 text-sm leading-relaxed">
-                    Our mission is rooted strictly in local accountability. By extending long-term regional service availability out to remote communities, we pledge to prioritize quality over volume. We continue expanding our networks across state borders while preserving personalized, small-town attention to detail.
-                </p>
-            </section>
+        <div class="bg-white rounded border border-zinc-200 p-8 mb-12 shadow-sm">
+            <h2 class="text-lg font-black uppercase text-black border-b pb-2 mb-3">Radical Transparency Policy</h2>
+            <p class="text-slate-700 text-sm leading-relaxed">
+                Handyman Painting L.L.C. logs projects that faced major roadblocks, schedule stoppages, or material/substrate issues publicly. Each project link below leads to a dedicated case file containing the job breakdown, photo/video evidence vault, internal operational review, and direct client commentary.
+            </p>
         </div>
+
+        <!-- Filter Controls -->
+        <section class="mb-8">
+            <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+                <h2 class="text-2xl font-black uppercase text-black">Project Directory</h2>
+                <div class="flex flex-wrap gap-2 text-xs font-black uppercase" id="filter-buttons">
+                    <button onclick="filterCategory('all')" class="filter-btn active bg-black text-white px-3 py-1.5 rounded transition">All Categories</button>
+                    <button onclick="filterCategory('commercial')" class="filter-btn bg-zinc-200 text-zinc-700 hover:bg-zinc-300 px-3 py-1.5 rounded transition">Multi-Family / Commercial</button>
+                    <button onclick="filterCategory('residential')" class="filter-btn bg-zinc-200 text-zinc-700 hover:bg-zinc-300 px-3 py-1.5 rounded transition">Residential Property</button>
+                </div>
+            </div>
+
+            <!-- Project Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="projects-grid">
+
+                <!-- Rivercrest Apartments -->
+                <div class="project-card bg-white border-2 border-zinc-200 rounded-lg p-6 shadow-sm hover:border-red-500 transition" data-categories="commercial substrate">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-mono text-slate-400">#TR-MAD-01</span>
+                        <span class="text-[10px] font-black uppercase bg-zinc-100 text-slate-600 px-2 py-0.5 rounded">Madison, MN</span>
+                    </div>
+                    <h3 class="text-xl font-black uppercase text-slate-900 mb-1">Rivercrest Apartments</h3>
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-4">Client Contact: Jay Jewson</p>
+                    
+                    <div class="flex flex-wrap gap-1.5 mb-6">
+                        <span class="bg-blue-100 text-blue-900 text-[10px] font-black uppercase px-2 py-0.5 rounded">Multi-Family / Commercial</span>
+                        <span class="bg-amber-100 text-amber-900 text-[10px] font-black uppercase px-2 py-0.5 rounded">Subcontractor / Substrate Issue</span>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-500">Case File Open</span>
+                        <a href="projects/rivercrest-apartments.html" class="text-xs font-black brand-red uppercase hover:underline">View Full Case File →</a>
+                    </div>
+                </div>
+
+                <!-- 117 Black Oak Avenue -->
+                <div class="project-card bg-white border-2 border-zinc-200 rounded-lg p-6 shadow-sm hover:border-red-500 transition" data-categories="residential prep">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-mono text-slate-400">#TR-MNT-01</span>
+                        <span class="text-[10px] font-black uppercase bg-zinc-100 text-slate-600 px-2 py-0.5 rounded">Montevideo, MN</span>
+                    </div>
+                    <h3 class="text-xl font-black uppercase text-slate-900 mb-1">117 Black Oak Avenue</h3>
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-4">Client Contact: Kevin Wald</p>
+                    
+                    <div class="flex flex-wrap gap-1.5 mb-6">
+                        <span class="bg-emerald-100 text-emerald-900 text-[10px] font-black uppercase px-2 py-0.5 rounded">Residential Property</span>
+                        <span class="bg-purple-100 text-purple-900 text-[10px] font-black uppercase px-2 py-0.5 rounded">Prep & Prep Curing Dispute</span>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-500">Case File Open</span>
+                        <a href="projects/117-black-oak-avenue.html" class="text-xs font-black brand-red uppercase hover:underline">View Full Case File →</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </main>
 
     <footer class="py-8 bg-brand-black text-center text-white border-t-4 border-brand-red">
         <p class="text-xs uppercase tracking-[0.3em]">© 2026 Handyman Painting L.L.C. | Montevideo, MN</p>
     </footer>
 
+    <script>
+        function filterCategory(category) {
+            const cards = document.querySelectorAll('.project-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-zinc-200', 'text-zinc-700');
+            });
+            event.target.classList.remove('bg-zinc-200', 'text-zinc-700');
+            event.target.classList.add('bg-black', 'text-white');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.categories.includes(category)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
 </html>
-
-
