@@ -226,8 +226,11 @@
                 .map(cb => cb.value)
                 .join(', ') || 'None selected';
 
+            const rawName = document.getElementById('fullName').value;
+
             formDataObject = {
-                fullName: document.getElementById('fullName').value,
+                name: rawName,
+                fullName: rawName,
                 phone: document.getElementById('phone').value,
                 email: document.getElementById('email').value,
                 location: document.getElementById('location').value,
@@ -241,20 +244,20 @@
                 availability: document.getElementById('availability').value
             };
 
-            document.getElementById('modalSummary').innerHTML = 
-                <div><strong>Full Name:</strong> \</div>
-                <div><strong>Phone:</strong> \</div>
-                <div><strong>Email:</strong> \</div>
-                <div><strong>Location:</strong> \</div>
-                <div><strong>Position:</strong> \</div>
-                <div><strong>Experience:</strong> \</div>
-                <div><strong>Recent Role:</strong> \</div>
-                <div><strong>Skills:</strong> \</div>
-                <div><strong>Work Ethic:</strong> \</div>
-                <div><strong>Quality Control:</strong> \</div>
-                <div><strong>Logistics:</strong> \</div>
-                <div><strong>Availability:</strong> \</div>
-            ;
+            document.getElementById('modalSummary').innerHTML = `
+                <div><strong>Full Name:</strong> ${escapeHtml(rawName)}</div>
+                <div><strong>Phone:</strong> ${escapeHtml(formDataObject.phone)}</div>
+                <div><strong>Email:</strong> ${escapeHtml(formDataObject.email)}</div>
+                <div><strong>Location:</strong> ${escapeHtml(formDataObject.location)}</div>
+                <div><strong>Position:</strong> ${escapeHtml(formDataObject.position)}</div>
+                <div><strong>Experience:</strong> ${escapeHtml(formDataObject.experienceYears)}</div>
+                <div><strong>Recent Role:</strong> ${escapeHtml(formDataObject.recentRole)}</div>
+                <div><strong>Skills:</strong> ${escapeHtml(formDataObject.skills)}</div>
+                <div><strong>Work Ethic:</strong> ${escapeHtml(formDataObject.workEthic)}</div>
+                <div><strong>Quality Control:</strong> ${escapeHtml(formDataObject.qualityControl)}</div>
+                <div><strong>Logistics:</strong> ${escapeHtml(formDataObject.logistics)}</div>
+                <div><strong>Availability:</strong> ${escapeHtml(formDataObject.availability)}</div>
+            `;
 
             const modal = document.getElementById('reviewModal');
             modal.classList.remove('hidden');
@@ -301,4 +304,3 @@
 
 </body>
 </html>
-
