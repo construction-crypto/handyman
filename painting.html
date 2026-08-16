@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exterior & Interior Painting | Handyman Services Montevideo MN</title>
+    <link rel="stylesheet" href="output.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Global Navigation Hook -->
+    <div id="nav-container"></div>
+
+    <!-- Hero Section -->
+    <section class="bg-slate-900 text-white py-16 px-4">
+        <div class="max-w-5xl mx-auto text-center">
+            <span class="text-amber-400 font-bold uppercase tracking-widest text-xs bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Residential & Commercial</span>
+            <h1 class="text-4xl md:text-5xl font-black mt-4 mb-3 tracking-tight">Precision Exterior & Interior Painting</h1>
+            <p class="text-slate-300 max-w-2xl mx-auto text-base">High-durability coatings, thorough surface prep, and fast turnaround options.</p>
+        </div>
+    </section>
+
+    <!-- Lead Form Section -->
+    <section id="quote" class="py-12 px-4">
+        <div class="max-w-3xl mx-auto">
+            <form action="https://formspree.io/f/mzepaver" method="POST" id="paintingForm" class="space-y-6 bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <input type="hidden" name="_subject" value="New Painting Lead - Handyman Services">
+                <input type="hidden" name="service" value="Exterior/Interior Painting">
+
+                <h2 class="text-2xl font-bold text-slate-900">Request Painting Estimate</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-semibold text-slate-700 mb-1">Full Name</label>
+                        <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-semibold text-slate-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                    </div>
+                    <div>
+                        <label for="address" class="block text-sm font-semibold text-slate-700 mb-1">Property Address</label>
+                        <input type="text" id="address" name="address" required placeholder="e.g., 401 E Canyon Ave, Montevideo, MN" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                    </div>
+                </div>
+
+                <!-- Dual Path Selection -->
+                <div class="border-t border-b border-slate-200 py-5 space-y-4">
+                    <p class="text-sm font-bold text-slate-900">Select Estimation Method:</p>
+
+                    <label class="flex items-start gap-3 p-4 bg-slate-50 border border-slate-300 rounded-xl cursor-pointer hover:border-amber-500 transition">
+                        <input type="radio" name="estimation_method" value="Free Automated Stack" checked class="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-900 text-sm">Standard Automated Quote</span>
+                                <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded font-bold">FREE</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Calculates an estimated price range based on exterior wall square footage and story count.</p>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-4 bg-slate-50 border border-slate-300 rounded-xl cursor-pointer hover:border-amber-500 transition">
+                        <input type="radio" name="estimation_method" value="EagleView Walls Report" class="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-900 text-sm">EagleView Walls 3D Satellite Report</span>
+                                <span class="bg-amber-100 text-amber-900 text-xs px-2 py-0.5 rounded font-bold">+$50 Expedited</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-1">Orders high-precision exterior wall elevation data, gable measurements, and trim length reporting.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold py-4 px-6 rounded-lg shadow transition text-base">
+                    Generate Painting Estimate & Create Account
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <script src="auth-nav.js"></script>
+    <script>
+        document.getElementById('paintingForm').addEventListener('submit', function(e) {
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+            const isEagleView = document.querySelector('input[name="estimation_method"]:checked').value.includes('EagleView');
+
+            localStorage.setItem('has_painting_request', 'true');
+            localStorage.setItem('painting_address', address);
+            localStorage.setItem('painting_total', isEagleView ? '$4,200.00 (EagleView Verified)' : '$3,800 - $4,500 (Estimated Range)');
+
+            setTimeout(() => {
+                window.location.href = `login.html?redirect=dashboard&email=${encodeURIComponent(email)}`;
+            }, 800);
+        });
+    </script>
+</body>
+</html>
