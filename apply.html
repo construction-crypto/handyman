@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Application | Handyman Painting L.L.C.</title>
+    <title>Employment Application Hub | Handyman Painting L.L.C.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
@@ -34,122 +34,146 @@
     <!-- Main Content -->
     <main class="flex-grow max-w-4xl mx-auto px-4 py-10 w-full">
         
-        <div id="formContainer" class="bg-white rounded-xl shadow-lg p-6 sm:p-10 border border-slate-200">
+        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-10 border border-slate-200">
             
-            <div class="border-b border-slate-200 pb-6 mb-8">
-                <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tight">Employment Application</h1>
-                <p class="text-slate-600 mt-1">Join our professional crew. Fill out the application form below.</p>
+            <div class="border-b border-slate-200 pb-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 id="formHeaderTitle" class="text-3xl font-black text-slate-900 uppercase tracking-tight">Employment Application</h1>
+                    <p id="formHeaderSubtitle" class="text-slate-600 mt-1">Submit your contact info, select your target role, review the official job description, and complete the vetting profile.</p>
+                </div>
+                <div id="activeDivisionBadge" class="hidden bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider">
+                    Role: <span id="badgeDivisionName">None</span>
+                </div>
             </div>
 
-            <!-- Application Form with Formspree Endpoint -->
-            <form id="appForm" action="https://formspree.io/f/xyegprla" method="POST" class="space-y-6">
+            <!-- Formspree Endpoint Submission Form -->
+            <form id="appForm" action="https://formspree.io/f/xyegprla" method="POST" class="space-y-8">
                 
-                <!-- Section 1 -->
-                <div class="border-b border-slate-200 pb-6">
-                    <h2 class="text-lg font-extrabold uppercase tracking-wide mb-4 text-red-600">Section 1: Basic Information</h2>
+                <!-- Hidden Inputs for Tracking -->
+                <input type="hidden" id="selectedDivisionInput" name="Selected Division">
+                <input type="hidden" id="selectedPositionInput" name="Position Applied For">
+
+                <!-- Step 1: Basic Contact Information -->
+                <div id="section-contact" class="border-b border-slate-200 pb-6 space-y-4">
+                    <h2 class="text-lg font-extrabold uppercase tracking-wide text-red-600">Step 1: Contact Information</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-bold text-slate-700 mb-1">Full Name *</label>
-                            <input type="text" name="Full Name" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+                            <input type="text" id="input_fullname" name="Full Name" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-1">Phone Number *</label>
-                            <input type="tel" name="Phone Number" required placeholder="320-000-0000" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+                            <input type="tel" id="input_phone" name="Phone Number" required placeholder="320-000-0000" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-1">Email Address *</label>
-                            <input type="email" name="_replyto" required placeholder="you@example.com" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+                            <input type="email" id="input_email" name="_replyto" required placeholder="you@example.com" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
                         </div>
-                        <div>
+                        <div class="sm:col-span-2">
                             <label class="block text-sm font-bold text-slate-700 mb-1">City / State of Residence *</label>
-                            <input type="text" name="Location" required placeholder="e.g. Montevideo, MN" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+                            <input type="text" id="input_location" name="Location" required placeholder="e.g. Montevideo, MN" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Division & Position Selection -->
+                <div id="section-position" class="border-b border-slate-200 pb-6 space-y-4">
+                    <h2 class="text-lg font-extrabold uppercase tracking-wide text-red-600">Step 2: Career Division & Position</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Select Division *</label>
+                            <select id="divisionSelect" required onchange="updatePositions()" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white font-semibold">
+                                <option value="">Choose a division...</option>
+                                <option value="exec">Executive Leadership</option>
+                                <option value="sales">Sales & Estimating Division</option>
+                                <option value="operations">Operations & Project Management</option>
+                                <option value="office">Office & Administration</option>
+                                <option value="field">Field Crew (Jobsite Level)</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Position Applied For *</label>
-                            <select name="Position Applied For" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white">
-                                <option value="">Select a position...</option>
-                                <option value="Lead Painter / Foreman">Lead Painter / Foreman</option>
-                                <option value="Journeyman Painter">Journeyman Painter</option>
-                                <option value="Apprentice / Painter Helper">Apprentice / Painter Helper</option>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Select Specific Role *</label>
+                            <select id="positionSelect" required onchange="renderJobDescription()" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white font-semibold">
+                                <option value="">Select division first...</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 2 -->
-                <div class="border-b border-slate-200 pb-6">
-                    <h2 class="text-lg font-extrabold uppercase tracking-wide mb-4 text-red-600">Section 2: Experience & Skills</h2>
-                    <div class="space-y-4">
+                <!-- Step 3: Mandatory Job Description & Responsibilities Review -->
+                <div id="section-job-desc" class="border-b border-slate-200 pb-6 space-y-4 hidden">
+                    <h2 class="text-lg font-extrabold uppercase tracking-wide text-red-600">Step 3: Official Job Description & Responsibilities Review</h2>
+                    <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 space-y-4">
+                        <div id="jobDescriptionContainer" class="text-sm text-slate-700 space-y-3">
+                            <!-- Injected dynamically -->
+                        </div>
+                        <div class="pt-4 border-t border-slate-200 flex items-center gap-3">
+                            <input type="checkbox" id="confirmJobDesc" required onchange="toggleRoleQuestions()" class="w-5 h-5 text-red-600 border-slate-300 rounded focus:ring-red-500">
+                            <label for="confirmJobDesc" class="text-sm font-bold text-slate-900 cursor-pointer">
+                                I have read, understood, and accept the official job description, duties, and performance expectations outlined above. *
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Role-Specific Qualification & Risk Mitigation Questions (Unlocked After Confirmation) -->
+                <div id="section-role-questions" class="space-y-6 hidden">
+                    <h2 class="text-lg font-extrabold uppercase tracking-wide text-red-600">Step 4: Role-Specific Qualification & Risk Mitigation</h2>
+                    <div id="uniqueQuestionsContainer" class="space-y-4 bg-slate-50 p-6 rounded-lg border border-slate-200">
+                        <!-- Dynamically populated unique fields per exact position -->
+                    </div>
+
+                    <!-- General Logistics -->
+                    <div class="border-t border-slate-200 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Years of Painting or Construction Experience *</label>
-                            <select name="Years of Experience" required class="w-full sm:w-1/2 px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white">
-                                <option value="">Select experience...</option>
-                                <option value="0 (Entry Level)">0 Years (Entry Level)</option>
-                                <option value="1-3 Years">1–3 Years</option>
-                                <option value="3-5 Years">3–5 Years</option>
-                                <option value="5+ Years">5+ Years</option>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Driver's License & Reliable Transport *</label>
+                            <select id="input_transport" name="Driver License & Transport" required class="w-full px-3 py-2 border border-slate-300 rounded-md bg-white">
+                                <option value="">Select...</option>
+                                <option value="Yes (License & Vehicle)">Yes (Valid License & Reliable Vehicle)</option>
+                                <option value="License Only">Valid License Only</option>
+                                <option value="No">No</option>
                             </select>
                         </div>
-
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Most Recent Painting / Trade Role *</label>
-                            <textarea name="Recent Role Details" rows="3" required placeholder="Company name, main duties, duration..." class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none"></textarea>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Target Start Date & Available Hours *</label>
+                            <input type="text" id="input_availability" name="Availability" required placeholder="Enter availability..." class="w-full px-3 py-2 border border-slate-300 rounded-md">
                         </div>
+                    </div>
 
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Equipment & Skills Experience:</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="Skills" value="Airless Sprayers" class="rounded text-red-600 focus:ring-red-500"> Airless Sprayers</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="Skills" value="Pressure Washers" class="rounded text-red-600 focus:ring-red-500"> Pressure Washers</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="Skills" value="Drywall Patching/Texturing" class="rounded text-red-600 focus:ring-red-500"> Drywall Patching / Texturing</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="Skills" value="Scaffolding/Ladders 24ft+" class="rounded text-red-600 focus:ring-red-500"> Scaffolding / Ladders 24ft+</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="Skills" value="Cabinet Refinishing" class="rounded text-red-600 focus:ring-red-500"> Cabinet Refinishing</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="Skills" value="Exterior Staining" class="rounded text-red-600 focus:ring-red-500"> Exterior Staining</label>
-                            </div>
-                        </div>
+                    <!-- Review Trigger Button -->
+                    <div class="pt-4">
+                        <button type="button" onclick="triggerReviewModal()" class="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wider text-base rounded-md shadow-md transition-colors">
+                            Review Application Summary & Submit
+                        </button>
                     </div>
                 </div>
 
-                <!-- Section 3 -->
-                <div>
-                    <h2 class="text-lg font-extrabold uppercase tracking-wide mb-4 text-red-600">Section 3: Quality & Readiness</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Work Ethic & Problem Solving *</label>
-                            <textarea name="Work Ethic & Problem Solving" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none"></textarea>
+                <!-- Application Review Modal (Hidden by Default) -->
+                <div id="reviewModal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 border-2 border-red-600">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-4 mb-4">
+                            <h3 class="text-xl font-black uppercase tracking-tight text-slate-900">Application Review Summary</h3>
+                            <button type="button" onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl">&times;</button>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6">Please carefully review your application details below. Once confirmed, click final submission to transmit directly to our hiring committee.</p>
+                        
+                        <div id="reviewContentSummary" class="space-y-4 bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm">
+                            <!-- Dynamic summary injected here -->
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Quality Control & Prep Work *</label>
-                            <textarea name="Quality Control & Prep Work" rows="3" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none"></textarea>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-1">Driver's License & Transport *</label>
-                                <select name="Driver License & Transport" required class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none bg-white">
-                                    <option value="">Select...</option>
-                                    <option value="Yes (License & Vehicle)">Yes (Valid License & Reliable Vehicle)</option>
-                                    <option value="License Only">Valid License Only</option>
-                                    <option value="No">No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-1">Target Start Date & Available Hours *</label>
-                                <input type="text" name="Availability" required placeholder="e.g. Immediate, Mon-Fri 7am-5pm" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-600 focus:outline-none">
-                            </div>
+                        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                            <button type="button" onclick="closeReviewModal()" class="w-full py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold uppercase rounded-md transition-colors">
+                                &larr; Return & Edit
+                            </button>
+                            <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wider rounded-md shadow-md transition-colors">
+                                Confirm & Transmit Application
+                            </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="pt-4">
-                    <button type="submit" class="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wider text-base rounded-md shadow-md transition-colors">
-                        Submit Application
-                    </button>
                 </div>
 
             </form>
+
         </div>
 
     </main>
@@ -158,5 +182,508 @@
         <p>&copy; Handyman Painting L.L.C. All rights reserved.</p>
     </footer>
 
+    <!-- Precision Job Description & Questionnaire Engine -->
+    <script>
+        const roleData = {
+            exec: {
+                divisionName: "Executive Leadership",
+                roles: {
+                    "Chief Operating Officer (COO) / VP of Operations": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Chief Operating Officer (COO) / VP of Operations</h3>
+                            <p>As COO at Handyman Painting L.L.C., you will maintain total executive command over multi-state trade operations (MN, SD, WI), heavy equipment deployment, fleet telematics, subcontractor compliance, and labor gross margin adherence.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Directly supervise regional field superintendents, project managers, and logistics coordinators.</li>
+                                <li>Enforce strict labor gross margin targets and eliminate trade crew overtime drift across active jobsites.</li>
+                                <li>Manage company fleet maintenance budgets, vehicle safety protocols, and GPS tracking compliance.</li>
+                                <li>Oversee comprehensive subcontractor vetting, W-9/COI collection, and lien waiver execution to eliminate legal liability.</li>
+                                <li>Lead enterprise crisis management for severe jobsite incidents, property damage claims, and OSHA/MNOSHA audits.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div class="p-3 bg-red-50 border-l-4 border-red-600 text-xs font-bold text-red-800 uppercase mb-4">High-Level Executive Risk Mitigation & Operational Protocol</div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">1. Describe your experience managing multi-state fleet logistics, vehicle maintenance budgets, and GPS telematics compliance *</label>
+                                <textarea name="COO_Fleet_Logistics" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">2. What is your precise methodology for enforcing labor gross margin targets and mitigating trade crew overtime drift? *</label>
+                                <textarea name="COO_Profitability" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">3. Outline your crisis management framework for handling severe jobsite accidents, structural property damage claims, or OSHA audits *</label>
+                                <textarea name="COO_Crisis" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">4. How do you vet and onboard subcontractors to limit company liability, worker misclassification risk, and lien waivers? *</label>
+                                <textarea name="COO_SubVetting" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">5. What enterprise software stacks and project management systems have you personally implemented across scaling operations? *</label>
+                                <textarea name="COO_Software" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Chief Financial Officer (CFO) / Controller": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Chief Financial Officer (CFO) / Controller</h3>
+                            <p>As CFO, you will direct all corporate accounting, financial planning, cash flow runways, bonding lines, insurance audits, and tax compliance across our regional service territories.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Establish real-time job-costing visibility, WIP (Work-in-Progress) schedules, and percentage-of-completion accounting.</li>
+                                <li>Manage contractor liability insurance policies, annual workers' comp audits, and maintain EMR ratings below 1.0.</li>
+                                <li>Direct internal control procedures for accounts payable, payroll processing, and multi-state tax compliance (MN, SD, WI).</li>
+                                <li>Maintain bonding lines and negotiate favorable commercial credit terms and material rebates with major paint suppliers.</li>
+                                <li>Actively audit operational overhead and eliminate financial leakage or margin erosion across all departments.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div class="p-3 bg-red-50 border-l-4 border-red-600 text-xs font-bold text-red-800 uppercase mb-4">High-Level Executive Risk Mitigation & Financial Controls</div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">1. How do you establish real-time job-costing visibility, WIP (Work-in-Progress) schedules, and cash flow runways? *</label>
+                                <textarea name="CFO_JobCosting" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">2. Describe your experience managing contractor liability insurance policies, annual workers' comp audits, and EMR rating control *</label>
+                                <textarea name="CFO_Insurance" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">3. Outline your internal control procedures for accounts payable, payroll processing, and multi-state tax compliance (MN, SD, WI) *</label>
+                                <textarea name="CFO_TaxCompliance" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">4. What is your strategy for maintaining bonding lines and negotiating favorable credit terms with major paint suppliers (Valspar, Sherwin-Williams, Benjamin Moore)? *</label>
+                                <textarea name="CFO_SupplierCredit" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">5. Describe a past instance where you identified financial leakage or margin erosion and the corrective actions implemented *</label>
+                                <textarea name="CFO_Leakage" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    }
+                }
+            },
+            sales: {
+                divisionName: "Sales & Estimating Division",
+                roles: {
+                    "Sales Director / Business Development Manager": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Sales Director / Business Development Manager</h3>
+                            <p>Drive commercial general contractor partnerships, multi-family residential contracts, and regional sales pipeline expansion while enforcing rigorous profit margin thresholds.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Secure high-value commercial construction accounts and recurring general contractor partnerships.</li>
+                                <li>Manage outbound regional sales pipelines and establish pricing minimums for high-end residential accounts.</li>
+                                <li>Enforce company gross margin thresholds across all outbound proposals and manage sales rep closing ratios.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div class="p-3 bg-red-50 border-l-4 border-red-600 text-xs font-bold text-red-800 uppercase mb-4">Management Vetting & Sales Pipeline Strategy</div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your track record in securing multi-family commercial contracts and general contractor partnerships *</label>
+                                <textarea name="SalesDir_Contracts" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you structure high-end residential accounts, pricing minimums, and regional sales pipelines? *</label>
+                                <textarea name="SalesDir_Pipeline" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What is your approach to managing closing ratios for subordinate sales reps and enforcing company margin thresholds? *</label>
+                                <textarea name="SalesDir_Margins" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Senior Estimator / Take-off Specialist": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Senior Estimator / Take-off Specialist</h3>
+                            <p>Execute precise digital blueprint take-offs, material estimations, and competitive bidding packages for commercial and residential painting contracts.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Utilize digital take-off software (Bluebeam, PlanSwift) to calculate exact surface areas and paint specifications.</li>
+                                <li>Maintain accurate material pricing databases for coatings, drywall supplies, and sundries.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div class="p-3 bg-red-50 border-l-4 border-red-600 text-xs font-bold text-red-800 uppercase mb-4">Technical Estimating Vetting</div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What digital take-off software and blueprint reading standards do you utilize for competitive commercial bids? *</label>
+                                <textarea name="SrEst_Software" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your accuracy rate and experience with material take-offs for painting, drywall, and coatings *</label>
+                                <textarea name="SrEst_Takeoffs" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Residential Estimator / Sales Rep": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Residential Estimator / Sales Rep</h3>
+                            <p>Conduct in-home client consultations, perform precise on-site measurements, and close residential painting and remodeling proposals.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Perform professional client walkthroughs and generate tablet-based estimates in the field.</li>
+                                <li>Maintain high closing percentages while adhering to company pricing standards.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you conduct client walkthroughs and formulate on-site software estimates? *</label>
+                                <textarea name="ResEst_Walkthroughs" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What is your average closing percentage on residential painting and exterior remodeling proposals? *</label>
+                                <textarea name="ResEst_Closing" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    }
+                }
+            },
+            operations: {
+                divisionName: "Operations & Project Management",
+                roles: {
+                    "General Superintendent / Operations Manager": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: General Superintendent / Operations Manager</h3>
+                            <p>Oversee active jobsite coordination, heavy equipment deployment (scaffolding, boom lifts), multi-crew routing, and production milestone enforcement.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Coordinate active jobsites and machinery logistics across regional territories in MN and SD.</li>
+                                <li>Resolve crew scheduling conflicts and ensure strict adherence to project deadlines.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div class="p-3 bg-red-50 border-l-4 border-red-600 text-xs font-bold text-red-800 uppercase mb-4">Operations & Equipment Risk Mitigation</div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your experience coordinating active jobsites and heavy equipment deployment (scaffolding, boom lifts) across regional territories *</label>
+                                <textarea name="Supt_Equipment" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you manage multi-crew scheduling conflicts and enforce production milestones? *</label>
+                                <textarea name="Supt_Scheduling" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Project Manager (PM)": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Project Manager (PM)</h3>
+                            <p>Manage project budgets, change orders, subcontractor coordination, and client communication from project kickoff to final punch list inspection.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Track job budget variances and document all scope change orders.</li>
+                                <li>Maintain transparent daily communication and progress reports with clients.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you track job budgets, manage change orders, and coordinate specialty subcontractors? *</label>
+                                <textarea name="PM_Budgets" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your communication workflow with clients from kickoff to final punch list inspection *</label>
+                                <textarea name="PM_ClientComm" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Safety Director / QC Inspector": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Safety Director / QC Inspector</h3>
+                            <p>Enforce strict OSHA, MNOSHA, and EPA RRP lead-paint containment standards while performing rigorous quality assurance inspections on finished coatings.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Conduct routine safety audits and enforce PPE compliance across all jobsites.</li>
+                                <li>Perform mil thickness tests and surface adhesion inspections on finished paint work.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What is your level of expertise enforcing OSHA, MNOSHA, and EPA RRP lead-paint containment standards? *</label>
+                                <textarea name="Safety_OSHA" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you conduct quality assurance inspections on finished coating surfaces? *</label>
+                                <textarea name="Safety_QA" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    }
+                }
+            },
+            office: {
+                divisionName: "Office & Administration",
+                roles: {
+                    "Office Manager / Administrative Assistant": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Office Manager / Administrative Assistant</h3>
+                            <p>Handle high-volume inbound communications, municipal building permits, client invoicing, and organized corporate record-keeping.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Manage phone routing, customer inquiries, and schedule dispatches.</li>
+                                <li>Process accounts receivable/payable and secure municipal building permits.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your experience handling high-volume inbound phone routing, municipal building permits, and invoicing *</label>
+                                <textarea name="Admin_Invoicing" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What administrative software are you proficient in to maintain organized filing and client records? *</label>
+                                <input type="text" name="Admin_Software" required placeholder="List software proficiencies..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md">
+                            </div>
+                        `
+                    },
+                    "HR / Recruitment Specialist": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: HR / Recruitment Specialist</h3>
+                            <p>Manage seasonal high-volume recruitment, applicant screening, background checks, I-9 verification, and field worker safety onboarding.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Source, screen, and interview candidates for field and administrative positions.</li>
+                                <li>Ensure complete compliance with employment laws and safety onboarding handbooks.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your experience managing seasonal high-volume hiring, background checks, and worker certifications *</label>
+                                <textarea name="HR_Recruiting" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you handle field worker onboarding and safety compliance documentation? *</label>
+                                <textarea name="HR_Onboarding" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    }
+                }
+            },
+            field: {
+                divisionName: "Field Crew (Jobsite Level)",
+                roles: {
+                    "Jobsite Foreman / Crew Leader": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Jobsite Foreman / Crew Leader</h3>
+                            <p>Direct daily field operations, manage crew task execution, monitor on-site material staging, and conduct client walkthroughs.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Supervise field technicians and ensure adherence to daily production goals.</li>
+                                <li>Enforce jobsite safety rules and manage material inventories on-site.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your experience running daily jobsites, managing field crew tasks, and client walkthroughs *</label>
+                                <textarea name="Foreman_Experience" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">How do you monitor on-site material inventory, quality control, and safety compliance? *</label>
+                                <textarea name="Foreman_QC" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Lead Journeyman Painter": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Lead Journeyman Painter</h3>
+                            <p>Execute specialty coatings, cabinet spraying, fine woodwork finishing, and advanced drywall repair with flawless quality.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Apply high-end finishes using HVLP sprayers and catalyzed lacquers.</li>
+                                <li>Perform expert skim coating, texture matching, and level 5 drywall finishes.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What is your proficiency level with specialty coatings, cabinet spraying, and flawless finish work? *</label>
+                                <textarea name="LeadPain_Specialty" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your experience with advanced drywall repairs and flawless wall smoothing *</label>
+                                <textarea name="LeadPain_Drywall" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Journeyman Painter": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Journeyman Painter</h3>
+                            <p>Execute professional masking, cutting, rolling, and airless spraying across residential and commercial painting projects.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Perform interior and exterior painting tasks with high efficiency and precision.</li>
+                                <li>Maintain clean and organized work areas throughout project execution.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Can you execute masking, cutting, rolling, and airless spraying completely unsupervised? *</label>
+                                <select name="Journeyman_Unsupervised" required class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md">
+                                    <option value="">Select...</option>
+                                    <option value="Yes - Fully Unsupervised">Yes, fully capable of running jobs unsupervised</option>
+                                    <option value="Mostly - Minimal Guidance">Mostly, with occasional lead oversight</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Detail your previous painting project history and years working in the trade *</label>
+                                <textarea name="Journeyman_History" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    },
+                    "Apprentice / Prep Painter": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Apprentice / Prep Painter</h3>
+                            <p>Perform essential surface preparation including sanding, scraping, caulking, taping, and plastic layout while learning professional trade skills.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Prepare surfaces meticulously prior to paint application.</li>
+                                <li>Assist lead painters and maintain jobsite cleanliness.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">What surface preparation experience do you have (sanding, scraping, caulking, taping, plastic layout)? *</label>
+                                <textarea name="Apprentice_Prep" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Are you reliable, eager to learn trade skills, and comfortable working long hours on your feet? *</label>
+                                <input type="text" name="Apprentice_WorkEthic" required placeholder="Enter confirmation..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md">
+                            </div>
+                        `
+                    },
+                    "Field Support / General Labor ('Grunt')": {
+                        desc: `
+                            <h3 class="font-extrabold text-slate-900 text-base uppercase">Role Overview: Field Support / General Labor ('Grunt')</h3>
+                            <p>Handle heavy lifting, moving staging/scaffolding, loading trucks, general jobsite cleanup, and assisting trade crews.</p>
+                            <h4 class="font-bold text-slate-800 mt-2">Core Responsibilities:</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                                <li>Load and unload equipment and material supplies on job sites.</li>
+                                <li>Perform general site cleanup, mix paint, and assist with equipment maintenance.</li>
+                            </ul>
+                        `,
+                        questions: `
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Are you physically capable of heavy lifting, moving staging/scaffolding, and loading trucks daily? *</label>
+                                <select name="Labor_HeavyLift" required class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md">
+                                    <option value="">Select...</option>
+                                    <option value="Yes - Fully Capable">Yes, fully capable of heavy site labor</option>
+                                    <option value="Limitations">Have lifting limitations</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Describe your experience with jobsite cleanup, mixing paint, and cleaning spray guns *</label>
+                                <textarea name="Labor_Cleanup" rows="3" required placeholder="Provide detailed answer here..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md"></textarea>
+                            </div>
+                        `
+                    }
+                }
+            }
+        };
+
+        function updatePositions() {
+            const divKey = document.getElementById('divisionSelect').value;
+            const posSelect = document.getElementById('positionSelect');
+            
+            posSelect.innerHTML = '<option value="">Select a specific position...</option>';
+            document.getElementById('section-job-desc').classList.add('hidden');
+            document.getElementById('section-role-questions').classList.add('hidden');
+            document.getElementById('activeDivisionBadge').classList.add('hidden');
+            document.getElementById('confirmJobDesc').checked = false;
+            
+            if (divKey && roleData[divKey]) {
+                document.getElementById('selectedDivisionInput').value = roleData[divKey].divisionName;
+                const rolesObj = roleData[divKey].roles;
+                for (const roleName in rolesObj) {
+                    const opt = document.createElement('option');
+                    opt.value = roleName;
+                    opt.textContent = roleName;
+                    posSelect.appendChild(opt);
+                }
+            } else {
+                document.getElementById('selectedDivisionInput').value = "";
+            }
+        }
+
+        function renderJobDescription() {
+            const divKey = document.getElementById('divisionSelect').value;
+            const roleName = document.getElementById('positionSelect').value;
+            const descContainer = document.getElementById('jobDescriptionContainer');
+            const descSection = document.getElementById('section-job-desc');
+            const questionSection = document.getElementById('section-role-questions');
+            const confirmCheckbox = document.getElementById('confirmJobDesc');
+
+            confirmCheckbox.checked = false;
+            questionSection.classList.add('hidden');
+
+            if (divKey && roleName && roleData[divKey].roles[roleName]) {
+                document.getElementById('selectedPositionInput').value = roleName;
+                const roleObj = roleData[divKey].roles[roleName];
+                
+                descContainer.innerHTML = roleObj.desc;
+                document.getElementById('uniqueQuestionsContainer').innerHTML = roleObj.questions;
+                
+                descSection.classList.remove('hidden');
+
+                // Update Header Badge
+                const badge = document.getElementById('activeDivisionBadge');
+                badge.classList.remove('hidden');
+                document.getElementById('badgeDivisionName').innerText = roleName;
+            } else {
+                descContainer.innerHTML = '';
+                descSection.classList.add('hidden');
+                document.getElementById('activeDivisionBadge').classList.add('hidden');
+            }
+        }
+
+        function toggleRoleQuestions() {
+            const confirmCheckbox = document.getElementById('confirmJobDesc');
+            const questionSection = document.getElementById('section-role-questions');
+
+            if (confirmCheckbox.checked) {
+                questionSection.classList.remove('hidden');
+            } else {
+                questionSection.classList.add('hidden');
+            }
+        }
+
+        function triggerReviewModal() {
+            const form = document.getElementById('appForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Gather all inputs for summary
+            const name = document.getElementById('input_fullname').value;
+            const phone = document.getElementById('input_phone').value;
+            const email = document.getElementById('input_email').value;
+            const location = document.getElementById('input_location').value;
+            const division = document.getElementById('selectedDivisionInput').value;
+            const position = document.getElementById('selectedPositionInput').value;
+            const transport = document.getElementById('input_transport').value;
+            const availability = document.getElementById('input_availability').value;
+
+            let summaryHTML = `
+                <div class="grid grid-cols-2 gap-2 border-b border-slate-200 pb-3">
+                    <div><strong>Full Name:</strong> ${name}</div>
+                    <div><strong>Phone:</strong> ${phone}</div>
+                    <div><strong>Email:</strong> ${email}</div>
+                    <div><strong>Location:</strong> ${location}</div>
+                </div>
+                <div class="py-2 border-b border-slate-200">
+                    <div><strong>Division:</strong> ${division}</div>
+                    <div><strong>Position:</strong> <span class="text-red-600 font-bold">${position}</span></div>
+                    <div><strong>Job Description Acknowledged:</strong> <span class="text-green-600 font-bold">Yes (Confirmed)</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 py-2">
+                    <div><strong>Transport:</strong> ${transport}</div>
+                    <div><strong>Availability:</strong> ${availability}</div>
+                </div>
+                <p class="text-xs text-slate-500 italic mt-2">All role-specific qualification and risk-mitigation answers have been recorded and will be submitted.</p>
+            `;
+
+            document.getElementById('reviewContentSummary').innerHTML = summaryHTML;
+            document.getElementById('reviewModal').classList.remove('hidden');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>

@@ -1,122 +1,179 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard | Handyman Painting</title>
+    <title>Customer Project Center | Handyman Painting L.L.C.</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .brand-red { color: #E31E24; }
-        .bg-brand-red { background-color: #E31E24; }
-        .bg-brand-black { background-color: #1A1A1A; }
+        body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; color: #1A1A1A; }
+        .gold-accent { color: #C5A059; }
+        .bg-gold { background-color: #C5A059; }
+        .border-gold { border-color: #C5A059; }
+        .executive-header { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); }
     </style>
-    <script type="text/javascript">(function(w,s){var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="https://cdn.pagesense.io/js/934654246/e3589ba4a5494620b8dfd95a7d650578.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(e,x);})(window,"script");</script>
 </head>
-<body class="bg-zinc-100 min-h-screen text-slate-900 flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between">
+    <!-- Seamless Persistent Session Check -->
     <script>
         if (localStorage.getItem("isLoggedIn") !== "true") {
             window.location.href = "login.html";
-        }
-        function getUserClaims() {
-            return { name: "Jesse Bautista III", email: "jessebautistaiii@gmail.com" };
+        } else if (localStorage.getItem("isOnboarded") !== "true") {
+            window.location.href = "onboarding.html";
         }
     </script>
-    <header class="bg-brand-black text-white py-3 border-b-4 border-brand-red shadow-md">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <span class="text-lg font-black tracking-wider uppercase">Client Portal</span>
+
+    <!-- Top Navigation -->
+    <header class="executive-header text-white border-b-2 border-[#C5A059] sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-8 h-20 flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <a href="index.html" class="text-xs font-bold uppercase text-zinc-300 hover:text-white transition">Main Site</a>
-                <button onclick="localStorage.clear(); window.location.href='login.html';" class="bg-brand-red text-white px-3 py-1 rounded text-xs font-bold uppercase">Log Out</button>
+                <div class="h-3.5 w-3.5 bg-[#C5A059] shadow-sm"></div>
+                <div>
+                    <span class="text-sm font-extrabold tracking-widest uppercase text-white block">Handyman Painting L.L.C.</span>
+                    <span class="text-[10px] tracking-wider uppercase text-[#C5A059] font-semibold">Customer Project Center</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-6 text-xs font-semibold">
+                <a href="dashboard.html" class="text-slate-300 hover:text-white transition">Dashboard Hub</a>
+                <span class="text-slate-600">|</span>
+                <span id="nav-client-name" class="text-slate-300">Welcome</span>
+                <button onclick="localStorage.clear(); window.location.href='login.html';" class="bg-[#C5A059] hover:bg-[#b08d46] text-slate-950 px-4 py-2 rounded text-xs font-bold uppercase transition shadow-xs">Log Out</button>
             </div>
         </div>
     </header>
-    <main class="container mx-auto px-4 py-6 flex-grow">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 space-y-6">
-                <div id="sec-header-greeting"></div>
-                <div id="sec-workflow-status"></div>
-                <div id="sec-schedule-assessment"></div>
-                <div id="sec-project-bids"></div>
-                <div id="sec-paint-studio"></div>
-                <div id="sec-paint-calculator"></div>
-                <div id="sec-budget-estimator"></div>
-                <div id="sec-checklist-warranty"></div>
-                <div id="sec-job-photos"></div>
-                <div id="sec-invoices-payments"></div>
-                <div id="sec-profile-property"></div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-8 py-10 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Side: Captured Project Data & Tools -->
+        <div class="lg:col-span-8 space-y-8">
+            
+            <div class="bg-white rounded-lg border border-slate-200/80 p-8 shadow-xs relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-[#C5A059]"></div>
+                <div class="flex justify-between items-start pb-6 border-b border-slate-100">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded">Active Project Overview</span>
+                        <h1 id="welcome-heading" class="text-2xl font-extrabold text-slate-900 mt-2">Project Hub</h1>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider">Status</span>
+                        <span class="text-xs font-bold text-emerald-600">Scheduled & Ready, You Betcha</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 text-xs">
+                    <div>
+                        <span class="text-slate-400 block font-semibold uppercase text-[10px] tracking-wider">Property Address</span>
+                        <span id="data-address" class="font-bold text-slate-900 mt-1 block text-sm">Loading...</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block font-semibold uppercase text-[10px] tracking-wider">Project Type</span>
+                        <span id="data-type" class="font-bold text-slate-900 mt-1 block text-sm">Loading...</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block font-semibold uppercase text-[10px] tracking-wider">Estimated Scope</span>
+                        <span id="data-sqft" class="font-bold text-slate-900 mt-1 block text-sm">Loading...</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block font-semibold uppercase text-[10px] tracking-wider">Target Timeline</span>
+                        <span id="data-timeline" class="font-bold text-slate-900 mt-1 block text-sm">Loading...</span>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-slate-100 text-xs">
+                    <span class="text-slate-400 block font-semibold uppercase text-[10px] tracking-wider mb-1">Your Special Notes</span>
+                    <p id="data-notes" class="text-slate-700 italic">None provided.</p>
+                </div>
             </div>
-            <div class="space-y-6">
-                <div id="sec-weather-widget"></div>
-                <div id="sec-account-overview"></div>
-                <div id="sec-direct-dispatch"></div>
+
+            <!-- Paint Coverage Calculator -->
+            <div class="bg-white rounded-lg border border-slate-200/80 p-8 shadow-xs">
+                <h2 class="font-bold uppercase text-xs tracking-widest text-slate-900 mb-4 pb-2 border-b border-slate-100">Paint Coverage & Gallon Tool</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-xs">
+                    <div>
+                        <label class="block font-bold uppercase text-slate-700 mb-2">Wall Length (ft)</label>
+                        <input type="number" id="tool-length" class="w-full p-3 bg-slate-50 border border-slate-300 rounded focus:bg-white focus:ring-2 focus:ring-[#C5A059] focus:outline-none" value="20">
+                    </div>
+                    <div>
+                        <label class="block font-bold uppercase text-slate-700 mb-2">Wall Height (ft)</label>
+                        <input type="number" id="tool-height" class="w-full p-3 bg-slate-50 border border-slate-300 rounded focus:bg-white focus:ring-2 focus:ring-[#C5A059] focus:outline-none" value="9">
+                    </div>
+                </div>
+                <button onclick="runPaintCalc()" class="bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-bold uppercase px-6 py-3 rounded transition tracking-wider">Calculate Paint Needed</button>
+                <div id="tool-paint-result" class="mt-4 p-4 bg-slate-50 rounded border border-slate-200 hidden text-xs font-medium text-slate-800"></div>
             </div>
+
+            <!-- Prairie Wisdom -->
+            <div class="bg-white rounded-lg border border-slate-200/80 p-8 shadow-xs">
+                <h2 class="font-bold uppercase text-xs tracking-widest text-slate-900 mb-4 pb-2 border-b border-slate-100">Handyman's Prairie Painting Wisdom</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600">
+                    <div class="p-4 bg-slate-50 rounded border border-slate-200">
+                        <strong class="text-slate-900 block mb-1">The Morning Dew Rule</strong>
+                        Never roll exterior paint before 9:00 AM if there's heavy morning dew. Trapped moisture causes bubbling faster than anything else.
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded border border-slate-200">
+                        <strong class="text-slate-900 block mb-1">Wind & Sun Management</strong>
+                        Painting in direct 90° prairie wind dries the top layer too fast, leaving the bond underneath weak. We paint with the shade.
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <!-- Right Side: Navigation & Support -->
+        <div class="lg:col-span-4 space-y-8">
+            
+            <div class="bg-white rounded-lg border border-slate-200/80 p-8 shadow-xs">
+                <h3 class="font-bold uppercase text-xs tracking-widest text-slate-900 mb-4 pb-2 border-b border-slate-100">Daily Milestone Photos</h3>
+                <p class="text-xs text-slate-600 mb-4">Check out real-time photo logs taken by your crew lead as work progresses.</p>
+                <button onclick="alert('Photo gallery feed loaded.')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold uppercase py-2.5 rounded transition">View Today's Photos</button>
+            </div>
+
+            <div class="bg-[#0F172A] text-white rounded-lg p-8 shadow-md border-t-2 border-[#C5A059]">
+                <h3 class="font-bold uppercase text-xs tracking-widest text-[#C5A059] mb-3">Talk to Your Crew Lead</h3>
+                <p class="text-xs text-slate-300 mb-6 leading-relaxed">Have a question about color choices or need to tweak your schedule? Reach out directly.</p>
+                <a href="tel:3203219359" class="block text-center bg-[#C5A059] hover:bg-[#b08d46] text-slate-950 text-xs font-bold uppercase py-3 rounded transition tracking-wider shadow-sm">Call 320-321-9359</a>
+            </div>
+
+        </div>
+
     </main>
-    <footer class="bg-brand-black text-zinc-500 py-4 text-center text-xs border-t border-zinc-800">
-        &copy; 2026 HANDYMAN PAINTING L.L.C. | AUTHENTICATED CLIENT SESSION
+
+    <!-- Footer -->
+    <footer class="executive-header text-slate-400 py-6 text-center text-xs border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col sm:flex-row justify-between items-center">
+            <span>&copy; 2026 Handyman Painting L.L.C. All Rights Reserved.</span>
+            <span class="text-[10px] text-[#C5A059] font-mono mt-2 sm:mt-0 tracking-widest">CUSTOMER PORTAL</span>
+        </div>
     </footer>
+
+    <!-- Personalization & Data Binding Scripts -->
     <script>
-        async function loadComponentSafely(targetId, componentPath) {
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            try {
-                const response = await fetch(componentPath);
-                if (!response.ok) throw new Error('Error');
-                container.innerHTML = await response.text();
-            } catch (e) {
-                container.innerHTML = '<div class="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded">⚠️ Failed to load component: ' + componentPath + '</div>';
-            }
+        const clientName = localStorage.getItem("clientName") || "Valued Client";
+        document.getElementById('nav-client-name').innerText = 'Welcome, ' + clientName;
+        document.getElementById('welcome-heading').innerText = clientName + '\'s Project Hub';
+
+        document.getElementById('data-address').innerText = localStorage.getItem("projectAddress") || "Not Specified";
+        document.getElementById('data-type').innerText = localStorage.getItem("projectType") || "Exterior Painting";
+        document.getElementById('data-sqft').innerText = (localStorage.getItem("projectSqFt") || "2000") + ' sq ft approx.';
+        document.getElementById('data-timeline').innerText = localStorage.getItem("projectTimeline") || "As Soon As Possible";
+        
+        const notes = localStorage.getItem("projectNotes");
+        if (notes) {
+            document.getElementById('data-notes').innerText = notes;
+            document.getElementById('data-notes').classList.remove('italic');
         }
-        document.addEventListener("DOMContentLoaded", async function() {
-            await Promise.allSettled([
-                loadComponentSafely("sec-header-greeting", "components/header-greeting.html"),
-                loadComponentSafely("sec-workflow-status", "components/workflow-status.html"),
-                loadComponentSafely("sec-schedule-assessment", "components/schedule-assessment.html"),
-                loadComponentSafely("sec-project-bids", "components/project-bids.html"),
-                loadComponentSafely("sec-paint-studio", "components/paint-studio.html"),
-                loadComponentSafely("sec-paint-calculator", "components/paint-calculator.html"),
-                loadComponentSafely("sec-budget-estimator", "components/budget-estimator.html"),
-                loadComponentSafely("sec-checklist-warranty", "components/checklist-warranty.html"),
-                loadComponentSafely("sec-job-photos", "components/job-photos.html"),
-                loadComponentSafely("sec-invoices-payments", "components/invoices-payments.html"),
-                loadComponentSafely("sec-profile-property", "components/profile-property.html"),
-                loadComponentSafely("sec-weather-widget", "components/weather-widget.html"),
-                loadComponentSafely("sec-account-overview", "components/account-overview.html"),
-                loadComponentSafely("sec-direct-dispatch", "components/direct-dispatch.html")
-            ]);
-        });
-        async function handleManualSearch() {
-            const input = document.getElementById('citySearchInput');
-            if (!input) return alert('Search input not found.');
-            const query = input.value.trim();
-            if (!query) return alert('Enter a city or ZIP.');
-            try {
-                const res = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(query) + '&count=1');
-                const data = await res.json();
-                if (data.results && data.results.length > 0) {
-                    const loc = data.results[0];
-                    if (typeof fetchWeather === 'function') {
-                        fetchWeather(loc.latitude, loc.longitude, loc.name + ', ' + (loc.admin1 || ''), 'Manual Search');
-                    } else {
-                        alert('Found: ' + loc.name);
-                    }
-                } else {
-                    alert('Location not found.');
-                }
-            } catch (e) {
-                alert('Search failed.');
-            }
-        }
-    
-        function toggleEditMode() {
-            const el = document.getElementById("edit-container");
-            if (el) {
-                el.classList.toggle("hidden");
-            } else {
-                console.log("Toggle edit mode triggered: No edit container found.");
-            }
-        }
+
+        window.runPaintCalc = function() {
+            const length = parseFloat(document.getElementById('tool-length').value) || 0;
+            const height = parseFloat(document.getElementById('tool-height').value) || 0;
+            const sqFt = length * height * 2;
+            const gallons = Math.ceil(sqFt / 350);
+            
+            const resBox = document.getElementById('tool-paint-result');
+            resBox.innerHTML = 'Estimated surface area for <strong>' + clientName + '</strong>: <strong>' + sqFt + ' sq ft</strong>. You will need roughly <strong>' + gallons + ' gallon(s)</strong> of paint (figured at standard 350 sq ft/gal coverage).';
+            resBox.classList.remove('hidden');
+        };
     </script>
 </body>
 </html>
