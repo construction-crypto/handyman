@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-// Adjust your database client import based on how api/ schema connects
-// If using standard sqlite3 or better-sqlite3 in api folder:
-import Database from 'better-sqlite3';
-import path from 'path';
+import { db } from '@/db';
+import { projects } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 export async function GET(request) {
   try {
@@ -13,12 +12,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Access token is required' }, { status: 400 });
     }
 
-    // Connect to the database defined by schema.sql
-    const dbPath = path.join(process.cwd(), 'api', 'database.sqlite');
-    const db = new Database(dbPath, { readonly: true });
-
-    const stmt = db.prepare('SELECT * FROM projects WHERE client_token = ?');
-    const project = stmt.get(token);
+    const result = await db.select().from(projects).where(eq(projects.clientToken, token)).limit(1);
+    const project = result[0];
 
     if (!project) {
       return NextResponse.json({ error: 'Invalid or expired access token' }, { status: 401 });

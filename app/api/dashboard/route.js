@@ -12,7 +12,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
     }
 
-    const project = await db.select().from(projects).where(eq(projects.id, projectId)).get();
+    const result = await db.select().from(projects).where(eq(projects.id, Number(projectId))).limit(1);
+    const project = result[0];
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
