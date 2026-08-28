@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Onboarding | Handyman Painting L.L.C.</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="output.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; color: #1A1A1A; }
@@ -19,10 +19,11 @@
     <script>
         if (localStorage.getItem("isLoggedIn") !== "true") {
             window.location.href = "login.html";
+        } else if (localStorage.getItem("isOnboarded") === "true") {
+            window.location.href = "dashboard.html";
         }
     </script>
 
-    <!-- Header -->
     <header class="executive-header text-white border-b-2 border-[#C5A059] sticky top-0 z-50 shadow-md">
         <div class="max-w-3xl mx-auto px-8 h-20 flex justify-between items-center">
             <div class="flex items-center space-x-4">
@@ -36,12 +37,10 @@
         </div>
     </header>
 
-    <!-- Main Wizard Container -->
     <main class="max-w-3xl mx-auto px-8 py-16 flex-grow flex items-center justify-center w-full">
         <div class="bg-white rounded-xl border border-slate-200/80 p-10 shadow-sm relative overflow-hidden w-full">
             <div class="absolute top-0 left-0 w-1.5 h-full bg-[#C5A059]"></div>
             
-            <!-- Step 1: Full Name -->
             <div id="step-1" class="wizard-step step-transition space-y-6">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded">Question 1</span>
                 <h2 class="text-2xl font-extrabold text-slate-900">What is your full name, friend?</h2>
@@ -50,14 +49,12 @@
                 <button onclick="nextStep(1)" class="w-full bg-[#0F172A] hover:bg-slate-800 text-white font-bold uppercase py-4 rounded transition tracking-wider text-xs shadow-sm">Continue &rarr;</button>
             </div>
 
-            <!-- Step 2: Address with Property Association Check -->
             <div id="step-2" class="wizard-step step-transition space-y-6 hidden">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded">Question 2</span>
                 <h2 class="text-2xl font-extrabold text-slate-900">Where is the property located?</h2>
                 <p class="text-xs text-slate-500">Drop your street address so our crew can map out the site.</p>
                 <input type="text" id="input-address" class="w-full p-4 bg-slate-50 border border-slate-300 rounded text-sm focus:bg-white focus:ring-2 focus:ring-[#C5A059] focus:outline-none" placeholder="e.g., Wilkins Street, Montevideo, MN">
                 
-                <!-- Property Association Conflict Modal / Alert Box -->
                 <div id="property-conflict-box" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-md text-xs space-y-3">
                     <p class="font-bold text-amber-900">Heads up! This address is already linked to an existing account profile in our database.</p>
                     <p class="text-amber-800">Would you like to log in to that account instead, or continue forward with this new onboarding registration?</p>
@@ -73,7 +70,6 @@
                 </div>
             </div>
 
-            <!-- Step 3: Expanded Project Type -->
             <div id="step-3" class="wizard-step step-transition space-y-6 hidden">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded">Question 3</span>
                 <h2 class="text-2xl font-extrabold text-slate-900">What kind of work are we looking at?</h2>
@@ -93,7 +89,6 @@
                 </div>
             </div>
 
-            <!-- Step 4: Approximate Square Footage -->
             <div id="step-4" class="wizard-step step-transition space-y-6 hidden">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded">Question 4</span>
                 <h2 class="text-2xl font-extrabold text-slate-900">Roughly how big is the area?</h2>
@@ -105,7 +100,6 @@
                 </div>
             </div>
 
-            <!-- Step 5: Timeline & Notes -->
             <div id="step-5" class="wizard-step step-transition space-y-6 hidden">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-1 rounded">Final Step</span>
                 <h2 class="text-2xl font-extrabold text-slate-900">Any specific timeline or special notes?</h2>
@@ -125,7 +119,6 @@
         </div>
     </main>
 
-    <!-- Wizard Animation & Conflict Check Engine -->
     <script>
         let currentStep = 1;
 
@@ -139,8 +132,6 @@
                 alert('Please enter your property address.');
                 return;
             }
-
-            // Simulated PostgreSQL database check for existing property association
             const knownExistingAddress = "Wilkins Street";
             if (addressVal.toLowerCase().includes(knownExistingAddress.toLowerCase())) {
                 document.getElementById('property-conflict-box').classList.remove('hidden');
@@ -167,7 +158,6 @@
                 alert('Please enter your name to continue.');
                 return;
             }
-
             document.getElementById('step-' + currentStep).classList.add('hidden');
             currentStep++;
             document.getElementById('step-' + currentStep).classList.remove('hidden');
@@ -191,7 +181,6 @@
             const timeline = document.getElementById('input-timeline').value;
             const notes = document.getElementById('input-notes').value;
 
-            // Secure local state and simulated PostgreSQL sync
             localStorage.setItem("clientName", fullName);
             localStorage.setItem("projectAddress", address);
             localStorage.setItem("projectType", type);

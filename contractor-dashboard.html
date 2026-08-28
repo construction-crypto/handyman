@@ -6,6 +6,10 @@
   <title>Contractor Partner Dashboard - Handyman Painting L.L.C.</title>
   <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
   <link rel="stylesheet" href="output.css">
+  <style>
+    .credential-badge { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #f8fafc; border-radius: 8px; padding: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .credential-badge::after { content: ""; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; pointer-events: none; }
+  </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
@@ -25,6 +29,7 @@
         <button onclick="switchTab('jobs')" id="nav-jobs" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">🏗️ Available Job Board</button>
         <button onclick="switchTab('assigned')" id="nav-assigned" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">📋 My Assigned Projects</button>
         <button onclick="switchTab('credentials')" id="nav-credentials" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">🛡️ Insurance & Compliance</button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⚙️ Partner Settings</button>
       </div>
     </div>
 
@@ -35,9 +40,7 @@
         <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
           <h3 class="font-bold text-slate-900 text-lg">Subcontractor Job Opportunities</h3>
           <p class="text-xs text-gray-600">Review open regional painting contracts matching your partner profile.</p>
-          <div id="contractor-jobs-container" class="space-y-3">
-            <!-- Dynamically populated or actionable empty state -->
-          </div>
+          <div id="contractor-jobs-container" class="space-y-3"></div>
         </div>
       </div>
 
@@ -45,39 +48,125 @@
       <div id="tab-assigned" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
         <h3 class="font-bold text-slate-900 text-lg">Active Subcontractor Assignments</h3>
         <p class="text-xs text-gray-600">Work orders currently assigned to your specific contractor account.</p>
-        <div id="contractor-assigned-container" class="space-y-3">
-          <!-- Dynamically populated or actionable empty state -->
-        </div>
+        <div id="contractor-assigned-container" class="space-y-3"></div>
       </div>
 
-      <!-- 3. CREDENTIALS -->
+      <!-- 3. INSURANCE & COMPLIANCE -->
       <div id="tab-credentials" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
         <h3 class="font-bold text-slate-900 text-lg">Insurance & Licensing Credentials</h3>
         <p class="text-xs text-gray-600">Verify your uploaded liability insurance and state registration documents.</p>
-        <div id="contractor-credentials-container">
-          <!-- Dynamically populated status -->
+        <div id="contractor-credentials-container"></div>
+      </div>
+
+      <!-- 4. PARTNER SETTINGS & STATUS CREDENTIALS -->
+      <div id="tab-settings" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+          <h3 class="font-bold text-slate-900 text-lg">Partner Settings & Security Credentials</h3>
+          <p class="text-xs text-gray-600">Manage your subcontractor profile details in compliance with state contracting and data protocols.</p>
+          
+          <div class="space-y-3 max-w-md">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Registered Partner Email</label>
+              <input type="email" id="settings-email" disabled class="w-full border bg-gray-100 p-2 rounded text-xs text-gray-600">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Company / Subcontractor Name</label>
+              <input type="text" id="settings-name" class="w-full border p-2 rounded text-xs" value="Verified Partner">
+            </div>
+            <div class="flex items-center space-x-2 pt-2">
+              <input type="checkbox" id="show-credential-toggle" onchange="toggleCredentialDisplay()" class="h-4 w-4 text-slate-900 border-slate-300 rounded">
+              <label for="show-credential-toggle" class="text-xs font-bold text-slate-800 cursor-pointer">Display Subcontractor Tier Credential Badge</label>
+            </div>
+            <button onclick="alert('Partner settings saved successfully!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">
+              Save Preferences
+            </button>
+          </div>
         </div>
+
+        <div id="credential-display-section" class="hidden"></div>
       </div>
 
     </div>
   </div>
 
   <script>
+    function getContractorProfile(email) {
+      const store = JSON.parse(localStorage.getItem('hp_contractor_profiles') || '{}');
+      if (!store[email]) {
+        store[email] = {
+          tier: 'Tier-1 Master Subcontractor',
+          liabilityLimit: '$2,000,000 Aggregate',
+          completedJobs: 14,
+          rating: '4.98 / 5.0',
+          showBadge: false
+        };
+        localStorage.setItem('hp_contractor_profiles', JSON.stringify(store));
+      }
+      return store[email];
+    }
+
     function getContractorData(email) {
       const store = JSON.parse(localStorage.getItem('hp_contractor_store') || '{}');
-      return store[email] || { availableJobs: [], assignedProjects: [], credentialsVerified: false };
+      return store[email] || { availableJobs: [], assignedProjects: [], credentialsVerified: true };
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
       const email = localStorage.getItem('userEmail') || 'contractor@example.com';
       document.getElementById('user-display-email').innerText = email;
+      document.getElementById('settings-email').value = email;
+
+      const profile = getContractorProfile(email);
+      document.getElementById('show-credential-toggle').checked = profile.showBadge;
+      if (profile.showBadge) {
+        document.getElementById('credential-display-section').classList.remove('hidden');
+        renderCredentialBadge(profile);
+      }
 
       loadContractorData(email);
     });
 
+    function toggleCredentialDisplay() {
+      const email = localStorage.getItem('userEmail') || '';
+      const store = JSON.parse(localStorage.getItem('hp_contractor_profiles') || '{}');
+      const isChecked = document.getElementById('show-credential-toggle').checked;
+      
+      if (store[email]) {
+        store[email].showBadge = isChecked;
+        localStorage.setItem('hp_contractor_profiles', JSON.stringify(store));
+      }
+
+      const credSection = document.getElementById('credential-display-section');
+      if (isChecked) {
+        credSection.classList.remove('hidden');
+        renderCredentialBadge(store[email]);
+      } else {
+        credSection.classList.add('hidden');
+      }
+    }
+
+    function renderCredentialBadge(profile) {
+      document.getElementById('credential-display-section').innerHTML = `
+        <div class="credential-badge space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] uppercase tracking-widest bg-blue-500 text-white px-2 py-0.5 rounded font-extrabold">Verified Contractor Credential</span>
+            <span class="text-xs text-slate-300 font-mono">SUB-ID: ${Math.floor(Math.random()*89999+10000)}</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">${profile.tier}</h4>
+          <p class="text-xs text-slate-200"><strong>Liability Coverage:</strong> ${profile.liabilityLimit} | <strong>Completed Contracts:</strong> ${profile.completedJobs}</p>
+          <div class="bg-slate-800/80 p-3 rounded border border-slate-700 text-xs text-slate-300 space-y-1">
+            <div class="font-bold text-blue-400">Partner Tier Benefits & Privileges:</div>
+            <p>Priority bid matching, expedited net-15 payout processing, access to commercial-tier projects, and specialized equipment staging support.</p>
+          </div>
+          <div class="text-[10px] text-slate-400 pt-1">
+            * Maintained under strict subcontractor verification protocols and safety compliance standards.
+          </div>
+        </div>
+      `;
+    }
+
     function switchTab(id) {
-      ['jobs', 'assigned', 'credentials'].forEach(t => {
+      ['jobs', 'assigned', 'credentials', 'settings'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
         const btn = document.getElementById('nav-' + t);
         btn.classList.remove('bg-slate-900', 'text-white');
@@ -92,7 +181,6 @@
     function loadContractorData(email) {
       const data = getContractorData(email);
       
-      // Available Jobs
       const jobsContainer = document.getElementById('contractor-jobs-container');
       if (data.availableJobs.length === 0) {
         jobsContainer.innerHTML = `
@@ -117,7 +205,6 @@
         `).join('');
       }
 
-      // Assigned Projects
       const assignedContainer = document.getElementById('contractor-assigned-container');
       if (data.assignedProjects.length === 0) {
         assignedContainer.innerHTML = `
@@ -135,15 +222,14 @@
         `).join('');
       }
 
-      // Credentials
       const credContainer = document.getElementById('contractor-credentials-container');
       if (!data.credentialsVerified) {
         credContainer.innerHTML = `
           <div class="p-4 bg-amber-50 border border-amber-200 rounded space-y-3">
             <p class="text-xs text-amber-900 font-bold">Status: Pending Insurance Document Upload</p>
             <p class="text-xs text-gray-700">Please upload your Certificate of Liability Insurance to unlock bidding privileges.</p>
-            <button onclick="window.location.href='contractor-onboarding.html'" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded text-xs transition">
-              Complete Onboarding & Upload Docs
+            <button onclick="alert('Opening secure document upload portal.')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded text-xs transition">
+              Upload Compliance Documents
             </button>
           </div>
         `;

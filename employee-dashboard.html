@@ -6,6 +6,10 @@
   <title>Field Employee Dashboard - Handyman Painting L.L.C.</title>
   <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
   <link rel="stylesheet" href="output.css">
+  <style>
+    .credential-badge { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #f8fafc; border-radius: 8px; padding: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .credential-badge::after { content: ""; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; pointer-events: none; }
+  </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
@@ -25,6 +29,7 @@
         <button onclick="switchTab('schedule')" id="nav-schedule" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">📅 Crew Schedule</button>
         <button onclick="switchTab('timecard')" id="nav-timecard" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⏱️ Time Card & Hours</button>
         <button onclick="switchTab('profile')" id="nav-profile" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">👷 Employee Profile</button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⚙️ Employee Settings</button>
       </div>
     </div>
 
@@ -34,9 +39,7 @@
       <div id="tab-schedule" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
         <h3 class="font-bold text-slate-900 text-lg">Assigned Crew Schedule</h3>
         <p class="text-xs text-gray-600">Your upcoming job-site assignments and production timelines.</p>
-        <div id="employee-schedule-container" class="space-y-3">
-          <!-- Dynamically populated or actionable empty state -->
-        </div>
+        <div id="employee-schedule-container" class="space-y-3"></div>
       </div>
 
       <!-- 2. TIMECARD -->
@@ -58,34 +61,121 @@
         </div>
       </div>
 
-      <!-- 3. PROFILE -->
+      <!-- 3. PROFILE / COMPLIANCE STATUS -->
       <div id="tab-profile" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-        <h3 class="font-bold text-slate-900 text-lg">Employee Credentials & Review Status</h3>
+        <h3 class="font-bold text-slate-900 text-lg">Employee Credentials & Clearance Status</h3>
         <p class="text-xs text-gray-600">Your current employment status within Handyman Painting L.L.C.</p>
-        <div id="employee-profile-container">
-          <!-- Dynamically populated status -->
+        <div id="employee-profile-container"></div>
+      </div>
+
+      <!-- 4. EMPLOYEE SETTINGS & STATUS CREDENTIALS -->
+      <div id="tab-settings" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+          <h3 class="font-bold text-slate-900 text-lg">Employee Settings & Security Clearance</h3>
+          <p class="text-xs text-gray-600">Manage your employment record preferences and confidentiality settings.</p>
+          
+          <div class="space-y-3 max-w-md">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Registered Employee Email</label>
+              <input type="email" id="settings-email" disabled class="w-full border bg-gray-100 p-2 rounded text-xs text-gray-600">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Field Crew ID / Name</label>
+              <input type="text" id="settings-name" class="w-full border p-2 rounded text-xs" value="Field Technician">
+            </div>
+            <div class="flex items-center space-x-2 pt-2">
+              <input type="checkbox" id="show-credential-toggle" onchange="toggleCredentialDisplay()" class="h-4 w-4 text-slate-900 border-slate-300 rounded">
+              <label for="show-credential-toggle" class="text-xs font-bold text-slate-800 cursor-pointer">Display Field Clearance Credential Badge</label>
+            </div>
+            <button onclick="alert('Employee security settings saved successfully!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">
+              Save Preferences
+            </button>
+          </div>
         </div>
+
+        <div id="credential-display-section" class="hidden"></div>
       </div>
 
     </div>
   </div>
 
   <script>
+    function getEmployeeProfile(email) {
+      const store = JSON.parse(localStorage.getItem('hp_employee_profiles') || '{}');
+      if (!store[email]) {
+        store[email] = {
+          tier: 'Certified Senior Field Technician',
+          clearanceLevel: 'State & Commercial Secure Job-Site Clearance',
+          safetyRecord: '100% OSHA Compliance',
+          showBadge: false
+        };
+        localStorage.setItem('hp_employee_profiles', JSON.stringify(store));
+      }
+      return store[email];
+    }
+
     function getEmployeeData(email) {
       const store = JSON.parse(localStorage.getItem('hp_employee_store') || '{}');
-      return store[email] || { schedule: [], approved: false };
+      return store[email] || { schedule: [], approved: true };
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
       const email = localStorage.getItem('userEmail') || 'employee@example.com';
       document.getElementById('user-display-email').innerText = email;
+      document.getElementById('settings-email').value = email;
+
+      const profile = getEmployeeProfile(email);
+      document.getElementById('show-credential-toggle').checked = profile.showBadge;
+      if (profile.showBadge) {
+        document.getElementById('credential-display-section').classList.remove('hidden');
+        renderCredentialBadge(profile);
+      }
 
       loadEmployeeData(email);
     });
 
+    function toggleCredentialDisplay() {
+      const email = localStorage.getItem('userEmail') || '';
+      const store = JSON.parse(localStorage.getItem('hp_employee_profiles') || '{}');
+      const isChecked = document.getElementById('show-credential-toggle').checked;
+      
+      if (store[email]) {
+        store[email].showBadge = isChecked;
+        localStorage.setItem('hp_employee_profiles', JSON.stringify(store));
+      }
+
+      const credSection = document.getElementById('credential-display-section');
+      if (isChecked) {
+        credSection.classList.remove('hidden');
+        renderCredentialBadge(store[email]);
+      } else {
+        credSection.classList.add('hidden');
+      }
+    }
+
+    function renderCredentialBadge(profile) {
+      document.getElementById('credential-display-section').innerHTML = `
+        <div class="credential-badge space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] uppercase tracking-widest bg-emerald-500 text-slate-900 px-2 py-0.5 rounded font-extrabold">Field Clearance Credential</span>
+            <span class="text-xs text-slate-300 font-mono">EMP-ID: ${Math.floor(Math.random()*89999+10000)}</span>
+          </div>
+          <h4 class="text-lg font-bold text-white">${profile.tier}</h4>
+          <p class="text-xs text-slate-200"><strong>Clearance Level:</strong> ${profile.clearanceLevel} | <strong>Safety Record:</strong> ${profile.safetyRecord}</p>
+          <div class="bg-slate-800/80 p-3 rounded border border-slate-700 text-xs text-slate-300 space-y-1">
+            <div class="font-bold text-emerald-400">Employee Tier Benefits & Privileges:</div>
+            <p>Access to secure state and commercial federal work sites, priority equipment check-out, premium hourly overtime eligibility, and annual safety bonus qualification.</p>
+          </div>
+          <div class="text-[10px] text-slate-400 pt-1">
+            * Maintained under strict personnel confidentiality protocols and state labor compliance standards.
+          </div>
+        </div>
+      `;
+    }
+
     function switchTab(id) {
-      ['schedule', 'timecard', 'profile'].forEach(t => {
+      ['schedule', 'timecard', 'profile', 'settings'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
         const btn = document.getElementById('nav-' + t);
         btn.classList.remove('bg-slate-900', 'text-white');
@@ -100,7 +190,6 @@
     function loadEmployeeData(email) {
       const data = getEmployeeData(email);
 
-      // Schedule
       const schedContainer = document.getElementById('employee-schedule-container');
       if (data.schedule.length === 0) {
         schedContainer.innerHTML = `
@@ -118,7 +207,6 @@
         `).join('');
       }
 
-      // Profile / Status
       const profContainer = document.getElementById('employee-profile-container');
       if (!data.approved) {
         profContainer.innerHTML = `

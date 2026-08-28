@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-Job Checklist & Warranty Guarantee</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { brand: { red: '#DC2626', dark: '#991B1B' } } } } }</script>
+</head>
+<body class="bg-zinc-100 p-4 md:p-8 font-sans">
+  <div class="max-w-4xl mx-auto space-y-8">
+    <div class="bg-white rounded-xl shadow-lg border border-zinc-200 overflow-hidden">
+      <div class="bg-zinc-900 text-white p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-brand-red text-white mb-2">Preparation Guide</span>
+          <h3 class="font-black text-2xl uppercase tracking-wide">Pre-Job Preparation Checklist</h3>
+        </div>
+        <div class="bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-center min-w-[140px]">
+          <span class="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Readiness Score</span>
+          <span class="text-2xl font-black text-emerald-400" id="readinessScore">0%</span>
+        </div>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="checklistGrid">
+          <label class="flex items-start gap-3 p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/50 cursor-pointer transition">
+            <input type="checkbox" class="checklist-item w-5 h-5 mt-0.5 accent-brand-red rounded border-zinc-300">
+            <div><span class="block text-xs font-bold text-zinc-800">Clear Work Space</span><span class="block text-[11px] text-zinc-500">Move small items at least 3ft away from walls.</span></div>
+          </label>
+          <label class="flex items-start gap-3 p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/50 cursor-pointer transition">
+            <input type="checkbox" class="checklist-item w-5 h-5 mt-0.5 accent-brand-red rounded border-zinc-300">
+            <div><span class="block text-xs font-bold text-zinc-800">Remove Wall Décor</span><span class="block text-[11px] text-zinc-500">Take down pictures and window treatments.</span></div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checkboxes = document.querySelectorAll('.checklist-item');
+      const scoreDisplay = document.getElementById('readinessScore');
+      checkboxes.forEach(cb => cb.addEventListener('change', () => {
+        let checked = Array.from(checkboxes).filter(c => c.checked).length;
+        scoreDisplay.textContent = `${Math.round((checked / checkboxes.length) * 100)}%`;
+      }));
+    });
+  </script>
+</body>
+</html>
