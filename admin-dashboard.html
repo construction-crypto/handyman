@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Command Center - Handyman Painting L.L.C.</title>
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+  <link rel="stylesheet" href="output.css">
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
+
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold tracking-tight">Handyman Painting <span class="text-red-400">Admin Command Center</span></h1>
+      <div class="flex items-center space-x-4">
+        <span id="user-display-email" class="text-xs text-slate-300"></span>
+        <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="md:col-span-1 space-y-2">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
+        <button onclick="switchTab('approvals')" id="nav-approvals" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">🛡️ Pending Approvals</button>
+        <button onclick="switchTab('operations')" id="nav-operations" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">📊 Enterprise Metrics</button>
+        <button onclick="switchTab('users')" id="nav-users" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">👥 User Directory</button>
+      </div>
+    </div>
+
+    <div class="md:col-span-3 space-y-6">
+      <!-- PENDING APPROVALS -->
+      <div id="tab-approvals" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+        <h3 class="font-bold text-slate-900 text-lg">Pending Employee & Contractor Applications</h3>
+        <p class="text-xs text-gray-600">Review submitted background checks and licensing documentation before granting system access.</p>
+        
+        <div class="border border-slate-200 p-4 rounded-lg flex justify-between items-center bg-slate-50">
+          <div>
+            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded">Pending Review</span>
+            <h4 class="font-bold text-slate-900 text-sm mt-1">Luke Ernst - Subcontractor Application</h4>
+            <p class="text-xs text-gray-600 mt-0.5">Submitted liability certificate & regional property maintenance agreement.</p>
+          </div>
+          <div class="space-x-2">
+            <button onclick="alert('Account Approved and Role Upgraded!')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold">Approve</button>
+            <button onclick="alert('Application Rejected.')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold">Reject</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPERATIONS -->
+      <div id="tab-operations" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+        <h3 class="font-bold text-slate-900 text-lg">Enterprise Operational Metrics</h3>
+        <p class="text-xs text-gray-600">State Registration: DLI #IR815804 | Unique Entity ID: HWYRMVYT2RT6</p>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-slate-50 p-4 rounded border"><div class="text-xs text-gray-500 uppercase font-bold">Active Bids</div><div class="text-xl font-bold text-slate-900 mt-1">12</div></div>
+          <div class="bg-slate-50 p-4 rounded border"><div class="text-xs text-gray-500 uppercase font-bold">Field Crews</div><div class="text-xl font-bold text-slate-900 mt-1">3 Active</div></div>
+          <div class="bg-slate-50 p-4 rounded border"><div class="text-xs text-gray-500 uppercase font-bold">Compliance Status</div><div class="text-xl font-bold text-emerald-600 mt-1">100%</div></div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div id="tab-users" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+        <h3 class="font-bold text-slate-900 text-lg">System User Directory</h3>
+        <p class="text-xs text-gray-600">Manage registered users, reset credentials, and assign custom roles.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
+      document.getElementById('user-display-email').innerText = localStorage.getItem('userEmail') || '';
+    });
+    function switchTab(id) {
+      ['approvals', 'operations', 'users'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        document.getElementById('nav-' + t).classList.remove('bg-slate-900', 'text-white');
+        document.getElementById('nav-' + t).classList.add('text-slate-600', 'hover:bg-slate-100');
+      });
+      document.getElementById('tab-' + id).classList.remove('hidden');
+      document.getElementById('nav-' + id).classList.remove('text-slate-600', 'hover:bg-slate-100');
+      document.getElementById('nav-' + id).classList.add('bg-slate-900', 'text-white');
+    }
+    function handleLogout() { localStorage.clear(); window.location.href = 'login.html'; }
+  </script>
+</body>
+</html>
