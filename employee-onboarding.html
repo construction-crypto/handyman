@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Employee Intake - Handyman Painting</title>
+  <link rel="stylesheet" href="output.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-xl text-center">
+    <span class="px-3 py-1 text-xs font-semibold rounded bg-emerald-600 text-white uppercase tracking-wider">Field Staff</span>
+    <h2 class="text-2xl font-bold text-slate-900 mt-2">Field Employee Verification Intake</h2>
+    <p class="text-sm text-gray-600 mt-2 mb-6">
+      Thank you for registering. Field employee accounts require administrative verification and credential matching before crew deployment.
+    </p>
+
+    <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg text-amber-900 text-sm mb-6 text-left">
+      <strong>Next Steps:</strong>
+      <ul class="list-disc list-inside mt-2 space-y-1 text-xs">
+        <li>Our operations manager will review your submitted profile.</li>
+        <li>You will receive an email confirmation once your time clock and crew schedule are unlocked.</li>
+      </ul>
+    </div>
+
+    <button onclick="handleReturnLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded font-bold text-sm transition">
+      Return to Log In
+    </button>
+  </div>
+
+  <script>
+    function handleReturnLogin() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contractor Partner Onboarding - Handyman Painting</title>
+  <link rel="stylesheet" href="output.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-xl">
+    <div class="mb-6 text-center">
+      <span class="px-3 py-1 text-xs font-semibold rounded bg-amber-500 text-white uppercase tracking-wider">Partner Track</span>
+      <h2 class="text-2xl font-bold text-slate-900 mt-2">Contractor Business Onboarding</h2>
+      <p class="text-sm text-gray-600 mt-1">Provide your business details and agree to subcontractor terms to activate your job board access.</p>
+    </div>
+
+    <form onsubmit="handleContractorOnboard(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Company / Legal Business Name</label>
+        <input type="text" id="bus-name" required class="w-full border p-2.5 rounded text-sm" placeholder="e.g. Precision Painting Services LLC">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">EIN / Tax ID</label>
+          <input type="text" id="bus-ein" required class="w-full border p-2.5 rounded text-sm" placeholder="XX-XXXXXXX">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">General Liability Insurance ($1M+)</label>
+          <input type="text" id="bus-insurance" required class="w-full border p-2.5 rounded text-sm" placeholder="Policy / Carrier Name">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Primary Service Region / County</label>
+        <input type="text" id="bus-region" required class="w-full border p-2.5 rounded text-sm" placeholder="e.g. Chippewa / Yellow Medicine County">
+      </div>
+
+      <div class="flex items-start space-x-2 pt-2">
+        <input type="checkbox" id="terms-agree" required class="mt-1">
+        <label for="terms-agree" class="text-xs text-gray-600 leading-relaxed">
+          I certify that all workers are covered by statutory workers' compensation insurance and agree to Handyman Painting L.L.C. subcontractor standards and code of conduct.
+        </label>
+      </div>
+
+      <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded font-bold text-sm transition mt-4">
+        Complete Onboarding & Access Job Board
+      </button>
+    </form>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (!isLoggedIn) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    function handleContractorOnboard(e) {
+      e.preventDefault();
+      localStorage.setItem('contractorOnboarded', 'true');
+      alert('Contractor Onboarding complete! Redirecting to your Contractor Hub & Job Board.');
+      window.location.href = 'contractor-dashboard.html';
+    }
+  </script>
+</body>
+</html>

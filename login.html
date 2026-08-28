@@ -3,67 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Handyman Painting - Customer Portal</title>
+  <title>Handyman Painting - Portal Access</title>
   <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-    .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-    h2 { margin-top: 0; color: #333; text-align: center; }
+    .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 480px; }
+    h2 { margin-top: 0; color: #1e293b; text-align: center; }
     .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-    input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; background: #ff9900; border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-    button:hover { background: #e68a00; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: #475569; font-size: 13px; text-transform: uppercase; }
+    input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #0f172a; border: none; color: white; font-size: 15px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #1e293b; }
     .toggle { text-align: center; margin-top: 15px; font-size: 14px; }
-    .toggle a { color: #0066cc; text-decoration: none; font-weight: bold; }
+    .toggle a { color: #2563eb; text-decoration: none; font-weight: bold; cursor: pointer; }
     .hidden { display: none; }
+    .role-card { border: 2px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+    .role-card:hover { border-color: #0f172a; background: #f8fafc; }
+    .role-card.selected { border-color: #0f172a; background: #f1f5f9; }
+    .role-title { font-weight: bold; color: #0f172a; font-size: 16px; }
+    .role-desc { font-size: 12px; color: #64748b; margin-top: 3px; }
   </style>
-    <script type="text/javascript">(function(w,s){var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="https://cdn.pagesense.io/js/934654246/e3589ba4a5494620b8dfd95a7d650578.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(e,x);})(window,"script");</script>
 </head>
 <body>
 
   <div class="card">
-    <h2>Handyman Painting Portal</h2>
+    <h2>Handyman Painting L.L.C.</h2>
     
     <!-- LOGIN FORM -->
     <div id="login-section">
+      <p style="text-align: center; font-size: 13px; color: #64748b; margin-bottom: 20px;">Secure Client, Partner & Employee Gateway</p>
       <div class="form-group">
         <label>Email Address</label>
-        <input type="email" id="login-email" placeholder="customer@example.com">
+        <input type="email" id="login-email" placeholder="user@example.com">
       </div>
       <div class="form-group">
         <label>Password</label>
         <input type="password" id="login-password" placeholder="••••••••">
       </div>
-      <button onclick="handleLogin()">Log In</button>
+      <button onclick="handleLogin()">Log In to Portal</button>
       <div class="toggle">
-        Need an account? <a href="#" onclick="toggleView('signup')">Sign Up</a>
+        New to Handyman Painting? <a onclick="switchView('signup-role-select')">Create an Account</a>
       </div>
     </div>
 
-    <!-- SIGNUP FORM -->
-    <div id="signup-section" class="hidden">
+    <!-- STEP 1: UNIQUE ROLE SELECTION CARDS -->
+    <div id="signup-role-select" class="hidden">
+      <p style="text-align: center; font-size: 13px; color: #64748b; margin-bottom: 15px;">Select your account classification:</p>
+      
+      <div class="role-card" onclick="selectRolePath('customer')">
+        <div class="role-title">🏠 Customer / Property Owner</div>
+        <div class="role-desc">Request project bids, track painting schedules, and review estimates.</div>
+      </div>
+
+      <div class="role-card" onclick="selectRolePath('contractor')">
+        <div class="role-title">🤝 Contractor Partner</div>
+        <div class="role-desc">Submit insurance & business credentials, access sub-contractor job boards.</div>
+      </div>
+
+      <div class="role-card" onclick="selectRolePath('employee')">
+        <div class="role-title">👷 Field Crew / Employee</div>
+        <div class="role-desc">Submit your field credentials for time tracking and crew deployment.</div>
+      </div>
+
+      <div class="toggle">
+        Already registered? <a onclick="switchView('login-section')">Log In</a>
+      </div>
+    </div>
+
+    <!-- STEP 2: DYNAMIC SIGNUP FORM BASED ON CHOSEN ROLE -->
+    <div id="signup-form-section" class="hidden">
+      <div id="role-badge" style="text-align: center; font-size: 12px; font-weight: bold; background: #e2e8f0; color: #334155; padding: 4px; border-radius: 4px; margin-bottom: 15px; text-transform: uppercase;"></div>
+      
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="signup-name" placeholder="John Doe">
       </div>
       <div class="form-group">
         <label>Email Address</label>
-        <input type="email" id="signup-email" placeholder="customer@example.com">
+        <input type="email" id="signup-email" placeholder="user@example.com">
       </div>
       <div class="form-group">
         <label>Password</label>
         <input type="password" id="signup-password" placeholder="••••••••">
       </div>
-      <button onclick="handleSignUp()">Create Account</button>
+      
+      <button onclick="handleSignUp()">Complete Registration</button>
       <div class="toggle">
-        Already have an account? <a href="#" onclick="toggleView('login')">Log In</a>
+        <a onclick="switchView('signup-role-select')">← Back to Role Selection</a>
       </div>
     </div>
 
     <!-- VERIFICATION FORM -->
     <div id="verify-section" class="hidden">
-      <p style="text-align: center; font-size: 14px; color: #666;">Check your email for a verification code.</p>
+      <p style="text-align: center; font-size: 14px; color: #666;">Check your email for your verification code.</p>
       <div class="form-group">
         <label>Verification Code</label>
         <input type="text" id="verify-code" placeholder="123456">
@@ -79,15 +111,25 @@
     };
     const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
     let currentEmail = '';
+    let selectedRole = 'customer';
 
-    function toggleView(view) {
+    function switchView(viewId) {
       document.getElementById('login-section').classList.add('hidden');
-      document.getElementById('signup-section').classList.add('hidden');
+      document.getElementById('signup-role-select').classList.add('hidden');
+      document.getElementById('signup-form-section').classList.add('hidden');
       document.getElementById('verify-section').classList.add('hidden');
 
-      if (view === 'login') document.getElementById('login-section').classList.remove('hidden');
-      if (view === 'signup') document.getElementById('signup-section').classList.remove('hidden');
-      if (view === 'verify') document.getElementById('verify-section').classList.remove('hidden');
+      document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function selectRolePath(role) {
+      selectedRole = role;
+      const badge = document.getElementById('role-badge');
+      if (role === 'customer') badge.innerText = 'Registering as: Customer / Property Owner';
+      if (role === 'contractor') badge.innerText = 'Registering as: Contractor Partner';
+      if (role === 'employee') badge.innerText = 'Registering as: Field Crew Employee';
+      
+      switchView('signup-form-section');
     }
 
     function handleSignUp() {
@@ -96,9 +138,15 @@
       const password = document.getElementById('signup-password').value;
       currentEmail = email;
 
+      if (!name || !email || !password) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
       const attributeList = [
         new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'email', Value: email }),
-        new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'name', Value: name })
+        new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'name', Value: name }),
+        new AmazonCognitoIdentity.CognitoUserAttribute({ Name: 'custom:role', Value: selectedRole })
       ];
 
       userPool.signUp(email, password, attributeList, null, (err, result) => {
@@ -107,7 +155,7 @@
           return;
         }
         alert('Account created! Check your email for the verification code.');
-        toggleView('verify');
+        switchView('verify-section');
       });
     }
 
@@ -123,8 +171,14 @@
           alert('Verification Error: ' + (err.message || err));
           return;
         }
-        alert('Email verified successfully! You can now log in.');
-        toggleView('login');
+
+        if (selectedRole === 'contractor') {
+          window.location.href = 'contractor-onboarding.html';
+        } else if (selectedRole === 'employee') {
+          window.location.href = 'employee-onboarding.html';
+        } else {
+          window.location.href = 'dashboard.html';
+        }
       });
     }
 
@@ -143,11 +197,37 @@
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
           const token = result.getIdToken().getJwtToken();
-          localStorage.setItem('userToken', token);
-          localStorage.setItem('isLoggedIn', 'true');
           
-          alert('Successfully logged in!');
-          window.location.href = 'dashboard.html?v=' + new Date().getTime();
+          cognitoUser.getUserAttributes((err, attributes) => {
+            let role = 'customer';
+            if (!err && attributes) {
+              for (let attr of attributes) {
+                if (attr.getName() === 'custom:role') {
+                  role = attr.getValue();
+                }
+              }
+            }
+
+            localStorage.setItem('userToken', token);
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('userEmail', email);
+
+            if (role === 'admin') {
+              window.location.href = 'admin-dashboard.html';
+            } else if (role === 'contractor') {
+              const onboarded = localStorage.getItem('contractorOnboarded');
+              if (onboarded) {
+                window.location.href = 'contractor-dashboard.html';
+              } else {
+                window.location.href = 'contractor-onboarding.html';
+              }
+            } else if (role === 'employee') {
+              window.location.href = 'employee-dashboard.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          });
         },
         onFailure: (err) => {
           alert('Login Error: ' + (err.message || err));
@@ -157,4 +237,3 @@
   </script>
 </body>
 </html>
-
