@@ -31,9 +31,9 @@
     <div class="md:col-span-1 space-y-2">
       <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
         <button onclick="switchTab('projects')" id="nav-projects" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">📂 Projects</button>
-        <button onclick="switchTab('change-orders')" id="nav-change-orders" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">📋 Change Orders</button>
-        <button onclick="switchTab('support')" id="nav-support" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">💬 Customer Service</button>
-        <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">⚙️ User Settings</button>
+        <button onclick="switchTab('change-orders')" id="nav-change-orders" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">📋 Change Orders</button>
+        <button onclick="switchTab('support')" id="nav-support" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">💬 Customer Service</button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⚙️ User Settings</button>
       </div>
     </div>
 
@@ -58,21 +58,12 @@
             <div class="slide-panel pr-4 space-y-3">
               <div class="flex justify-between items-center mb-2">
                 <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wide" id="project-list-title">Active Projects</h3>
-                <span class="text-xs text-gray-500" id="project-count">1 item</span>
+                <span class="text-xs text-gray-500" id="project-count">0 items</span>
               </div>
               
-              <!-- Sample Project Item -->
-              <div onclick="selectProject('Exterior House Painting - 520 Wilkins St', '$3,450.00', 'In Progress', 'Prep & priming phase underway. Expected completion in 4 days.')" 
-                   class="p-4 border rounded-lg cursor-pointer hover:border-slate-900 hover:shadow-md transition bg-white border-slate-200">
-                <div class="flex justify-between items-start">
-                  <h4 class="font-bold text-slate-900 text-sm">Exterior House Painting</h4>
-                  <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded">Active</span>
-                </div>
-                <p class="text-xs text-gray-500 mt-1">520 Wilkins Street, Montevideo, MN</p>
-                <div class="mt-3 flex justify-between items-center text-xs">
-                  <span class="font-bold text-slate-900">$3,450.00</span>
-                  <span class="text-blue-600 font-medium">View Details &rarr;</span>
-                </div>
+              <!-- Dynamic Project List Container -->
+              <div id="dynamic-project-list" class="space-y-3">
+                <!-- Injected via JavaScript based on actual user data -->
               </div>
             </div>
 
@@ -93,23 +84,13 @@
         <h3 class="font-bold text-slate-900 text-lg">Change Orders & Scope Adjustments</h3>
         <p class="text-xs text-gray-600">Review and authorize requested changes to active project scopes or material upgrades.</p>
         
-        <div class="border border-amber-200 bg-amber-50 p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-200 text-amber-900 rounded">Pending Approval</span>
-            <h4 class="font-bold text-slate-900 text-sm mt-1">CO #1: Additional Front Porch Railing Staining</h4>
-            <p class="text-xs text-gray-600 mt-0.5">Adds 1 coat primer + 2 coats solid stain to front steps & railing.</p>
-            <p class="text-xs font-bold text-slate-900 mt-2">Cost Adjustment: +$350.00</p>
-          </div>
-          <div class="space-x-2">
-            <button onclick="alert('Change Order Approved!')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold">Approve</button>
-            <button onclick="alert('Change Order Declined.')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold">Decline</button>
-          </div>
+        <div id="change-orders-container">
+          <!-- Dynamically populated or empty state with actionable means -->
         </div>
       </div>
 
       <!-- ================= 3. CUSTOMER SERVICE TAB ================= -->
       <div id="tab-support" class="hidden space-y-6">
-        <!-- Chatbot Section -->
         <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
           <h3 class="font-bold text-slate-900 text-lg">Customer Support & FAQ Chatbot</h3>
           <p class="text-xs text-gray-600">Have questions about your paint schedule, weather delays, or warranty? Ask our intelligent assistant below.</p>
@@ -121,11 +102,10 @@
           </div>
           <div class="flex gap-2">
             <input type="text" id="chat-input" placeholder="Type your question here..." class="flex-grow border border-slate-300 p-2 rounded text-xs">
-            <button onclick="sendChatMessage()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold">Send</button>
+            <button onclick="sendChatMessage()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">Send</button>
           </div>
         </div>
 
-        <!-- Formspree Support Form -->
         <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
           <h4 class="font-bold text-slate-900 text-sm">Couldn't find the help you were looking for?</h4>
           <p class="text-xs text-gray-600">Submit a direct inquiry to our operations desk using the form below:</p>
@@ -133,7 +113,7 @@
           <form action="https://formspree.io/f/xqpkkndg" method="POST" class="space-y-3">
             <div>
               <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Your Email</label>
-              <input type="email" name="email" required class="w-full border p-2 rounded text-xs" placeholder="name@example.com">
+              <input type="email" id="form-email-input" name="email" required class="w-full border p-2 rounded text-xs" placeholder="name@example.com">
             </div>
             <div>
               <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Message / Inquiry</label>
@@ -160,7 +140,7 @@
             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Full Name</label>
             <input type="text" id="settings-name" class="w-full border p-2 rounded text-xs" value="Valued Customer">
           </div>
-          <button onclick="alert('Settings updated successfully!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold">
+          <button onclick="alert('Settings updated successfully!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">
             Save Changes
           </button>
         </div>
@@ -170,27 +150,44 @@
   </div>
 
   <script>
+    // Mock user-specific database store in localStorage for true isolation
+    function getUserProjects(email) {
+      const allProjects = JSON.parse(localStorage.getItem('hp_user_projects') || '{}');
+      // If user has no specific projects initialized, return empty array for zero placeholders
+      return allProjects[email] || { active: [], pending: [], completed: [], declined: [], changeOrders: [] };
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
       if (!isLoggedIn) {
         window.location.href = 'login.html';
       }
-      document.getElementById('user-display-email').innerText = localStorage.getItem('userEmail') || '';
-      document.getElementById('settings-email').value = localStorage.getItem('userEmail') || '';
+      const email = localStorage.getItem('userEmail') || 'customer@example.com';
+      document.getElementById('user-display-email').innerText = email;
+      document.getElementById('settings-email').value = email;
+      document.getElementById('form-email-input').value = email;
+
+      loadProjectsForTab('active');
+      loadChangeOrders();
     });
 
     function switchTab(tabId) {
       ['projects', 'change-orders', 'support', 'settings'].forEach(t => {
         document.getElementById('tab-' + t).classList.add('hidden');
-        document.getElementById('nav-' + t).classList.remove('bg-slate-900', 'text-white');
-        document.getElementById('nav-' + t).classList.add('text-slate-600', 'hover:bg-slate-100');
+        const btn = document.getElementById('nav-' + t);
+        btn.classList.remove('bg-slate-900', 'text-white');
+        btn.classList.add('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
       });
       document.getElementById('tab-' + tabId).classList.remove('hidden');
-      document.getElementById('nav-' + tabId).classList.remove('text-slate-600', 'hover:bg-slate-100');
-      document.getElementById('nav-' + tabId).classList.add('bg-slate-900', 'text-white');
+      const activeBtn = document.getElementById('nav-' + tabId);
+      activeBtn.classList.remove('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
+      activeBtn.classList.add('bg-slate-900', 'text-white');
     }
 
+    let currentStatusFilter = 'active';
+
     function filterProjects(status) {
+      currentStatusFilter = status;
       ['active', 'pending', 'completed', 'declined'].forEach(s => {
         document.getElementById('sub-' + s).classList.remove('border-b-2', 'border-slate-900', 'text-slate-900');
         document.getElementById('sub-' + s).classList.add('text-slate-500');
@@ -198,20 +195,63 @@
       document.getElementById('sub-' + status).classList.add('border-b-2', 'border-slate-900', 'text-slate-900');
       document.getElementById('sub-' + status).classList.remove('text-slate-500');
       document.getElementById('project-list-title').innerText = status.toUpperCase() + ' PROJECTS';
+      loadProjectsForTab(status);
     }
 
-    function selectProject(title, price, status, desc) {
+    function loadProjectsForTab(status) {
+      const email = localStorage.getItem('userEmail') || '';
+      const userData = getUserProjects(email);
+      const listElem = document.getElementById('dynamic-project-list');
+      const items = userData[status] || [];
+
+      document.getElementById('project-count',).innerText = `${items.length} item${items.length === 1 ? '' : 's'}`;
+
+      if (items.length === 0) {
+        listElem.innerHTML = `
+          <div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50">
+            <p class="text-xs text-slate-600 font-medium">No ${status} projects found for your account.</p>
+            <button onclick="window.location.href='bid.html'" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded text-xs transition">
+              Request a New Project Estimate &rarr;
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      listElem.innerHTML = items.map((p, idx) => `
+        <div onclick="selectProjectFromData('${status}', ${idx})" 
+             class="p-4 border rounded-lg cursor-pointer hover:border-slate-900 hover:shadow-md transition bg-white border-slate-200">
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-slate-900 text-sm">${p.title}</h4>
+            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded uppercase">${status}</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">${p.location}</p>
+          <div class="mt-3 flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-900">${p.price}</span>
+            <span class="text-blue-600 font-medium">View Details &rarr;</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectProjectFromData(status, idx) {
+      const email = localStorage.getItem('userEmail') || '';
+      const userData = getUserProjects(email);
+      const p = userData[status][idx];
+      if (!p) return;
+
       document.getElementById('project-slider').classList.add('split-view-active');
       document.getElementById('project-detail-content').innerHTML = `
-        <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded">${status}</span>
-        <h4 class="font-bold text-slate-900 text-lg mt-1">${title}</h4>
-        <p class="text-xs text-gray-600"><strong>Total Estimate:</strong> ${price}</p>
+        <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded uppercase">${status}</span>
+        <h4 class="font-bold text-slate-900 text-lg mt-1">${p.title}</h4>
+        <p class="text-xs text-gray-600"><strong>Location:</strong> ${p.location}</p>
+        <p class="text-xs text-gray-600"><strong>Total Estimate:</strong> ${p.price}</p>
         <div class="bg-white p-4 rounded border border-slate-200 mt-2 space-y-2">
           <h5 class="font-bold text-xs text-slate-800 uppercase">Project Status & Notes</h5>
-          <p class="text-xs text-gray-700">${desc}</p>
+          <p class="text-xs text-gray-700">${p.notes}</p>
         </div>
         <div class="pt-2">
-          <button onclick="alert('Downloading full project scope PDF...')" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded text-xs font-bold">Download Project Report</button>
+          <button onclick="alert('Downloading full project scope PDF report...')" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded text-xs font-bold transition">Download Project Report</button>
         </div>
       `;
     }
@@ -220,13 +260,44 @@
       document.getElementById('project-slider').classList.remove('split-view-active');
     }
 
+    function loadChangeOrders() {
+      const email = localStorage.getItem('userEmail') || '';
+      const userData = getUserProjects(email);
+      const container = document.getElementById('change-orders-container');
+      const cos = userData.changeOrders || [];
+
+      if (cos.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50">
+            <p class="text-xs text-slate-600 font-medium">No pending change orders requiring your review.</p>
+            <p class="text-[11px] text-gray-500">Change orders will appear here if our field team requests a scope modification.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = cos.map((co, idx) => `
+        <div class="border border-amber-200 bg-amber-50 p-4 rounded-lg flex justify-between items-center">
+          <div>
+            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-200 text-amber-900 rounded">Pending Approval</span>
+            <h4 class="font-bold text-slate-900 text-sm mt-1">${co.title}</h4>
+            <p class="text-xs text-gray-600 mt-0.5">${co.description}</p>
+            <p class="text-xs font-bold text-slate-900 mt-2">Cost Adjustment: ${co.price}</p>
+          </div>
+          <div class="space-x-2">
+            <button onclick="alert('Change Order Approved!')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Approve</button>
+            <button onclick="alert('Change Order Declined.')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Decline</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
     function sendChatMessage() {
       const input = document.getElementById('chat-input');
       const chatWin = document.getElementById('chat-window');
       if (!input.value.trim()) return;
 
       chatWin.innerHTML += `<div class="bg-blue-100 text-blue-900 p-2 rounded max-w-[80%] ml-auto"><strong>You:</strong> ${input.value}</div>`;
-      
       const userText = input.value.toLowerCase();
       input.value = '';
 

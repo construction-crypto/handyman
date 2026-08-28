@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Employee Dashboard - Handyman Painting L.L.C.</title>
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+  <link rel="stylesheet" href="output.css">
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
+
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold tracking-tight">Handyman Painting <span class="text-amber-400">Employee Portal</span></h1>
+      <div class="flex items-center space-x-4">
+        <span id="user-display-email" class="text-xs text-slate-300"></span>
+        <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="md:col-span-1 space-y-2">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
+        <button onclick="switchTab('schedule')" id="nav-schedule" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">📅 Crew Schedule</button>
+        <button onclick="switchTab('timecard')" id="nav-timecard" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⏱️ Time Card & Hours</button>
+        <button onclick="switchTab('profile')" id="nav-profile" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">👷 Employee Profile</button>
+      </div>
+    </div>
+
+    <div class="md:col-span-3 space-y-6">
+      
+      <!-- 1. CREW SCHEDULE -->
+      <div id="tab-schedule" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+        <h3 class="font-bold text-slate-900 text-lg">Assigned Crew Schedule</h3>
+        <p class="text-xs text-gray-600">Your upcoming job-site assignments and production timelines.</p>
+        <div id="employee-schedule-container" class="space-y-3">
+          <!-- Dynamically populated or actionable empty state -->
+        </div>
+      </div>
+
+      <!-- 2. TIMECARD -->
+      <div id="tab-timecard" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+        <h3 class="font-bold text-slate-900 text-lg">Time Card & Payroll Logs</h3>
+        <p class="text-xs text-gray-600">Log daily hours worked on active job sites.</p>
+        <div class="border border-slate-200 p-4 rounded-lg bg-slate-50 space-y-3 max-w-md">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Select Date</label>
+            <input type="date" id="time-date" class="w-full border p-2 rounded text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Hours Worked</label>
+            <input type="number" id="time-hours" step="0.5" placeholder="8.0" class="w-full border p-2 rounded text-xs">
+          </div>
+          <button onclick="alert('Time card submitted to dispatch for review!')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded text-xs transition">
+            Submit Daily Hours
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. PROFILE -->
+      <div id="tab-profile" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+        <h3 class="font-bold text-slate-900 text-lg">Employee Credentials & Review Status</h3>
+        <p class="text-xs text-gray-600">Your current employment status within Handyman Painting L.L.C.</p>
+        <div id="employee-profile-container">
+          <!-- Dynamically populated status -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function getEmployeeData(email) {
+      const store = JSON.parse(localStorage.getItem('hp_employee_store') || '{}');
+      return store[email] || { schedule: [], approved: false };
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
+      const email = localStorage.getItem('userEmail') || 'employee@example.com';
+      document.getElementById('user-display-email').innerText = email;
+
+      loadEmployeeData(email);
+    });
+
+    function switchTab(id) {
+      ['schedule', 'timecard', 'profile'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        const btn = document.getElementById('nav-' + t);
+        btn.classList.remove('bg-slate-900', 'text-white');
+        btn.classList.add('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
+      });
+      document.getElementById('tab-' + id).classList.remove('hidden');
+      const activeBtn = document.getElementById('nav-' + id);
+      activeBtn.classList.remove('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
+      activeBtn.classList.add('bg-slate-900', 'text-white');
+    }
+
+    function loadEmployeeData(email) {
+      const data = getEmployeeData(email);
+
+      // Schedule
+      const schedContainer = document.getElementById('employee-schedule-container');
+      if (data.schedule.length === 0) {
+        schedContainer.innerHTML = `
+          <div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50">
+            <p class="text-xs text-slate-600 font-medium">No job assignments currently scheduled for your crew ID.</p>
+            <p class="text-[11px] text-gray-500">Your crew lead or dispatcher will assign your daily locations here.</p>
+          </div>
+        `;
+      } else {
+        schedContainer.innerHTML = data.schedule.map(s => `
+          <div class="border p-4 rounded bg-slate-50">
+            <h4 class="font-bold text-sm text-slate-900">${s.title}</h4>
+            <p class="text-xs text-gray-600">${s.location}</p>
+          </div>
+        `).join('');
+      }
+
+      // Profile / Status
+      const profContainer = document.getElementById('employee-profile-container');
+      if (!data.approved) {
+        profContainer.innerHTML = `
+          <div class="p-4 bg-amber-50 border border-amber-200 rounded space-y-2">
+            <p class="text-xs text-amber-900 font-bold">Status: Pending Administrator Review</p>
+            <p class="text-xs text-gray-700">Your field credentials are being reviewed by operations. Full system scheduling privileges will unlock upon approval.</p>
+          </div>
+        `;
+      } else {
+        profContainer.innerHTML = `
+          <div class="p-4 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-900 font-bold">
+            Status: Active Field Employee (Cleared for Deployment)
+          </div>
+        `;
+      }
+    }
+
+    function handleLogout() { localStorage.clear(); window.location.href = 'login.html'; }
+  </script>
+</body>
+</html>
