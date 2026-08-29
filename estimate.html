@@ -5,81 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary SEO Meta Tags -->
-    <title>Free Online Project Estimate Builder | Handyman Painting L.L.C.</title>
-    <meta name="description" content="Get an instant, fair, and honest cost estimate for painting, roofing, concrete, remodeling, and framing in Western Minnesota. Quick, easy, and transparent pricing.">
-    <meta name="keywords" content="handyman cost calculator, painting estimate Minnesota, local contractor cost estimate, Montevideo contractor estimate, general contractor quote">
+    <title>Request a Trade Project Estimate | Handyman Painting L.L.C.</title>
+    <meta name="description" content="Select your trade for painting, roofing, or handyman repairs and get a tailored cost estimate instantly in Western Minnesota.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://handymanpainting.com/estimate.html">
-
-    <!-- Open Graph / Facebook / LinkedIn -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Instant Project Estimate Builder | Handyman Painting L.L.C.">
-    <meta property="og:description" content="Calculate project costs for painting, roofing, concrete, and home additions in seconds with our fair & honest estimate tool.">
-    <meta property="og:image" content="https://handymanpainting.com/logo.jpg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Instant Project Estimate Builder | Handyman Painting L.L.C.">
-    <meta property="twitter:description" content="Calculate project costs for painting, roofing, concrete, and home additions in seconds.">
-    <meta property="twitter:image" content="https://handymanpainting.com/logo.jpg">
-
-    <!-- Structured Data (Schema.org / JSON-LD) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "https://handymanpainting.com/"
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": "Project Estimate Builder",
-              "item": "https://handymanpainting.com/estimate.html"
-            }
-          ]
-        },
-        {
-          "@type": "Service",
-          "name": "Contracting & Painting Estimate Calculator",
-          "provider": {
-            "@type": "HomeAndConstructionBusiness",
-            "name": "Handyman Painting L.L.C.",
-            "telephone": "+1-320-555-0199",
-            "areaServed": "Western Minnesota",
-            "image": "https://handymanpainting.com/logo.jpg"
-          },
-          "serviceType": "General Contracting, Painting, Roofing, Remodeling, Concrete, Drywall",
-          "description": "Interactive online cost estimator for home improvement and general contracting work in Minnesota.",
-          "offers": {
-            "@type": "Offer",
-            "price": "0.00",
-            "priceCurrency": "USD",
-            "description": "Free instant online project estimate"
-          }
-        }
-      ]
-    }
-    </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .brand-red { color: #E31E24; }
-        .bg-brand-red { background-color: #E31E24; }
     </style>
-    <script type="text/javascript">(function(w,s){var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="https://cdn.pagesense.io/js/934654246/e3589ba4a5494620b8dfd95a7d650578.js";var x=document.getElementsByTagName("script")[0];x.parentNode.insertBefore(e,x);})(window,"script");</script>
 </head>
-<body class="bg-zinc-950 text-slate-100 min-h-screen">
+<body class="bg-white text-zinc-900 min-h-screen">
 
-    <header class="bg-black py-4 border-b border-zinc-800 sticky top-0 z-50">
+    <header class="bg-zinc-900 py-4 border-b border-zinc-200 sticky top-0 z-50">
         <div class="container mx-auto px-6 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3">
                 <img src="logo.jpg" alt="Handyman Painting L.L.C. Logo" class="h-10 w-auto">
@@ -89,234 +28,229 @@
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-12 max-w-5xl">
+    <main class="container mx-auto px-4 py-12 max-w-4xl">
         <div class="text-center mb-10">
-            <span class="bg-red-950/80 text-red-500 border border-red-800 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full">Fair & Honest Pricing</span>
-            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight text-white mt-4">Build Your <span class="brand-red">Project Estimate</span></h1>
-            <p class="text-zinc-400 text-sm md:text-base mt-2 max-w-2xl mx-auto font-medium">Tell us a bit about what you're working on, and we'll give you a clear, straightforward cost estimate right away.</p>
+            <span class="bg-zinc-100 text-zinc-800 border border-zinc-300 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full">Tailored Trade Estimate</span>
+            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight text-zinc-900 mt-4">Request Your <span id="header-accent" class="text-red-600 transition-colors duration-300">Project Estimate</span></h1>
+            <p class="text-zinc-600 text-sm md:text-base mt-2 max-w-2xl mx-auto font-medium">Select your trade below to instantly load specialized options and connect directly with our expert field teams.</p>
         </div>
 
         <form id="estimator-form" action="https://formspree.io/f/mnjgznpz" method="POST" enctype="multipart/form-data" class="space-y-8">
             
-            <!-- SECTION 1: CONTACT -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:p-8 shadow-xl">
-                <h2 class="text-lg font-black uppercase tracking-wide text-white border-b border-zinc-800 pb-3 mb-6 flex items-center justify-between">
-                    <span><span class="text-red-600">01.</span> Who Are We Working With?</span>
-                    <span class="text-[10px] bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded uppercase">Your Info</span>
+            <!-- SECTION 1: TRADE SELECTOR -->
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-6 md:p-8 shadow-sm">
+                <h2 class="text-lg font-black uppercase tracking-wide text-zinc-900 border-b border-zinc-200 pb-3 mb-6 flex items-center justify-between">
+                    <span><span class="trade-num text-red-600 transition-colors duration-300">01.</span> Select Trade Category</span>
+                    <span class="text-[10px] bg-white border border-zinc-300 px-2 py-0.5 rounded uppercase text-zinc-700">Step 1</span>
+                </h2>
+                <div>
+                    <label class="block text-zinc-700 uppercase tracking-wider text-xs font-bold mb-2">What trade is this project for? *</label>
+                    <select id="trade_selector" name="selected_trade_category" class="w-full bg-white border border-zinc-300 rounded p-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #dc2626;">
+                        <option value="painting" data-endpoint="https://formspree.io/f/mnjgznpz" data-color="text-red-600" data-bg="bg-red-600" data-hover="hover:bg-red-700" data-hex="#dc2626">Painting & Interior/Exterior Coatings</option>
+                        <option value="roofing" data-endpoint="https://formspree.io/f/mzepaver" data-color="text-blue-600" data-bg="bg-blue-600" data-hover="hover:bg-blue-700" data-hex="#2563eb">Roofing & Shingles/Metal</option>
+                        <option value="handyman" data-endpoint="https://formspree.io/f/xvkoojle" data-color="text-amber-600" data-bg="bg-amber-600" data-hover="hover:bg-amber-700" data-hex="#d97706">Handyman Repairs & General Maintenance</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION 2: CONTACT DETAILS -->
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-6 md:p-8 shadow-sm">
+                <h2 class="text-lg font-black uppercase tracking-wide text-zinc-900 border-b border-zinc-200 pb-3 mb-6 flex items-center justify-between">
+                    <span><span class="trade-num text-red-600 transition-colors duration-300">02.</span> Contact Information</span>
+                    <span class="text-[10px] bg-white border border-zinc-300 px-2 py-0.5 rounded uppercase text-zinc-700">Your Info</span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-bold">
                     <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Your Name / Business *</label>
-                        <input type="text" name="client_name" required class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none" placeholder="e.g. Jane Doe">
+                        <label class="block text-zinc-700 uppercase tracking-wider mb-2">Your Name / Business *</label>
+                        <input type="text" name="client_name" required class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" placeholder="e.g. Jane Doe" style="--tw-ring-color: #dc2626;">
                     </div>
                     <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Best Phone Number *</label>
-                        <input type="tel" name="client_phone" required class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none" placeholder="(320) 555-0199">
+                        <label class="block text-zinc-700 uppercase tracking-wider mb-2">Best Phone Number *</label>
+                        <input type="tel" name="client_phone" required class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" placeholder="(320) 555-0199" style="--tw-ring-color: #dc2626;">
                     </div>
                     <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Email Address *</label>
-                        <input type="email" name="client_email" required class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none" placeholder="you@example.com">
+                        <label class="block text-zinc-700 uppercase tracking-wider mb-2">Email Address *</label>
+                        <input type="email" name="client_email" required class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" placeholder="you@example.com" style="--tw-ring-color: #dc2626;">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Job Location / Street Address *</label>
-                        <input type="text" name="site_address" required class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none" placeholder="1012 N 6th St">
+                        <label class="block text-zinc-700 uppercase tracking-wider mb-2">Job Location / Street Address *</label>
+                        <input type="text" name="site_address" required class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" placeholder="1012 N 6th St" style="--tw-ring-color: #dc2626;">
                     </div>
                     <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">City & State *</label>
-                        <input type="text" name="site_city_state" required class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none" placeholder="Montevideo, MN">
+                        <label class="block text-zinc-700 uppercase tracking-wider mb-2">City & State *</label>
+                        <input type="text" name="site_city_state" required class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" placeholder="Montevideo, MN" style="--tw-ring-color: #dc2626;">
                     </div>
                 </div>
             </div>
 
-            <!-- SECTION 2: WORK NEEDED & SITE DETAILS -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:p-8 shadow-xl">
-                <h2 class="text-lg font-black uppercase tracking-wide text-white border-b border-zinc-800 pb-3 mb-6 flex items-center justify-between">
-                    <span><span class="text-red-600">02.</span> What Kind of Work Do You Need Done?</span>
-                    <span class="text-[10px] bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded uppercase">Project Type</span>
+            <!-- SECTION 3: DYNAMIC TRADE SPECIFICS -->
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-6 md:p-8 shadow-sm">
+                <h2 class="text-lg font-black uppercase tracking-wide text-zinc-900 border-b border-zinc-200 pb-3 mb-6 flex items-center justify-between">
+                    <span><span class="trade-num text-red-600 transition-colors duration-300">03.</span> Project Specifications</span>
+                    <span id="trade-spec-label" class="text-[10px] bg-white border border-zinc-300 px-2 py-0.5 rounded uppercase text-zinc-700">Painting Details</span>
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs font-bold">
-                    <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Main Type of Work</label>
-                        <select id="calc_trade" name="primary_trade" class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none">
-                            <option value="2.35">Painting & Interior/Exterior Coatings</option>
-                            <option value="12.50">Framing & Structural Woodwork</option>
-                            <option value="9.75">Roofing (Shingles or Metal)</option>
-                            <option value="11.00">Concrete Work (Slabs, Sidewalks, Pads)</option>
-                            <option value="4.50">Drywall (Hanging, Taping, & Mudding)</option>
-                            <option value="8.50">Siding, Soffit & Trim</option>
-                            <option value="14.00">Trim Work, Doors & Interior Finish</option>
-                            <option value="16.50">Masonry, Brick & Stone</option>
-                            <option value="6.00">Tear-Out, Demolition & Site Cleanup</option>
-                            <option value="18.50">General Remodeling / Full Addition</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Approximate Size (Sq. Ft. or Lineal Ft.) *</label>
-                        <input id="calc_sqft" type="number" name="square_footage" value="1000" min="50" max="100000" placeholder="e.g. 1500" class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-2">Materials Quality Level</label>
-                        <select id="calc_material_grade" name="material_grade" class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-white focus:border-red-600 focus:outline-none">
-                            <option value="1.00">Standard Quality (Reliable & Built to Last)</option>
-                            <option value="1.25">Upgraded / Mid-Range Finish</option>
-                            <option value="1.55">Premium / High-End Custom Materials</option>
-                        </select>
-                    </div>
+                
+                <div id="trade_fields_container">
+                    <!-- Dynamic fields will inject here based on selection -->
                 </div>
             </div>
 
-            <!-- SECTION 3: PREP & ACCESS -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:p-8 shadow-xl">
-                <h2 class="text-lg font-black uppercase tracking-wide text-white border-b border-zinc-800 pb-3 mb-6 flex items-center justify-between">
-                    <span><span class="text-red-600">03.</span> Prep Work & Site Conditions</span>
-                    <span class="text-[10px] bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded uppercase">Setup Details</span>
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-bold">
-                    <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-3">Extra Surface Prep Needed?</label>
-                        <div class="space-y-2 text-zinc-300">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="site_options[]" value="Selective Demolition" data-rate="1.75" class="calc-check rounded border-zinc-800 bg-zinc-950 text-red-600 focus:ring-0">
-                                Tear-Out / Demolition Work Needed [+$1.75/sq ft]
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="site_options[]" value="Batt/Blow Insulation" data-rate="1.20" class="calc-check rounded border-zinc-800 bg-zinc-950 text-red-600 focus:ring-0">
-                                Adding Insulation (Wall or Attic) [+$1.20/sq ft]
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="site_options[]" value="Subfloor Prep / Leveling" data-rate="0.95" class="calc-check rounded border-zinc-800 bg-zinc-950 text-red-600 focus:ring-0">
-                                Floor Prep, Repairs & Leveling [+$0.95/sq ft]
-                            </label>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-zinc-400 uppercase tracking-wider mb-3">Equipment or Access Considerations</label>
-                        <div class="space-y-2 text-zinc-300">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="equipment_options[]" value="Excavator/Bobcat On-Site" data-flat="750" class="calc-check rounded border-zinc-800 bg-zinc-950 text-red-600 focus:ring-0">
-                                Machine / Skid Steer Needed On Site [+$750 flat]
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="equipment_options[]" value="Debris Haul / Dumpster" data-flat="550" class="calc-check rounded border-zinc-800 bg-zinc-950 text-red-600 focus:ring-0">
-                                Dumpster & Waste Hauling Included [+$550 flat]
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="equipment_options[]" value="Scaffolding Rigging" data-flat="600" class="calc-check rounded border-zinc-800 bg-zinc-950 text-red-600 focus:ring-0">
-                                Scaffolding / High Reach Needed [+$600 flat]
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PRICE PREVIEW CARD -->
-            <div class="bg-gradient-to-br from-zinc-900 to-black border-2 border-red-700 rounded-lg p-6 md:p-8 shadow-2xl relative overflow-hidden">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-zinc-800 pb-6 mb-6">
-                    <div>
-                        <span class="text-xs font-black uppercase tracking-widest text-red-500">Estimated Investment</span>
-                        <h3 class="text-2xl font-black uppercase text-white mt-1">Estimated Cost Range</h3>
-                        <p class="text-xs text-zinc-400">Note: We cover all trades except electrical and plumbing. We'll verify final details on site.</p>
-                    </div>
-                    <div class="bg-zinc-950 border border-zinc-800 p-4 rounded-md text-right w-full md:w-auto">
-                        <span class="text-[10px] font-black uppercase tracking-wider text-zinc-400 block">Estimated Range</span>
-                        <span id="preview_total_range" class="text-3xl md:text-4xl font-black brand-red tracking-tight">$0 - $0</span>
-                        <input type="hidden" id="calculated_estimate_field" name="calculated_estimate_summary" value="">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold text-zinc-300">
-                    <div class="bg-zinc-950/70 p-3 rounded border border-zinc-800">
-                        <span class="text-zinc-500 block text-[10px] uppercase">Base Labor & Materials</span>
-                        <span id="breakdown_base" class="text-white font-mono text-sm">$0.00</span>
-                    </div>
-                    <div class="bg-zinc-950/70 p-3 rounded border border-zinc-800">
-                        <span class="text-zinc-500 block text-[10px] uppercase">Prep & Subsurface Work</span>
-                        <span id="breakdown_prep" class="text-white font-mono text-sm">$0.00</span>
-                    </div>
-                    <div class="bg-zinc-950/70 p-3 rounded border border-zinc-800">
-                        <span class="text-zinc-500 block text-[10px] uppercase">Equipment & Site Setup</span>
-                        <span id="breakdown_rigging" class="text-white font-mono text-sm">$0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 4: NOTES & BLUEPRINTS -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 md:p-8 shadow-xl">
-                <h2 class="text-lg font-black uppercase tracking-wide text-white border-b border-zinc-800 pb-3 mb-4 flex items-center justify-between">
-                    <span><span class="text-red-600">04.</span> Any Specific Details or Plans?</span>
-                    <span class="text-[10px] bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded uppercase">Notes</span>
+            <!-- SECTION 4: NOTES & SUBMIT -->
+            <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-6 md:p-8 shadow-sm">
+                <h2 class="text-lg font-black uppercase tracking-wide text-zinc-900 border-b border-zinc-200 pb-3 mb-4 flex items-center justify-between">
+                    <span><span class="trade-num text-red-600 transition-colors duration-300">04.</span> Project Notes & Photos</span>
+                    <span class="text-[10px] bg-white border border-zinc-300 px-2 py-0.5 rounded uppercase text-zinc-700">Finalize</span>
                 </h2>
                 <div class="grid grid-cols-1 gap-6 mb-6">
                     <div>
-                        <label class="block text-zinc-400 uppercase text-xs font-bold tracking-wider mb-2">Have Blueprints or Pictures? Upload 'Em Here (Optional)</label>
-                        <input type="file" name="project_plans" multiple accept=".pdf,.png,.jpg,.dwg" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-zinc-400 text-xs file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-red-600 file:text-white file:font-bold hover:file:bg-red-700 cursor-pointer">
+                        <label class="block text-zinc-700 uppercase text-xs font-bold tracking-wider mb-2">Upload Photos or Plans (Optional)</label>
+                        <input type="file" name="project_files" multiple accept=".pdf,.png,.jpg" class="w-full bg-white border border-zinc-300 rounded p-2 text-zinc-600 text-xs file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-white file:font-bold cursor-pointer transition-colors duration-300" id="file-input-styled">
                     </div>
                     <div>
-                        <label class="block text-zinc-400 uppercase text-xs font-bold tracking-wider mb-2">Tell Us About Your Project</label>
-                        <textarea name="detailed_notes" rows="4" class="w-full bg-zinc-950 border border-zinc-800 rounded p-4 text-xs font-medium text-white focus:border-red-600 focus:outline-none" placeholder="Let us know about preferred brand choices, timing, or anything specific you'd like us to keep in mind..."></textarea>
+                        <label class="block text-zinc-700 uppercase text-xs font-bold tracking-wider mb-2">Additional Project Notes</label>
+                        <textarea name="detailed_notes" rows="4" class="trade-input w-full bg-white border border-zinc-300 rounded p-4 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" placeholder="Describe specific repairs, colors, or scheduling requirements..." style="--tw-ring-color: #dc2626;"></textarea>
                     </div>
                 </div>
                 
-                <button type="submit" class="w-full bg-brand-red hover:bg-red-700 text-white font-black text-xl uppercase tracking-wider py-5 rounded shadow-2xl transition duration-200 italic">
-                    Send Us Your Project Info
+                <button type="submit" id="submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-black text-xl uppercase tracking-wider py-5 rounded shadow-lg transition duration-300 italic">
+                    Submit Project Estimate Request
                 </button>
             </div>
         </form>
     </main>
 
-    <footer class="bg-black border-t border-zinc-800 py-6 text-center text-xs text-zinc-500 font-bold uppercase tracking-widest">
-        <p>© 2026 Handyman Painting L.L.C. | Quality Work, Honest Estimates</p>
+    <footer class="bg-zinc-900 border-t border-zinc-800 py-6 text-center text-xs text-zinc-400 font-bold uppercase tracking-widest">
+        <p>© 2026 Handyman Painting L.L.C. | Professional Trades & Honest Estimates</p>
     </footer>
 
-    <!-- CALCULATOR SCRIPT -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const tradeSelector = document.getElementById("trade_selector");
             const form = document.getElementById("estimator-form");
+            const tradeFieldsContainer = document.getElementById("trade_fields_container");
+            const tradeSpecLabel = document.getElementById("trade-spec-label");
+            const headerAccent = document.getElementById("header-accent");
+            const submitBtn = document.getElementById("submit-btn");
+            const fileInput = document.getElementById("file-input-styled");
 
-            function updateCalculator() {
-                const sqft = parseFloat(document.getElementById("calc_sqft").value) || 0;
-                const tradeBase = parseFloat(document.getElementById("calc_trade").value) || 2.35;
-                const materialGrade = parseFloat(document.getElementById("calc_material_grade").value) || 1.00;
-
-                const directBaseCost = sqft * tradeBase * materialGrade;
-
-                let prepAddCost = 0;
-                document.querySelectorAll("input[name='site_options[]']:checked").forEach(el => {
-                    prepAddCost += sqft * (parseFloat(el.getAttribute("data-rate")) || 0);
-                });
-
-                let equipmentCost = 0;
-                document.querySelectorAll("input[name='equipment_options[]']:checked").forEach(el => {
-                    equipmentCost += parseFloat(el.getAttribute("data-flat")) || 0;
-                });
-
-                const generalConditions = (directBaseCost + prepAddCost) * 0.10;
-                const subtotal = directBaseCost + prepAddCost + equipmentCost + generalConditions;
-
-                const riskSpread = 0.10;
-                const lowEst = Math.round(subtotal * (1 - riskSpread));
-                const highEst = Math.round(subtotal * (1 + riskSpread));
-
-                if (sqft > 0) {
-                    document.getElementById("preview_total_range").textContent = `$${lowEst.toLocaleString()} - $${highEst.toLocaleString()}`;
-                    document.getElementById("breakdown_base").textContent = `$${Math.round(directBaseCost).toLocaleString()}`;
-                    document.getElementById("breakdown_prep").textContent = `$${Math.round(prepAddCost).toLocaleString()}`;
-                    document.getElementById("breakdown_rigging").textContent = `$${Math.round(equipmentCost + generalConditions).toLocaleString()}`;
-                    
-                    document.getElementById("calculated_estimate_field").value = `Range: $${lowEst} - $${highEst} | Base Trade: $${Math.round(directBaseCost)} | Site Prep: $${Math.round(prepAddCost)} | Equipment/Overhead: $${Math.round(equipmentCost + generalConditions)}`;
-                } else {
-                    document.getElementById("preview_total_range").textContent = "$0 - $0";
-                    document.getElementById("breakdown_base").textContent = "$0.00";
-                    document.getElementById("breakdown_prep").textContent = "$0.00";
-                    document.getElementById("breakdown_rigging").textContent = "$0.00";
+            const tradeConfigs = {
+                painting: {
+                    label: "Painting Details",
+                    html: `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-bold">
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Surface Type</label>
+                                <select name="painting_surface" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #dc2626;">
+                                    <option value="Exterior Walls">Exterior Siding & Trim</option>
+                                    <option value="Interior Rooms">Interior Walls & Ceilings</option>
+                                    <option value="Cabinets">Kitchen Cabinets / Built-ins</option>
+                                    <option value="Staining">Deck / Fence Staining</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Approximate Sq. Ft. *</label>
+                                <input type="number" name="square_footage" required value="1500" min="50" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #dc2626;">
+                            </div>
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Paint Quality Grade</label>
+                                <select name="material_grade" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #dc2626;">
+                                    <option value="Standard Premium">Standard Professional Grade</option>
+                                    <option value="Top Tier">Top-Tier / Sherwin-Williams / Benjamin Moore</option>
+                                </select>
+                            </div>
+                        </div>
+                    `
+                },
+                roofing: {
+                    label: "Roofing Details",
+                    html: `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-bold">
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Roofing Material</label>
+                                <select name="roofing_material" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #2563eb;">
+                                    <option value="Architectural Shingles">Architectural Asphalt Shingles</option>
+                                    <option value="Metal Roofing">Standing Seam / Corrugated Metal</option>
+                                    <option value="Flat Roof">Flat / Low-Slope Membrane</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Approximate Roof Sq. Ft. *</label>
+                                <input type="number" name="square_footage" required value="2000" min="100" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #2563eb;">
+                            </div>
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Layers to Tear Off</label>
+                                <select name="tear_off_layers" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #2563eb;">
+                                    <option value="1 Layer">1 Existing Layer</option>
+                                    <option value="2+ Layers">2 or More Layers</option>
+                                    <option value="New Construction">New Deck / No Tear-off</option>
+                                </select>
+                            </div>
+                        </div>
+                    `
+                },
+                handyman: {
+                    label: "Handyman Repair Details",
+                    html: `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-bold">
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Primary Repair Type</label>
+                                <select name="handyman_repair_type" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #d97706;">
+                                    <option value="Drywall Patch">Drywall Patch & Texture Repair</option>
+                                    <option value="Door/Window">Door & Window Adjustment/Replacement</option>
+                                    <option value="Deck/Fence">Deck Boards & Railing Repair</option>
+                                    <option value="General Assembly">General Carpentry & Fixture Mounting</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-zinc-700 uppercase tracking-wider mb-2">Estimated Labor Scope</label>
+                                <select name="repair_scope" class="trade-input w-full bg-white border border-zinc-300 rounded p-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-300" style="--tw-ring-color: #d97706;">
+                                    <option value="Half Day">Quick Fix / Half Day Project</option>
+                                    <option value="Full Day">Full Day Punch List</option>
+                                    <option value="Multi-Day">Multi-Day Comprehensive Work</option>
+                                </select>
+                            </div>
+                        </div>
+                    `
                 }
+            };
+
+            function updateTradeForm() {
+                const selectedOption = tradeSelector.options[tradeSelector.selectedIndex];
+                const tradeKey = selectedOption.value;
+                const endpoint = selectedOption.getAttribute("data-endpoint");
+                const colorClass = selectedOption.getAttribute("data-color");
+                const bgClass = selectedOption.getAttribute("data-bg");
+                const hoverClass = selectedOption.getAttribute("data-hover");
+                const hexColor = selectedOption.getAttribute("data-hex");
+
+                // Update form destination
+                form.action = endpoint;
+
+                // Inject dynamic trade fields
+                tradeFieldsContainer.innerHTML = tradeConfigs[tradeKey].html;
+                tradeSpecLabel.textContent = tradeConfigs[tradeKey].label;
+
+                // Update accent colors dynamically across elements
+                headerAccent.className = `${colorClass} transition-colors duration-300`;
+                
+                document.querySelectorAll('.trade-num').forEach(el => {
+                    el.className = `trade-num ${colorClass} transition-colors duration-300`;
+                });
+
+                document.querySelectorAll('.trade-input').forEach(el => {
+                    el.style.setProperty('--tw-ring-color', hexColor);
+                });
+
+                // Update submit button theme color
+                submitBtn.className = `w-full ${bgClass} ${hoverClass} text-white font-black text-xl uppercase tracking-wider py-5 rounded shadow-lg transition duration-300 italic`;
+                
+                // Update file input button theme color
+                fileInput.className = `w-full bg-white border border-zinc-300 rounded p-2 text-zinc-600 text-xs file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 ${bgClass} file:text-white file:font-bold cursor-pointer transition-colors duration-300`;
             }
 
-            form.addEventListener("input", updateCalculator);
-            form.addEventListener("change", updateCalculator);
-            updateCalculator();
+            tradeSelector.addEventListener("change", updateTradeForm);
+            updateTradeForm(); // Initialize on load
         });
     </script>
 </body>
 </html>
-
