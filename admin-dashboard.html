@@ -3,85 +3,437 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Command Center - Handyman Painting L.L.C.</title>
-  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
-  <link rel="stylesheet" href="output.css">
-</head>
-<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
+  <title>Admin Dashboard - Handyman Painting L.L.C.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    #paint-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.15;
+    }
+    .leaflet-container {
+      background-color: #020617 !important;
+      font-family: inherit;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.75rem;
+    }
+    .custom-leaflet-pin {
+      background: transparent;
+      border: none;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.4); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .leaflet-pulse-marker {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 10px #ef4444;
+      position: relative;
+    }
+    .leaflet-pulse-marker::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      border-radius: 50%;
+      border: 2px solid #ef4444;
+      animation: pulse-ring 2s infinite;
+    }
+    .fade-in-popup {
+      animation: fadeInPopup 0.3s ease-out forwards;
+    }
+    @keyframes fadeInPopup {
+      from { opacity: 0; transform: translateY(10px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+  <script>
+    let activeZoomNode = null;
+    let leafletMap = null;
+    let markersLayer = null;
 
-  <header class="bg-slate-900 text-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-xl font-bold tracking-tight">Handyman Painting <span class="text-red-400">Admin Command Center</span></h1>
+    function switchTab(id) {
+      ['heatmap', 'project-workspace', 'inbox', 'contractors', 'customers', 'employees', 'approvals', 'operations'].forEach(function(t) {
+        var tabEl = document.getElementById('tab-' + t);
+        if (tabEl) tabEl.classList.add('hidden');
+        var btn = document.getElementById('nav-' + t);
+        if (btn) btn.className = 'w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2';
+      });
+      var activeTab = document.getElementById('tab-' + id);
+      if (activeTab) activeTab.classList.remove('hidden');
+      var activeBtn = document.getElementById('nav-' + id);
+      if (activeBtn) activeBtn.className = 'w-full text-left px-3.5 py-2.5 rounded font-bold text-xs bg-red-600 text-white transition flex items-center space-x-2';
+
+      if (id === 'heatmap' && leafletMap) {
+        setTimeout(function() { leafletMap.invalidateSize(); }, 200);
+      }
+    }
+
+    function initDashboard() {
+      var mockLeads = [
+        { category: 'Roofing Leads', name: 'Tom Kinman', lat: 44.9778, lng: -93.2650, location: 'Twin Cities Metro', details: 'Full roof replacement estimate & inspection.', date: '2026-07-12' },
+        { category: 'Handyman Repairs', name: 'Terri Emery', lat: 44.9444, lng: -95.7233, location: 'Montevideo, MN', details: 'Exterior trim painting & gate reinforcement.', date: '2026-07-28' },
+        { category: 'Project Leads', name: 'Luke Ernst', lat: 44.0216, lng: -92.4803, location: 'Rochester, MN', details: 'Subcontract property maintenance and lawn care.', date: '2026-06-15' },
+        { category: 'Customer Service', name: 'Anonymous Dispatcher', lat: 45.5579, lng: -94.1632, location: 'St. Cloud, MN', details: 'Logistics billing inquiry.', date: '2026-08-10' }
+      ];
+      localStorage.setItem('enterprise_leads', JSON.stringify(mockLeads));
+      renderLeadsTable(mockLeads);
+      initOpenStreetMap(mockLeads);
+      loadEnterpriseData();
+      initPaintCanvas();
+    }
+
+    function renderLeadsTable(leads) {
+      var leadsTable = document.getElementById('leads-table-body');
+      if (!leadsTable) return;
+      leadsTable.innerHTML = leads.map(function(l, idx) {
+        return '<tr class="border-b border-slate-800 hover:bg-slate-800/50">' +
+          '<td class="p-3"><span class="bg-slate-800 text-slate-200 px-2 py-0.5 rounded text-[10px] font-bold border border-slate-700">' + l.category + '</span></td>' +
+          '<td class="p-3 font-semibold text-white">' + l.name + '</td>' +
+          '<td class="p-3 text-slate-300 font-medium">' + l.location + '</td>' +
+          '<td class="p-3 text-slate-300">' + l.details + '</td>' +
+          '<td class="p-3"><button onclick="convertToDedicatedWorkspace(' + idx + ')" class="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded text-[11px] font-bold border border-slate-700">Convert</button></td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function initOpenStreetMap(leads) {
+      if (leafletMap) return;
+
+      leafletMap = L.map('openstreetmap-container', {
+        zoomControl: false
+      }).setView([45.6945, -94.1320], 7);
+
+      // Using Esri World Street Map / CartoDB alternative that resolves instantly in local file:// previews without token/referral errors
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+      }).addTo(leafletMap);
+
+      L.control.zoom({ position: 'topright' }).addTo(leafletMap);
+
+      markersLayer = L.layerGroup().addTo(leafletMap);
+      renderMapMarkers(leads);
+    }
+
+    function renderMapMarkers(leads) {
+      if (!markersLayer) return;
+      markersLayer.clearLayers();
+
+      leads.forEach((l, idx) => {
+        var pulseHtml = '<div class="leaflet-pulse-marker" style="background:' + getCategoryColor(l.category) + '; box-shadow: 0 0 12px ' + getCategoryColor(l.category) + ';"></div>';
+        var customIcon = L.divIcon({
+          className: 'custom-leaflet-pin',
+          html: pulseHtml,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+
+        var marker = L.marker([l.lat, l.lng], { icon: customIcon });
+        marker.on('click', function() {
+          focusOnNode(l.lat, l.lng, idx);
+        });
+        markersLayer.addLayer(marker);
+      });
+    }
+
+    function getCategoryColor(cat) {
+      if (cat.includes('Roofing')) return '#ef4444';
+      if (cat.includes('Handyman')) return '#8b5cf6';
+      if (cat.includes('Project')) return '#3b82f6';
+      return '#f59e0b';
+    }
+
+    function focusOnNode(lat, lng, leadIdx) {
+      var leads = JSON.parse(localStorage.getItem('enterprise_leads') || '[]');
+      var lead = leads[leadIdx] || { name: 'Sample Project', category: 'General', location: 'Minnesota', details: 'Active telemetry node inspection.' };
+      activeZoomNode = lead;
+
+      if (leafletMap) {
+        leafletMap.setView([lat, lng], 11, { animate: true, duration: 1.0 });
+      }
+
+      var resetBtn = document.getElementById('map-reset-zoom-btn');
+      if (resetBtn) resetBtn.classList.remove('hidden');
+
+      var popup = document.getElementById('map-popup-card');
+      if (popup) {
+        popup.classList.remove('hidden');
+        document.getElementById('popup-client-name').innerText = lead.name + ' (' + lead.category + ')';
+        document.getElementById('popup-client-details').innerText = 'Location: ' + lead.location + ' | Scope: ' + lead.details;
+        document.getElementById('popup-convert-btn').setAttribute('onclick', 'convertToDedicatedWorkspace(' + leadIdx + ')');
+      }
+    }
+
+    function resetMapZoom() {
+      if (leafletMap) {
+        leafletMap.setView([45.6945, -94.1320], 7, { animate: true, duration: 1.0 });
+      }
+      var resetBtn = document.getElementById('map-reset-zoom-btn');
+      if (resetBtn) resetBtn.classList.add('hidden');
+
+      var popup = document.getElementById('map-popup-card');
+      if (popup) popup.classList.add('hidden');
+      activeZoomNode = null;
+    }
+
+    function convertToDedicatedWorkspace(idx) {
+      var leads = JSON.parse(localStorage.getItem('enterprise_leads') || '[]');
+      var lead = leads[idx] || activeZoomNode;
+      if (!lead) return;
+
+      var workspaceEl = document.getElementById('dedicated-workspace-content');
+      if (workspaceEl) {
+        workspaceEl.innerHTML = '<div class="space-y-6">' +
+          '<div class="flex justify-between items-center bg-slate-950 p-5 rounded-xl border border-slate-800 shadow-xl">' +
+            '<div>' +
+              '<span class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded tracking-wider uppercase">' + lead.category + '</span>' +
+              '<h2 class="text-xl font-extrabold text-white mt-1">' + lead.name + ' - Dedicated Project Workspace</h2>' +
+              '<p class="text-xs text-slate-300 mt-0.5">Location: ' + lead.location + ' | Scope: ' + lead.details + '</p>' +
+            '</div>' +
+            '<button onclick="switchTab(\'heatmap\')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold transition border border-slate-700">← Back to Map</button>' +
+          '</div>' +
+          '<div class="grid grid-cols-1 md:grid-cols-3 gap-6">' +
+            '<div class="bg-slate-950 p-5 rounded-xl border border-slate-800 shadow space-y-3">' +
+              '<h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Competitive Bidding Calculator</h4>' +
+              '<div class="space-y-2 text-xs">' +
+                '<div><label class="text-slate-400">Materials ($)</label><input type="number" id="bid-materials" value="1200" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
+                '<div><label class="text-slate-400">Labor Hours</label><input type="number" id="bid-hours" value="40" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
+                '<div><label class="text-slate-400">Hourly Rate ($)</label><input type="number" id="bid-rate" value="65" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
+                '<div><label class="text-slate-400">Overhead ($)</label><input type="number" id="bid-overhead" value="300" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
+                '<button onclick="calculateCompetitiveBid()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition mt-2">Compute Total Bid Formula</button>' +
+                '<div id="bid-result-output" class="p-3 bg-slate-900 rounded border border-slate-800 text-emerald-400 font-mono font-bold mt-2">Total Bid = (Materials × 1.15) + (Labor Hours × Rate) + (Overhead)</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="bg-slate-950 p-5 rounded-xl border border-slate-800 shadow space-y-3">' +
+              '<h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Field Crew & Resource Dispatch</h4>' +
+              '<div class="space-y-2 text-xs text-slate-300">' +
+                '<p>Assign certified crew lead & equipment telemetry to outmaneuver regional competitors.</p>' +
+                '<button onclick="alert(\'Crew dispatched to project location successfully.\')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded transition border border-slate-700">Dispatch 3-Person Painting Crew</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="bg-slate-950 p-5 rounded-xl border border-slate-800 shadow space-y-3">' +
+              '<h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Client & Document Sign-Off</h4>' +
+              '<div class="space-y-2 text-xs text-slate-300">' +
+                '<p>NIST-standard ML-DSA-65 cryptographic validation available for state and federal contracts.</p>' +
+                '<button onclick="alert(\'Cryptographic signature applied to project contract manifest.\')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded transition border border-slate-700">Sign Contract Manifest</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }
+
+      switchTab('project-workspace');
+    }
+
+    function calculateCompetitiveBid() {
+      var mat = parseFloat(document.getElementById('bid-materials').value) || 0;
+      var hrs = parseFloat(document.getElementById('bid-hours').value) || 0;
+      var rate = parseFloat(document.getElementById('bid-rate').value) || 0;
+      var overhead = parseFloat(document.getElementById('bid-overhead').value) || 0;
+
+      var total = (mat * 1.15) + (hrs * rate) + overhead;
+      document.getElementById('bid-result-output').innerText = 'Total Bid = $' + total.toFixed(2);
+    }
+
+    function loadEnterpriseData() {
+      var inboxContainer = document.getElementById('inbox-messages-container');
+      if (inboxContainer) {
+        inboxContainer.innerHTML = '<div class="p-4 bg-slate-900 border border-slate-800 rounded text-center text-slate-400 text-xs font-medium">No direct messages recorded in local storage.</div>';
+      }
+      var jobBoard = document.getElementById('admin-job-board-list');
+      if (jobBoard) {
+        jobBoard.innerHTML = '<div class="p-4 bg-slate-900 border border-slate-800 rounded text-center text-slate-400 text-xs font-medium">No active jobs posted on the contractor board.</div>';
+      }
+    }
+
+    function initPaintCanvas() {
+      var canvas = document.getElementById('paint-canvas');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var width = canvas.width = window.innerWidth;
+      var height = canvas.height = window.innerHeight;
+
+      var drops = [];
+      var colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+      for (var i = 0; i < 10; i++) {
+        drops.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 80 + 40,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.filter = 'blur(60px)';
+        drops.forEach(function(d) {
+          d.x += d.vx;
+          d.y += d.vy;
+          if (d.x < 0 || d.x > width) d.vx *= -1;
+          if (d.y < 0 || d.y > height) d.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+          ctx.fillStyle = d.color;
+          ctx.fill();
+        });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    window.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</head>
+<body class="bg-slate-950 min-h-screen flex flex-col font-sans text-slate-100 relative overflow-x-hidden">
+
+  <canvas id="paint-canvas"></canvas>
+
+  <header class="bg-slate-900/95 backdrop-blur border-b border-slate-800 text-white shadow-2xl z-20 sticky top-0">
+    <div class="max-w-[96rem] mx-auto px-6 py-3.5 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <span class="bg-red-600 text-white font-black text-xs px-3 py-1 rounded tracking-wider uppercase shadow">Welcome, Chief</span>
+        <h1 class="text-lg font-bold tracking-tight text-white">Handyman Painting L.L.C.</h1>
+      </div>
       <div class="flex items-center space-x-4">
-        <span id="user-display-email" class="text-xs text-slate-300"></span>
-        <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Log Out</button>
+        <span class="text-xs text-slate-300 font-mono font-semibold">chief@handymanpaintingllc.co</span>
+        <button onclick="localStorage.clear(); window.location.reload();" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded text-xs font-bold transition shadow">Log Out</button>
       </div>
     </div>
   </header>
 
-  <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div class="md:col-span-1 space-y-2">
-      <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
-        <button onclick="switchTab('approvals')" id="nav-approvals" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">🛡️ Pending Approvals</button>
-        <button onclick="switchTab('operations')" id="nav-operations" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">📊 Enterprise Metrics</button>
-        <button onclick="switchTab('users')" id="nav-users" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-600 hover:bg-slate-100 transition">👥 User Directory</button>
+  <div class="max-w-[96rem] mx-auto px-6 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-12 gap-8 z-10">
+    
+    <div class="md:col-span-3 space-y-2">
+      <div class="bg-slate-900/90 backdrop-blur p-4 rounded-xl shadow-xl border border-slate-800 space-y-1.5 sticky top-20">
+        <button onclick="switchTab('heatmap')" id="nav-heatmap" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs bg-red-600 text-white transition flex items-center space-x-2 shadow"><span>🗺️</span><span>Lead Heatmap</span></button>
+        <button onclick="switchTab('project-workspace')" id="nav-project-workspace" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>⚡</span><span>Dedicated Workspace</span></button>
+        <button onclick="switchTab('inbox')" id="nav-inbox" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>💬</span><span>Direct Messages</span></button>
+        <button onclick="switchTab('contractors')" id="nav-contractors" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🤝</span><span>Contractor Workspace</span></button>
+        <button onclick="switchTab('customers')" id="nav-customers" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🏠</span><span>Customer Management</span></button>
+        <button onclick="switchTab('employees')" id="nav-employees" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>👷</span><span>Employee Management</span></button>
+        <button onclick="switchTab('approvals')" id="nav-approvals" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🛡️</span><span>Pending Approvals</span></button>
+        <button onclick="switchTab('operations')" id="nav-operations" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>📊</span><span>Enterprise Metrics</span></button>
       </div>
     </div>
 
-    <div class="md:col-span-3 space-y-6">
-      <!-- PENDING APPROVALS -->
-      <div id="tab-approvals" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-        <h3 class="font-bold text-slate-900 text-lg">Pending Employee & Contractor Applications</h3>
-        <p class="text-xs text-gray-600">Review submitted background checks and licensing documentation before granting system access.</p>
-        
-        <div class="border border-slate-200 p-4 rounded-lg flex justify-between items-center bg-slate-50">
+    <div class="md:col-span-9 space-y-6">
+
+      <div id="tab-heatmap" class="bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-5">
+        <div class="flex justify-between items-center flex-wrap gap-3">
           <div>
-            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded">Pending Review</span>
-            <h4 class="font-bold text-slate-900 text-sm mt-1">Luke Ernst - Subcontractor Application</h4>
-            <p class="text-xs text-gray-600 mt-0.5">Submitted liability certificate & regional property maintenance agreement.</p>
+            <h3 class="font-extrabold text-white text-lg tracking-tight">OpenStreetMap Minnesota Lead Heatmap & Telemetry</h3>
+            <p class="text-xs text-slate-300 font-medium mt-0.5">Interactive map tiles loaded seamlessly via robust Esri/OSM infrastructure without local file blocks.</p>
           </div>
-          <div class="space-x-2">
-            <button onclick="alert('Account Approved and Role Upgraded!')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold">Approve</button>
-            <button onclick="alert('Application Rejected.')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold">Reject</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <div class="lg:col-span-4 space-y-4">
+            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 shadow-inner space-y-2">
+              <h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Instructions</h4>
+              <p class="text-xs text-slate-300">Click any pulsing node on the interactive OpenStreetMap grid to lock coordinates, view lead specifications, and launch the dedicated project workspace.</p>
+            </div>
+          </div>
+
+          <div class="lg:col-span-8">
+            <div class="relative w-full h-[520px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-inner flex flex-col">
+              
+              <div class="absolute top-3 left-3 z-[400] flex space-x-2">
+                <button id="map-reset-zoom-btn" onclick="resetMapZoom()" class="hidden bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-xl border border-slate-700 transition">🔍 Reset Map View</button>
+              </div>
+
+              <div id="map-popup-card" class="hidden absolute bottom-4 left-4 right-4 z-[400] bg-slate-900/95 backdrop-blur border border-slate-700 p-4 rounded-xl shadow-2xl fade-in-popup flex justify-between items-center gap-4">
+                <div class="space-y-1">
+                  <div class="font-bold text-white text-sm" id="popup-client-name">Project Title</div>
+                  <div class="text-slate-300 text-xs" id="popup-client-details">Project rundown telemetry...</div>
+                </div>
+                <div class="flex space-x-2">
+                  <button id="popup-convert-btn" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded text-xs font-bold transition shadow whitespace-nowrap">Convert to Dedicated Workspace</button>
+                  <button onclick="document.getElementById('map-popup-card').classList.add('hidden')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded text-xs font-bold">Close</button>
+                </div>
+              </div>
+
+              <div id="openstreetmap-container" class="w-full h-full relative z-10"></div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="overflow-x-auto border border-slate-800 rounded-lg bg-slate-950 shadow-inner mt-4">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900 border-b border-slate-800 text-slate-300 font-bold">
+                <th class="p-3">Form Category</th>
+                <th class="p-3">Contact Name</th>
+                <th class="p-3">Location</th>
+                <th class="p-3">Details</th>
+                <th class="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="leads-table-body" class="divide-y divide-slate-800 text-slate-200">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-project-workspace" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-5">
+        <div id="dedicated-workspace-content" class="space-y-6">
+          <div class="p-6 bg-slate-950 rounded-xl border border-slate-800 text-center text-slate-400 text-xs font-medium">
+            No project currently selected. Click a node on the map and select "Convert to Dedicated Workspace".
           </div>
         </div>
       </div>
 
-      <!-- OPERATIONS -->
-      <div id="tab-operations" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-        <h3 class="font-bold text-slate-900 text-lg">Enterprise Operational Metrics</h3>
-        <p class="text-xs text-gray-600">State Registration: DLI #IR815804 | Unique Entity ID: HWYRMVYT2RT6</p>
-        <div class="grid grid-cols-3 gap-4">
-          <div class="bg-slate-50 p-4 rounded border"><div class="text-xs text-gray-500 uppercase font-bold">Active Bids</div><div class="text-xl font-bold text-slate-900 mt-1">12</div></div>
-          <div class="bg-slate-50 p-4 rounded border"><div class="text-xs text-gray-500 uppercase font-bold">Field Crews</div><div class="text-xl font-bold text-slate-900 mt-1">3 Active</div></div>
-          <div class="bg-slate-50 p-4 rounded border"><div class="text-xs text-gray-500 uppercase font-bold">Compliance Status</div><div class="text-xl font-bold text-emerald-600 mt-1">100%</div></div>
-        </div>
+      <div id="tab-inbox" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
+        <h3 class="font-extrabold text-white text-lg tracking-tight">Direct Communications Inbox</h3>
+        <div id="inbox-messages-container" class="space-y-3"></div>
       </div>
 
-      <!-- USERS -->
-      <div id="tab-users" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-        <h3 class="font-bold text-slate-900 text-lg">System User Directory</h3>
-        <p class="text-xs text-gray-600">Manage registered users, reset credentials, and assign custom roles.</p>
+      <div id="tab-contractors" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-5">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h3 class="font-extrabold text-white text-lg tracking-tight">Contractor Management Workspace</h3>
+        </div>
+        <div id="admin-job-board-list" class="space-y-2.5"></div>
       </div>
+
+      <div id="tab-customers" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
+        <h3 class="font-extrabold text-white text-lg tracking-tight">Customer Management Workspace</h3>
+      </div>
+
+      <div id="tab-employees" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
+        <h3 class="font-extrabold text-white text-lg tracking-tight">Employee Management Workspace</h3>
+      </div>
+
+      <div id="tab-approvals" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
+        <h3 class="font-extrabold text-white text-lg tracking-tight">Pending Approvals</h3>
+      </div>
+
+      <div id="tab-operations" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
+        <h3 class="font-extrabold text-white text-lg tracking-tight">Enterprise Operational Metrics</h3>
+        <p class="text-xs text-slate-300 font-medium">State Registration: DLI #IR815804 | Unique Entity ID: HWYRMVYT2RT6</p>
+      </div>
+
     </div>
   </div>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      if (!localStorage.getItem('isLoggedIn')) window.location.href = 'login.html';
-      document.getElementById('user-display-email').innerText = localStorage.getItem('userEmail') || '';
-    });
-    function switchTab(id) {
-      ['approvals', 'operations', 'users'].forEach(t => {
-        document.getElementById('tab-' + t).classList.add('hidden');
-        document.getElementById('nav-' + t).classList.remove('bg-slate-900', 'text-white');
-        document.getElementById('nav-' + t).classList.add('text-slate-600', 'hover:bg-slate-100');
-      });
-      document.getElementById('tab-' + id).classList.remove('hidden');
-      document.getElementById('nav-' + id).classList.remove('text-slate-600', 'hover:bg-slate-100');
-      document.getElementById('nav-' + id).classList.add('bg-slate-900', 'text-white');
-    }
-    function handleLogout() { localStorage.clear(); window.location.href = 'login.html'; }
-  </script>
 </body>
 </html>
