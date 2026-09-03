@@ -4,369 +4,523 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard - Handyman Painting L.L.C.</title>
-    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
-    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/gridstack@9.0.0/dist/gridstack.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@9.0.0/dist/gridstack-all.js"></script>
     <style>
-        .slide-container { display: flex; transition: transform 0.4s ease-in-out; width: 200%; }
-        .slide-panel { width: 50%; box-sizing: border-box; }
-        .split-view-active { transform: translateX(-50%); }
-        .credential-badge { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #f8fafc; border-radius: 8px; padding: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .credential-badge::after { content: ""; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(245, 158, 11, 0.15); border-radius: 50%; pointer-events: none; }
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background-color: #f8fafc;
+      }
+      .grid-stack-item-content {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .widget-header {
+        cursor: move;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 0.65rem 0.9rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .tier-emblem-large {
+        width: 104px;
+        height: 104px;
+        object-fit: contain;
+      }
+
+      /* Floating Emblem Animations */
+      @keyframes float-standard {
+        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(220, 38, 38, 0.3)); }
+        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(220, 38, 38, 0.5)); }
+        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(220, 38, 38, 0.3)); }
+      }
+      @keyframes float-preferred {
+        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(37, 99, 235, 0.3)); }
+        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(37, 99, 235, 0.5)); }
+        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(37, 99, 235, 0.3)); }
+      }
+      @keyframes float-supreme {
+        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(217, 119, 6, 0.3)); }
+        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(217, 119, 6, 0.5)); }
+        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(217, 119, 6, 0.3)); }
+      }
+      @keyframes float-executive {
+        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(147, 51, 234, 0.3)); }
+        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(147, 51, 234, 0.5)); }
+        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(147, 51, 234, 0.3)); }
+      }
+      .emblem-standard { animation: float-standard 4s ease-in-out infinite; }
+      .emblem-preferred { animation: float-preferred 4s ease-in-out infinite; }
+      .emblem-supreme { animation: float-supreme 4s ease-in-out infinite; }
+      .emblem-executive { animation: float-executive 4s ease-in-out infinite; }
+
+      /* Paint Swatch Canvas styling */
+      .paint-swatch-canvas {
+        width: 100%;
+        height: 180px;
+        border-radius: 0.75rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+      }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
-    
-    <header class="bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-tight">Handyman Painting <span class="text-amber-400">Client Portal</span></h1>
-            <div class="flex items-center space-x-4">
-                <span id="user-display-email" class="text-xs text-slate-300"></span>
-                <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Log Out</button>
-            </div>
-        </div>
-    </header>
+<body class="p-6 min-h-screen text-slate-800">
 
-    <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Top Layout Studio Bar -->
+    <div id="top-bar-container" class="bg-white border border-slate-200 text-slate-900 p-3.5 rounded-2xl mb-6 flex justify-between items-center shadow-sm max-w-7xl mx-auto">
+      <div class="flex items-center gap-4">
+        <span class="text-sm font-black tracking-wider uppercase text-slate-900 border-r border-slate-200 pr-4">Handyman Painting L.L.C.</span>
+        <span id="welcome-greeting-text" class="text-xs font-bold text-slate-600">Welcome Back!</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="openBlockCatalog()" id="btn-add-blocks" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs px-3.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm">
+          <span>+</span> Customize / Add Blocks & Tools
+        </button>
+        <button type="button" onclick="saveLayout()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-lg border border-slate-300 font-medium transition">💾 Save Layout</button>
+        <button type="button" onclick="if(window.grid) grid.compact()" class="text-xs text-slate-500 hover:text-slate-800 underline">Auto-Arrange</button>
+      </div>
+    </div>
+
+    <!-- Main Grid Canvas -->
+    <div class="max-w-7xl mx-auto">
+        <div class="grid-stack mb-6"></div>
+    </div>
+
+    <!-- Block Selection Catalog Modal -->
+    <div id="block-catalog-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full p-6 space-y-4 border border-slate-200">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Dashboard Block Catalog</h3>
+            <p class="text-xs text-slate-500">Toggle tools on or off to adjust your dashboard layout.</p>
+          </div>
+          <button type="button" onclick="closeBlockCatalog()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        </div>
         
-        <div class="md:col-span-1 space-y-2">
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
-                <button onclick="switchTab('projects')" id="nav-projects" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">📂 Projects</button>
-                <button onclick="switchTab('change-orders')" id="nav-change-orders" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">📋 Change Orders</button>
-                <button onclick="switchTab('payments')" id="nav-payments" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">💳 Secure Payments</button>
-                <button onclick="switchTab('support')" id="nav-support" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">💬 Customer Service</button>
-                <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⚙️ User Settings</button>
-            </div>
+        <div class="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto p-1" id="catalog-items-container"></div>
+
+        <div class="flex justify-end border-t pt-3">
+          <button type="button" onclick="closeBlockCatalog()" class="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-lg hover:bg-slate-800">Done</button>
         </div>
-
-        <div class="md:col-span-3 space-y-6">
-
-            <div id="tab-projects" class="space-y-4">
-                <div class="overflow-hidden bg-white rounded-lg shadow-sm border border-slate-200">
-                    <div class="flex border-b border-slate-200 bg-slate-50">
-                        <button onclick="filterProjects('active')" id="sub-active" class="flex-1 py-3 text-xs font-bold text-center border-b-2 border-slate-900 text-slate-900 uppercase">Active</button>
-                        <button onclick="filterProjects('pending')" id="sub-pending" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Pending</button>
-                        <button onclick="filterProjects('completed')" id="sub-completed" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Completed</button>
-                        <button onclick="filterProjects('declined')" id="sub-declined" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Declined</button>
-                    </div>
-
-                    <div id="project-slider" class="slide-container p-6">
-                        <div class="slide-panel pr-4 space-y-3">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wide" id="project-list-title">Active Projects</h3>
-                                <span class="text-xs text-gray-500" id="project-count">0 items</span>
-                            </div>
-                            <div id="dynamic-project-list" class="space-y-3"></div>
-                        </div>
-                        <div class="slide-panel pl-4">
-                            <button onclick="closeSplitView()" class="mb-4 text-xs font-bold text-blue-600 hover:underline">&larr; Back to Project List</button>
-                            <div id="project-detail-content" class="bg-slate-50 border border-slate-200 p-6 rounded-lg space-y-4"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-change-orders" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-                <h3 class="font-bold text-slate-900 text-lg">Change Orders & Scope Adjustments</h3>
-                <p class="text-xs text-gray-600">Review and authorize requested changes to active project scopes or material upgrades.</p>
-                <div id="change-orders-container"></div>
-            </div>
-
-            <!-- NEW PAYMENTS TAB -->
-            <div id="tab-payments" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-6">
-                    <div>
-                        <h3 class="font-bold text-slate-900 text-lg">Secure Invoice Payment Gateway</h3>
-                        <p class="text-xs text-gray-600">Settle your painting project invoices safely via credit card or direct bank transfer (ACH).</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Rail 1: Credit / Debit Card -->
-                        <div class="space-y-4 p-5 border border-slate-200 rounded-md bg-slate-50">
-                            <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Credit or Debit Card (Stripe)</h4>
-                            <div id="payment-element" class="bg-white p-3 rounded border border-slate-300 min-h-[40px]">
-                                <p class="text-[11px] text-slate-400">Stripe payment element container ready.</p>
-                            </div>
-                            <button onclick="alert('Stripe payment processing initialized.')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded text-xs font-bold transition shadow">
-                                Pay Invoice with Card
-                            </button>
-                        </div>
-
-                        <!-- Rail 2: Direct Bank Transfer (ACH via Plaid) -->
-                        <div class="space-y-4 p-5 border border-slate-200 rounded-md bg-slate-50">
-                            <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Direct Bank Transfer (Plaid ACH)</h4>
-                            <div class="p-4 bg-white rounded border border-slate-300 text-center space-y-3">
-                                <span id="plaid-status" class="inline-block px-2.5 py-1 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">Unlinked</span>
-                                <button onclick="initializePlaidLink()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded text-xs font-bold transition shadow">
-                                    Connect Bank Account
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-support" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="font-bold text-slate-900 text-lg">Customer Support & FAQ Chatbot</h3>
-                    <p class="text-xs text-gray-600">Have questions about your paint schedule, weather delays, or warranty? Ask our intelligent assistant below.</p>
-                    <div id="chat-window" class="h-48 border border-slate-200 rounded p-3 overflow-y-auto bg-slate-50 space-y-2 text-xs">
-                        <div class="bg-slate-200 text-slate-800 p-2 rounded max-w-[80%]">
-                            <strong>Support Bot:</strong> Hello! How can I assist you with your painting project today?
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="Type your question here..." class="flex-grow border border-slate-300 p-2 rounded text-xs">
-                        <button onclick="sendChatMessage()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">Send</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-settings" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="font-bold text-slate-900 text-lg">User Settings & Confidentiality Controls</h3>
-                    <p class="text-xs text-gray-600">State & Federal compliance standards: manage data encryption, visibility preferences, and profile particulars.</p>
-                    
-                    <div class="space-y-3 max-w-md">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Registered Email (Secure & Encrypted)</label>
-                            <input type="email" id="settings-email" disabled class="w-full border bg-gray-100 p-2 rounded text-xs text-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Full Name / Departmental ID</label>
-                            <input type="text" id="settings-name" class="w-full border p-2 rounded text-xs" value="Valued Customer">
-                        </div>
-                        <div class="flex items-center space-x-2 pt-2">
-                            <input type="checkbox" id="show-credential-toggle" onchange="toggleCredentialDisplay()" class="h-4 w-4 text-slate-900 border-slate-300 rounded">
-                            <label for="show-credential-toggle" class="text-xs font-bold text-slate-800 cursor-pointer">Display Custom Status Tier Credential on Dashboard</label>
-                        </div>
-                        <button onclick="alert('Settings and security preferences saved securely!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">
-                            Save Security Preferences
-                        </button>
-                    </div>
-                </div>
-                <div id="credential-display-section" class="hidden"></div>
-            </div>
-
-        </div>
+      </div>
     </div>
 
     <script>
-        function getCustomerProfile(email) {
-            const store = JSON.parse(localStorage.getItem('hp_customer_profiles') || '{}');
-            if (!store[email]) {
-                store[email] = {
-                    profileType: email.includes('.gov') || email.includes('state') ? 'government' : (email.includes('corp') ? 'commercial' : 'residential'),
-                    tier: 'Silver Tier',
-                    department: email.includes('.gov') ? 'State Infrastructure & General Services' : 'Standard Residential',
-                    spendTotal: '$3,450.00',
-                    frequency: '2 Active Projects',
-                    referrals: 1,
-                    socialShared: true,
-                    showBadge: false
-                };
-                localStorage.setItem('hp_customer_profiles', JSON.stringify(store));
+        window.CUSTOMER_DATA = {
+            profile: { name: 'John Doe', phone: '', address: '' },
+            spend: 0.00,
+            tier: 'Standard',
+            projects: { current: [], previous: [] },
+            invoices: [],
+            recommendations: []
+        };
+
+        const TIER_THEMES = {
+            standard: {
+                bgGradient: 'bg-gradient-to-r from-slate-900 via-zinc-900 to-slate-900',
+                accentText: 'text-red-400',
+                badgeBg: 'bg-red-500/10 text-red-400 border-red-500/20'
+            },
+            preferred: {
+                bgGradient: 'bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900',
+                accentText: 'text-blue-400',
+                badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+            },
+            supreme: {
+                bgGradient: 'bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900',
+                accentText: 'text-amber-400',
+                badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+            },
+            executive: {
+                bgGradient: 'bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900',
+                accentText: 'text-purple-400',
+                badgeBg: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
             }
-            return store[email];
+        };
+
+        const PREMADE_BLOCKS = {
+            tier: {
+                id: 'tier',
+                title: '🏆 Tier & Loyalty Status',
+                w: 12, h: 3,
+                getContent: () => {
+                    const spend = window.CUSTOMER_DATA.spend || 0;
+                    const tier = window.CUSTOMER_DATA.tier || 'Standard';
+                    const key = tier.toLowerCase();
+                    const theme = TIER_THEMES[key] || TIER_THEMES.standard;
+
+                    return `
+                    <div class="grid-stack-item-content !border-slate-800 ${theme.bgGradient} text-white shadow-xl" data-block-id="tier">
+                      <div class="widget-header !bg-black/40 !border-white/10">
+                        <span class="font-bold text-xs ${theme.accentText} uppercase tracking-wider">🏆 ${tier.toUpperCase()} MEMBER STATUS</span>
+                        <button type="button" onclick="removeBlock('tier')" class="text-slate-400 hover:text-white text-sm font-bold">&times;</button>
+                      </div>
+                      <div class="p-6 flex items-center justify-between gap-6 h-full">
+                        <div class="flex items-center gap-6">
+                          <div class="flex items-center justify-center p-2">
+                            <img id="tier-badge-img" src="/${tier}.jpg" alt="${tier} Tier Emblem" class="tier-emblem-large emblem-${key}" onerror="this.src='/Standard.jpg'" />
+                          </div>
+                          <div>
+                            <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded border ${theme.badgeBg}">Current Rank</span>
+                            <h2 id="tier-name-label" class="text-2xl font-black text-white mt-2">${tier} Member</h2>
+                            <p class="text-xs text-slate-300 mt-1">Lifetime Account Spend: <span id="tier-spend-label" class="font-bold ${theme.accentText}">$${spend.toFixed(2)}</span></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+                }
+            },
+            mixer: {
+                id: 'mixer',
+                title: '🎨 Interactive Paint Mixer Studio',
+                w: 6, h: 5,
+                getContent: () => `
+                <div class="grid-stack-item-content" data-block-id="mixer">
+                  <div class="widget-header">
+                    <span class="font-bold text-xs text-slate-800">🎨 Interactive Paint Mixer Studio</span>
+                    <button type="button" onclick="removeBlock('mixer')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                  </div>
+                  <div class="p-4 space-y-3 text-xs overflow-y-auto">
+                    <p class="text-slate-500 text-[11px]">Mix 2 paint colors together to test custom swirl finishes & color blends.</p>
+                    <canvas id="paint-mixer-canvas" class="paint-swatch-canvas"></canvas>
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label class="font-bold text-slate-700 block mb-1">Base Paint Color</label>
+                        <input type="color" id="color-picker-1" value="#dc2626" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
+                      </div>
+                      <div>
+                        <label class="font-bold text-slate-700 block mb-1">Secondary Blend</label>
+                        <input type="color" id="color-picker-2" value="#1e3a8a" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
+                      </div>
+                    </div>
+                  </div>
+                </div>`
+            },
+            projects: {
+                id: 'projects',
+                title: '📁 Projects & Bid Requests',
+                w: 6, h: 5,
+                getContent: () => {
+                    const currentProjects = window.CUSTOMER_DATA.projects.current;
+                    const hasCurrent = currentProjects && currentProjects.length > 0;
+
+                    let currentHtml = hasCurrent ? currentProjects.map(p => `
+                        <div class="p-3 border border-slate-200 rounded-lg bg-white space-y-2">
+                          <div class="flex justify-between items-start">
+                            <div>
+                              <p class="font-bold text-slate-900 text-sm">${p.title}</p>
+                              <p class="text-slate-500 text-[11px]">Submitted: ${p.date}</p>
+                            </div>
+                            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">${p.status}</span>
+                          </div>
+                          <p class="text-slate-600">${p.description}</p>
+                        </div>
+                    `).join('') : `
+                        <div class="p-8 border border-dashed border-slate-300 rounded-lg bg-slate-50/50 text-center space-y-2">
+                          <p class="text-slate-600 font-medium">No active projects or pending bid requests.</p>
+                          <p class="text-slate-400 text-[11px]">Click "Request New Bid" below to start your first project estimate.</p>
+                        </div>
+                    `;
+
+                    return `
+                    <div class="grid-stack-item-content" data-block-id="projects">
+                      <div class="widget-header">
+                        <span class="font-bold text-xs text-slate-800">📁 Projects & Bid Requests</span>
+                        <button type="button" onclick="removeBlock('projects')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                      </div>
+                      <div class="p-4 text-xs space-y-4 overflow-y-auto">
+                        <div class="flex justify-between items-center border-b pb-2">
+                          <div class="flex gap-2">
+                            <span class="px-2.5 py-1 bg-slate-900 text-white font-bold rounded">Active (${currentProjects.length})</span>
+                          </div>
+                          <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded shadow-sm transition">+ Request New Bid</button>
+                        </div>
+                        ${currentHtml}
+                      </div>
+                    </div>`;
+                }
+            },
+            invoices: {
+                id: 'invoices',
+                title: '💳 Invoices & Payments',
+                w: 4, h: 5,
+                getContent: () => {
+                    const invoices = window.CUSTOMER_DATA.invoices;
+                    const hasInvoices = invoices && invoices.length > 0;
+
+                    let invoiceListHtml = hasInvoices ? invoices.map(inv => `
+                        <div class="p-2 border rounded flex justify-between items-center bg-white">
+                          <div>
+                            <p class="font-bold text-slate-800">${inv.id}</p>
+                            <p class="text-slate-400 text-[10px]">${inv.date}</p>
+                          </div>
+                          <span class="font-bold text-slate-700">$${inv.amount.toFixed(2)}</span>
+                        </div>
+                    `).join('') : `
+                        <p class="text-slate-400 text-[11px] italic py-2">No past invoice history found.</p>
+                    `;
+
+                    return `
+                    <div class="grid-stack-item-content" data-block-id="invoices">
+                      <div class="widget-header">
+                        <span class="font-bold text-xs text-slate-800">💳 Payments & Billing</span>
+                        <button type="button" onclick="removeBlock('invoices')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                      </div>
+                      <div class="p-4 text-xs space-y-3 overflow-y-auto">
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                          <div>
+                            <p class="text-[10px] uppercase font-bold text-slate-500">Balance Due</p>
+                            <p class="text-lg font-black text-slate-800">$0.00</p>
+                          </div>
+                          <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded">No Unpaid Invoices</span>
+                        </div>
+                        <div class="space-y-2">
+                          <p class="font-bold text-slate-700 text-[11px]">Recent Invoices</p>
+                          ${invoiceListHtml}
+                        </div>
+                      </div>
+                    </div>`;
+                }
+            },
+            settings: {
+                id: 'settings',
+                title: '⚙️ Account & Profile Settings',
+                w: 4, h: 4,
+                getContent: () => {
+                    const prof = window.CUSTOMER_DATA.profile;
+                    return `
+                    <div class="grid-stack-item-content" data-block-id="settings">
+                      <div class="widget-header">
+                        <span class="font-bold text-xs text-slate-800">⚙️ Account Settings</span>
+                        <button type="button" onclick="removeBlock('settings')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                      </div>
+                      <div class="p-4 text-xs space-y-3 overflow-y-auto">
+                        <div class="grid grid-cols-2 gap-2">
+                          <div>
+                            <label class="font-bold text-slate-600 block mb-1">Full Name</label>
+                            <input type="text" id="prof-name" placeholder="No name on file" value="${prof.name}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
+                          </div>
+                          <div>
+                            <label class="font-bold text-slate-600 block mb-1">Phone Number</label>
+                            <input type="text" id="prof-phone" placeholder="No phone on file" value="${prof.phone}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
+                          </div>
+                        </div>
+                        <div>
+                          <label class="font-bold text-slate-600 block mb-1">Property Address</label>
+                          <input type="text" id="prof-address" placeholder="No property address specified" value="${prof.address}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
+                        </div>
+                        <button type="button" onclick="saveProfileDetails()" class="bg-slate-900 text-white font-bold px-3 py-1.5 rounded">Save Account Details</button>
+                      </div>
+                    </div>`;
+                }
+            },
+            budget: {
+                id: 'budget',
+                title: '📊 Project Cost Estimator',
+                w: 4, h: 4,
+                getContent: () => `
+                <div class="grid-stack-item-content" data-block-id="budget">
+                  <div class="widget-header">
+                    <span class="font-bold text-xs text-slate-800">📊 Project Cost Estimator</span>
+                    <button type="button" onclick="removeBlock('budget')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                  </div>
+                  <div class="p-4 text-xs space-y-3 overflow-y-auto">
+                    <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Est. Labor Hours:</span><input id="calc-hours" type="number" placeholder="0" class="w-20 border rounded p-1 text-right font-bold" oninput="recalcBudget()"></div>
+                    <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Materials Cost ($):</span><input id="calc-mat" type="number" placeholder="0.00" class="w-20 border rounded p-1 text-right font-bold" oninput="recalcBudget()"></div>
+                    <div class="border-t pt-2 flex justify-between font-bold text-slate-900 text-sm"><span>Project Total:</span><span id="calc-total" class="text-slate-900">$0.00</span></div>
+                  </div>
+                </div>`
+            }
+        };
+
+        let activeBlocks = new Set();
+        let grid;
+
+        /* INTERACTIVE PAINT MIXER STUDIO CANVAS ENGINE */
+        let mixerTime = 0;
+        let mixerAnimId = null;
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 220, g: 38, b: 38 };
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            if (!isLoggedIn) {
-                window.location.href = 'login.html';
-            }
-            const email = localStorage.getItem('userEmail') || 'customer@example.com';
-            document.getElementById('user-display-email').innerText = email;
-            document.getElementById('settings-email').value = email;
+        function animatePaintMixer() {
+            const canvas = document.getElementById('paint-mixer-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
 
-            const profile = getCustomerProfile(email);
-            document.getElementById('show-credential-toggle').checked = profile.showBadge;
-            if (profile.showBadge) {
-                document.getElementById('credential-display-section').classList.remove('hidden');
-                renderCredentialBadge(profile);
+            const parent = canvas.parentElement;
+            if (parent && (canvas.width !== parent.clientWidth / 2)) {
+                canvas.width = Math.max(120, Math.floor(parent.clientWidth / 2));
+                canvas.height = 90;
             }
 
-            loadProjectsForTab('active');
-            loadChangeOrders();
+            const w = canvas.width;
+            const h = canvas.height;
+            if (w === 0 || h === 0) return;
+
+            const color1Hex = document.getElementById('color-picker-1')?.value || '#dc2626';
+            const color2Hex = document.getElementById('color-picker-2')?.value || '#1e3a8a';
+
+            const c1 = hexToRgb(color1Hex);
+            const c2 = hexToRgb(color2Hex);
+
+            mixerTime += 0.018;
+            const imgData = ctx.createImageData(w, h);
+            const data = imgData.data;
+
+            let index = 0;
+            for (let y = 0; y < h; y++) {
+                const ny = y / h;
+                for (let x = 0; x < w; x++) {
+                    const nx = x / w;
+
+                    const swirl1 = Math.sin(nx * 5 + mixerTime + Math.cos(ny * 4 - mixerTime));
+                    const swirl2 = Math.cos(ny * 6 - mixerTime * 1.2 + Math.sin(nx * 3 + mixerTime));
+                    const swirl3 = Math.sin((nx + ny) * 4 + swirl1 * 1.8);
+
+                    let factor = (swirl1 + swirl2 + swirl3 + 3) / 6;
+                    factor = Math.max(0, Math.min(1, factor));
+
+                    data[index]     = Math.round(c1.r * (1 - factor) + c2.r * factor);
+                    data[index + 1] = Math.round(c1.g * (1 - factor) + c2.g * factor);
+                    data[index + 2] = Math.round(c1.b * (1 - factor) + c2.b * factor);
+                    data[index + 3] = 255;
+                    index += 4;
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            mixerAnimId = requestAnimationFrame(animatePaintMixer);
+        }
+
+        function updatePaintMixer() {
+            if (mixerAnimId) cancelAnimationFrame(mixerAnimId);
+            animatePaintMixer();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboardHeader();
+
+            grid = GridStack.init({
+                cellHeight: 80,
+                margin: 12,
+                handle: '.widget-header',
+                resizable: { handles: 'se, sw' }
+            });
+
+            addBlock('tier');
+            addBlock('mixer');
+            addBlock('projects');
+            addBlock('invoices');
+            addBlock('budget');
+            addBlock('settings');
+
+            setTimeout(updatePaintMixer, 100);
         });
 
-        function toggleCredentialDisplay() {
-            const email = localStorage.getItem('userEmail') || '';
-            const store = JSON.parse(localStorage.getItem('hp_customer_profiles') || '{}');
-            const isChecked = document.getElementById('show-credential-toggle').checked;
-            if (store[email]) {
-                store[email].showBadge = isChecked;
-                localStorage.setItem('hp_customer_profiles', JSON.stringify(store));
-            }
-            const credSection = document.getElementById('credential-display-section');
-            if (isChecked) {
-                credSection.classList.remove('hidden');
-                renderCredentialBadge(store[email]);
-            } else {
-                credSection.classList.add('hidden');
+        function updateDashboardHeader() {
+            const name = window.CUSTOMER_DATA?.profile?.name;
+            const greetingEl = document.getElementById('welcome-greeting-text');
+            if (greetingEl) {
+                greetingEl.innerText = name ? `Welcome back, ${name}!` : 'Welcome back!';
             }
         }
 
-        function renderCredentialBadge(profile) {
-            let benefits = "Standard client portal access, dedicated project scheduling, and basic warranty coverage.";
-            let badgeTitle = "Residential Verified Tier";
-            if (profile.profileType === 'government') {
-                badgeTitle = "State / Federal Agency Credential Clearance";
-                benefits = "Priority dispatch, classified project handling protocols, compliance audit trails, and dedicated municipal account management.";
-            } else if (profile.profileType === 'commercial') {
-                badgeTitle = "Commercial Enterprise Tier";
-                benefits = "Multi-site scheduling preference, net-terms eligibility, dedicated commercial project estimator, and after-hours crew deployment.";
-            }
-            document.getElementById('credential-display-section').innerHTML = `
-                <div class="credential-badge space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] uppercase tracking-widest bg-amber-500 text-slate-900 px-2 py-0.5 rounded font-extrabold">Official Status Credential</span>
-                        <span class="text-xs text-slate-300 font-mono">ID: SEC-${Math.floor(Math.random()*89999+10000)}</span>
-                    </div>
-                    <h4 class="text-lg font-bold text-white">${badgeTitle}</h4>
-                    <p class="text-xs text-slate-200"><strong>Classification Department / Sector:</strong> ${profile.department}</p>
-                    <div class="bg-slate-800/80 p-3 rounded border border-slate-700 text-xs text-slate-300 space-y-1">
-                        <div class="font-bold text-amber-400">Tier Benefits & Privileges:</div>
-                        <p>${benefits}</p>
-                    </div>
-                </div>
-            `;
-        }
+        function openBlockCatalog() {
+            const container = document.getElementById('catalog-items-container');
+            if (!container) return;
+            container.innerHTML = '';
 
-        function switchTab(tabId) {
-            ['projects', 'change-orders', 'payments', 'support', 'settings'].forEach(t => {
-                document.getElementById('tab-' + t).classList.add('hidden');
-                const btn = document.getElementById('nav-' + t);
-                btn.classList.remove('bg-slate-900', 'text-white');
-                btn.classList.add('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
-            });
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            const activeBtn = document.getElementById('nav-' + tabId);
-            activeBtn.classList.remove('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
-            activeBtn.classList.add('bg-slate-900', 'text-white');
-        }
-
-        let currentStatusFilter = 'active';
-
-        function filterProjects(status) {
-            currentStatusFilter = status;
-            ['active', 'pending', 'completed', 'declined'].forEach(s => {
-                document.getElementById('sub-' + s).classList.remove('border-b-2', 'border-slate-900', 'text-slate-900');
-                document.getElementById('sub-' + s).classList.add('text-slate-500');
-            });
-            document.getElementById('sub-' + status).classList.add('border-b-2', 'border-slate-900', 'text-slate-900');
-            document.getElementById('sub-' + status).classList.remove('text-slate-500');
-            document.getElementById('project-list-title').innerText = status.toUpperCase() + ' PROJECTS';
-            loadProjectsForTab(status);
-        }
-
-        function getUserProjects(email) {
-            const allProjects = JSON.parse(localStorage.getItem('hp_user_projects') || '{}');
-            return allProjects[email] || { active: [], pending: [], completed: [], declined: [], changeOrders: [] };
-        }
-
-        function loadProjectsForTab(status) {
-            const email = localStorage.getItem('userEmail') || '';
-            const userData = getUserProjects(email);
-            const listElem = document.getElementById('dynamic-project-list');
-            const items = userData[status] || [];
-            document.getElementById('project-count').innerText = `${items.length} item${items.length === 1 ? '' : 's'}`;
-            if (items.length === 0) {
-                listElem.innerHTML = `<div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50"><p class="text-xs text-slate-600 font-medium">No ${status} projects found.</p></div>`;
-                return;
-            }
-            listElem.innerHTML = items.map((p, idx) => `
-                <div onclick="selectProjectFromData('${status}', ${idx})" class="p-4 border rounded-lg cursor-pointer hover:border-slate-900 hover:shadow-md transition bg-white border-slate-200">
-                    <div class="flex justify-between items-start"><h4 class="font-bold text-slate-900 text-sm">${p.title}</h4><span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded uppercase">${status}</span></div>
-                    <p class="text-xs text-gray-500 mt-1">${p.location}</p>
-                    <div class="mt-3 flex justify-between items-center text-xs"><span class="font-bold text-slate-900">${p.price}</span><span class="text-blue-600 font-medium">View Details &rarr;</span></div>
-                </div>
-            `).join('');
-        }
-
-        function selectProjectFromData(status, idx) {
-            const email = localStorage.getItem('userEmail') || '';
-            const userData = getUserProjects(email);
-            const p = userData[status][idx];
-            if (!p) return;
-            document.getElementById('project-slider').classList.add('split-view-active');
-            document.getElementById('project-detail-content').innerHTML = `
-                <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded uppercase">${status}</span>
-                <h4 class="font-bold text-slate-900 text-lg mt-1">${p.title}</h4>
-                <p class="text-xs text-gray-600"><strong>Location:</strong> ${p.location}</p>
-                <p class="text-xs text-gray-600"><strong>Total Estimate:</strong> ${p.price}</p>
-                <div class="bg-white p-4 rounded border border-slate-200 mt-2 space-y-2">
-                    <h5 class="font-bold text-xs text-slate-800 uppercase">Project Status & Notes</h5>
-                    <p class="text-xs text-gray-700">${p.notes}</p>
-                </div>
-            `;
-        }
-
-        function closeSplitView() {
-            document.getElementById('project-slider').classList.remove('split-view-active');
-        }
-
-        function loadChangeOrders() {
-            const email = localStorage.getItem('userEmail') || '';
-            const userData = getUserProjects(email);
-            const container = document.getElementById('change-orders-container');
-            const cos = userData.changeOrders || [];
-            if (cos.length === 0) {
-                container.innerHTML = `<div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50"><p class="text-xs text-slate-600 font-medium">No pending change orders requiring your review.</p></div>`;
-                return;
-            }
-            container.innerHTML = cos.map(co => `
-                <div class="border border-amber-200 bg-amber-50 p-4 rounded-lg flex justify-between items-center">
+            Object.values(PREMADE_BLOCKS).forEach(block => {
+                const isActive = activeBlocks.has(block.id);
+                const card = document.createElement('div');
+                card.className = `p-3 border rounded-lg flex flex-col justify-between space-y-2 ${isActive ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-300'}`;
+                card.innerHTML = `
                     <div>
-                        <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-200 text-amber-900 rounded">Pending Approval</span>
-                        <h4 class="font-bold text-slate-900 text-sm mt-1">${co.title}</h4>
-                        <p class="text-xs font-bold text-slate-900 mt-2">Cost Adjustment: ${co.price}</p>
+                        <p class="font-bold text-xs text-slate-800">${block.title}</p>
+                        <p class="text-[10px] text-slate-500">${isActive ? 'On Dashboard' : 'Available in Catalog'}</p>
                     </div>
-                    <div class="space-x-2">
-                        <button onclick="alert('Approved')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs font-bold">Approve</button>
-                    </div>
-                </div>
-            `).join('');
+                    <button type="button" onclick="${isActive ? `removeBlock('${block.id}')` : `addBlock('${block.id}')`}" 
+                      class="text-xs px-2.5 py-1 rounded font-bold ${isActive ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-slate-900 text-white hover:bg-slate-800'}">
+                      ${isActive ? 'Remove' : '+ Add'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('block-catalog-modal')?.classList.remove('hidden');
         }
 
-        async function initializePlaidLink() {
-            try {
-                const res = await fetch('http://52.2.47.109:3000/api/create_link_token', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ userId: localStorage.getItem('userEmail') || 'client_123' }) 
-                });
-                const data = await res.json();
-                if(data.link_token) {
-                    const handler = Plaid.create({
-                        token: data.link_token,
-                        onSuccess: (public_token) => {
-                            document.getElementById('plaid-status').innerText = 'Bank Linked Successfully';
-                            document.getElementById('plaid-status').className = 'inline-block px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded';
-                        }
-                    });
-                    handler.open();
-                } else {
-                    alert('Plaid link token generation failed. Verify API keys.');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Error initializing Plaid.');
+        function closeBlockCatalog() {
+            document.getElementById('block-catalog-modal')?.classList.add('hidden');
+        }
+
+        function addBlock(blockId) {
+            const block = PREMADE_BLOCKS[blockId];
+            if (!block || !grid || activeBlocks.has(blockId)) return;
+
+            grid.addWidget({ w: block.w, h: block.h, content: block.getContent() });
+            activeBlocks.add(blockId);
+            openBlockCatalog();
+
+            if (blockId === 'mixer') {
+                setTimeout(updatePaintMixer, 50);
             }
         }
 
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const chatWin = document.getElementById('chat-window');
-            if (!input.value.trim()) return;
-            chatWin.innerHTML += `<div class="bg-blue-100 text-blue-900 p-2 rounded max-w-[80%] ml-auto"><strong>You:</strong> ${input.value}</div>`;
-            input.value = '';
+        function removeBlock(blockId) {
+            if (!grid) return;
+            const el = document.querySelector(`[data-block-id="${blockId}"]`)?.closest('.grid-stack-item');
+            if (el) {
+                grid.removeWidget(el);
+                activeBlocks.delete(blockId);
+                openBlockCatalog();
+            }
         }
 
-        function handleLogout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
+        function recalcBudget() {
+            const hrs = parseFloat(document.getElementById('calc-hours')?.value || 0);
+            const mat = parseFloat(document.getElementById('calc-mat')?.value || 0);
+            const total = (hrs * 65) + mat;
+            const el = document.getElementById('calc-total');
+            if (el) {
+                el.innerText = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                if (total > 0) {
+                    el.className = 'text-emerald-700 font-bold';
+                } else {
+                    el.className = 'text-slate-900 font-bold';
+                }
+            }
+        }
+
+        function saveProfileDetails() {
+            const nameVal = document.getElementById('prof-name')?.value || '';
+            window.CUSTOMER_DATA.profile.name = nameVal;
+            window.CUSTOMER_DATA.profile.phone = document.getElementById('prof-phone')?.value || '';
+            window.CUSTOMER_DATA.profile.address = document.getElementById('prof-address')?.value || '';
+            
+            updateDashboardHeader();
+            alert('Account details saved!');
+        }
+
+        function saveLayout() {
+            if (!grid) return;
+            localStorage.setItem('hp_dashboard_layout', JSON.stringify(grid.save()));
+            alert('Layout configuration saved!');
         }
     </script>
 </body>
