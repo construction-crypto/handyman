@@ -1,388 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Dashboard - Handyman Painting L.L.C.</title>
-  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
-  <link rel="stylesheet" href="output.css">
-  <style>
-    .slide-container { display: flex; transition: transform 0.4s ease-in-out; width: 200%; }
-    .slide-panel { width: 50%; box-sizing: border-box; }
-    .split-view-active { transform: translateX(-50%); }
-    .credential-badge { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #f8fafc; border-radius: 8px; padding: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-    .credential-badge::after { content: ""; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(245, 158, 11, 0.15); border-radius: 50%; pointer-events: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Handyman Painting L.L.C.</title>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <link rel="stylesheet" href="output.css">
+    <style>
+        .slide-container { display: flex; transition: transform 0.4s ease-in-out; width: 200%; }
+        .slide-panel { width: 50%; box-sizing: border-box; }
+        .split-view-active { transform: translateX(-50%); }
+        .credential-badge { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: #f8fafc; border-radius: 8px; padding: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .credential-badge::after { content: ""; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(245, 158, 11, 0.15); border-radius: 50%; pointer-events: none; }
+    </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
-
-  <header class="bg-slate-900 text-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-xl font-bold tracking-tight">Handyman Painting <span class="text-amber-400">Client Portal</span></h1>
-      <div class="flex items-center space-x-4">
-        <span id="user-display-email" class="text-xs text-slate-300"></span>
-        <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Log Out</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-4 gap-6">
     
-    <div class="md:col-span-1 space-y-2">
-      <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
-        <button onclick="switchTab('projects')" id="nav-projects" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">📂 Projects</button>
-        <button onclick="switchTab('change-orders')" id="nav-change-orders" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">📋 Change Orders</button>
-        <button onclick="switchTab('support')" id="nav-support" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">💬 Customer Service</button>
-        <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⚙️ User Settings</button>
-      </div>
-    </div>
-
-    <div class="md:col-span-3 space-y-6">
-
-      <div id="tab-projects" class="space-y-4">
-        <div class="overflow-hidden bg-white rounded-lg shadow-sm border border-slate-200">
-          <div class="flex border-b border-slate-200 bg-slate-50">
-            <button onclick="filterProjects('active')" id="sub-active" class="flex-1 py-3 text-xs font-bold text-center border-b-2 border-slate-900 text-slate-900 uppercase">Active</button>
-            <button onclick="filterProjects('pending')" id="sub-pending" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Pending</button>
-            <button onclick="filterProjects('completed')" id="sub-completed" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Completed</button>
-            <button onclick="filterProjects('declined')" id="sub-declined" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Declined</button>
-          </div>
-
-          <div id="project-slider" class="slide-container p-6">
-            <div class="slide-panel pr-4 space-y-3">
-              <div class="flex justify-between items-center mb-2">
-                <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wide" id="project-list-title">Active Projects</h3>
-                <span class="text-xs text-gray-500" id="project-count">0 items</span>
-              </div>
-              <div id="dynamic-project-list" class="space-y-3"></div>
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-tight">Handyman Painting <span class="text-amber-400">Client Portal</span></h1>
+            <div class="flex items-center space-x-4">
+                <span id="user-display-email" class="text-xs text-slate-300"></span>
+                <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Log Out</button>
             </div>
-            <div class="slide-panel pl-4">
-              <button onclick="closeSplitView()" class="mb-4 text-xs font-bold text-blue-600 hover:underline">&larr; Back to Project List</button>
-              <div id="project-detail-content" class="bg-slate-50 border border-slate-200 p-6 rounded-lg space-y-4"></div>
-            </div>
-          </div>
         </div>
-      </div>
+    </header>
 
-      <div id="tab-change-orders" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-        <h3 class="font-bold text-slate-900 text-lg">Change Orders & Scope Adjustments</h3>
-        <p class="text-xs text-gray-600">Review and authorize requested changes to active project scopes or material upgrades.</p>
-        <div id="change-orders-container"></div>
-      </div>
-
-      <div id="tab-support" class="hidden space-y-6">
-        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-          <h3 class="font-bold text-slate-900 text-lg">Customer Support & FAQ Chatbot</h3>
-          <p class="text-xs text-gray-600">Have questions about your paint schedule, weather delays, or warranty? Ask our intelligent assistant below.</p>
-          <div id="chat-window" class="h-48 border border-slate-200 rounded p-3 overflow-y-auto bg-slate-50 space-y-2 text-xs">
-            <div class="bg-slate-200 text-slate-800 p-2 rounded max-w-[80%]">
-              <strong>Support Bot:</strong> Hello! How can I assist you with your painting project today?
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <input type="text" id="chat-input" placeholder="Type your question here..." class="flex-grow border border-slate-300 p-2 rounded text-xs">
-            <button onclick="sendChatMessage()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">Send</button>
-          </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-          <h4 class="font-bold text-slate-900 text-sm">Couldn't find the help you were looking for?</h4>
-          <p class="text-xs text-gray-600">Submit a direct inquiry to our operations desk using Formspree:</p>
-          <form action="https://formspree.io/f/xqpkkndg" method="POST" class="space-y-3">
-            <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Your Email</label>
-              <input type="email" id="form-email-input" name="email" required class="w-full border p-2 rounded text-xs" placeholder="name@example.com">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Message / Inquiry</label>
-              <textarea name="message" rows="3" required class="w-full border p-2 rounded text-xs" placeholder="Describe your question or concern..."></textarea>
-            </div>
-            <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded text-xs transition">
-              Send Support Request
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <div id="tab-settings" class="hidden space-y-6">
+    <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-4 gap-6">
         
-        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
-          <h3 class="font-bold text-slate-900 text-lg">User Settings & Confidentiality Controls</h3>
-          <p class="text-xs text-gray-600">State & Federal compliance standards: manage data encryption, visibility preferences, and profile particulars.</p>
-          
-          <div class="space-y-3 max-w-md">
-            <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Registered Email (Secure & Encrypted)</label>
-              <input type="email" id="settings-email" disabled class="w-full border bg-gray-100 p-2 rounded text-xs text-gray-600">
+        <div class="md:col-span-1 space-y-2">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 space-y-1">
+                <button onclick="switchTab('projects')" id="nav-projects" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm bg-slate-900 text-white transition">📂 Projects</button>
+                <button onclick="switchTab('change-orders')" id="nav-change-orders" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">📋 Change Orders</button>
+                <button onclick="switchTab('payments')" id="nav-payments" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">💳 Secure Payments</button>
+                <button onclick="switchTab('support')" id="nav-support" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">💬 Customer Service</button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="w-full text-left px-4 py-2.5 rounded font-bold text-sm text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition">⚙️ User Settings</button>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Full Name / Departmental ID</label>
-              <input type="text" id="settings-name" class="w-full border p-2 rounded text-xs" value="Valued Customer">
-            </div>
-            <div class="flex items-center space-x-2 pt-2">
-              <input type="checkbox" id="show-credential-toggle" onchange="toggleCredentialDisplay()" class="h-4 w-4 text-slate-900 border-slate-300 rounded">
-              <label for="show-credential-toggle" class="text-xs font-bold text-slate-800 cursor-pointer">Display Custom Status Tier Credential on Dashboard</label>
-            </div>
-            <button onclick="alert('Settings and security preferences saved securely!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">
-              Save Security Preferences
-            </button>
-          </div>
         </div>
 
-        <div id="credential-display-section" class="hidden">
-          </div>
+        <div class="md:col-span-3 space-y-6">
 
-      </div>
+            <div id="tab-projects" class="space-y-4">
+                <div class="overflow-hidden bg-white rounded-lg shadow-sm border border-slate-200">
+                    <div class="flex border-b border-slate-200 bg-slate-50">
+                        <button onclick="filterProjects('active')" id="sub-active" class="flex-1 py-3 text-xs font-bold text-center border-b-2 border-slate-900 text-slate-900 uppercase">Active</button>
+                        <button onclick="filterProjects('pending')" id="sub-pending" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Pending</button>
+                        <button onclick="filterProjects('completed')" id="sub-completed" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Completed</button>
+                        <button onclick="filterProjects('declined')" id="sub-declined" class="flex-1 py-3 text-xs font-bold text-center text-slate-500 hover:text-slate-900 uppercase">Declined</button>
+                    </div>
 
+                    <div id="project-slider" class="slide-container p-6">
+                        <div class="slide-panel pr-4 space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wide" id="project-list-title">Active Projects</h3>
+                                <span class="text-xs text-gray-500" id="project-count">0 items</span>
+                            </div>
+                            <div id="dynamic-project-list" class="space-y-3"></div>
+                        </div>
+                        <div class="slide-panel pl-4">
+                            <button onclick="closeSplitView()" class="mb-4 text-xs font-bold text-blue-600 hover:underline">&larr; Back to Project List</button>
+                            <div id="project-detail-content" class="bg-slate-50 border border-slate-200 p-6 rounded-lg space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-change-orders" class="hidden bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+                <h3 class="font-bold text-slate-900 text-lg">Change Orders & Scope Adjustments</h3>
+                <p class="text-xs text-gray-600">Review and authorize requested changes to active project scopes or material upgrades.</p>
+                <div id="change-orders-container"></div>
+            </div>
+
+            <!-- NEW PAYMENTS TAB -->
+            <div id="tab-payments" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-6">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg">Secure Invoice Payment Gateway</h3>
+                        <p class="text-xs text-gray-600">Settle your painting project invoices safely via credit card or direct bank transfer (ACH).</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Rail 1: Credit / Debit Card -->
+                        <div class="space-y-4 p-5 border border-slate-200 rounded-md bg-slate-50">
+                            <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Credit or Debit Card (Stripe)</h4>
+                            <div id="payment-element" class="bg-white p-3 rounded border border-slate-300 min-h-[40px]">
+                                <p class="text-[11px] text-slate-400">Stripe payment element container ready.</p>
+                            </div>
+                            <button onclick="alert('Stripe payment processing initialized.')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded text-xs font-bold transition shadow">
+                                Pay Invoice with Card
+                            </button>
+                        </div>
+
+                        <!-- Rail 2: Direct Bank Transfer (ACH via Plaid) -->
+                        <div class="space-y-4 p-5 border border-slate-200 rounded-md bg-slate-50">
+                            <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Direct Bank Transfer (Plaid ACH)</h4>
+                            <div class="p-4 bg-white rounded border border-slate-300 text-center space-y-3">
+                                <span id="plaid-status" class="inline-block px-2.5 py-1 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">Unlinked</span>
+                                <button onclick="initializePlaidLink()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded text-xs font-bold transition shadow">
+                                    Connect Bank Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-support" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="font-bold text-slate-900 text-lg">Customer Support & FAQ Chatbot</h3>
+                    <p class="text-xs text-gray-600">Have questions about your paint schedule, weather delays, or warranty? Ask our intelligent assistant below.</p>
+                    <div id="chat-window" class="h-48 border border-slate-200 rounded p-3 overflow-y-auto bg-slate-50 space-y-2 text-xs">
+                        <div class="bg-slate-200 text-slate-800 p-2 rounded max-w-[80%]">
+                            <strong>Support Bot:</strong> Hello! How can I assist you with your painting project today?
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Type your question here..." class="flex-grow border border-slate-300 p-2 rounded text-xs">
+                        <button onclick="sendChatMessage()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="font-bold text-slate-900 text-lg">User Settings & Confidentiality Controls</h3>
+                    <p class="text-xs text-gray-600">State & Federal compliance standards: manage data encryption, visibility preferences, and profile particulars.</p>
+                    
+                    <div class="space-y-3 max-w-md">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Registered Email (Secure & Encrypted)</label>
+                            <input type="email" id="settings-email" disabled class="w-full border bg-gray-100 p-2 rounded text-xs text-gray-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Full Name / Departmental ID</label>
+                            <input type="text" id="settings-name" class="w-full border p-2 rounded text-xs" value="Valued Customer">
+                        </div>
+                        <div class="flex items-center space-x-2 pt-2">
+                            <input type="checkbox" id="show-credential-toggle" onchange="toggleCredentialDisplay()" class="h-4 w-4 text-slate-900 border-slate-300 rounded">
+                            <label for="show-credential-toggle" class="text-xs font-bold text-slate-800 cursor-pointer">Display Custom Status Tier Credential on Dashboard</label>
+                        </div>
+                        <button onclick="alert('Settings and security preferences saved securely!')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded text-xs font-bold transition">
+                            Save Security Preferences
+                        </button>
+                    </div>
+                </div>
+                <div id="credential-display-section" class="hidden"></div>
+            </div>
+
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Database and Tier Computation Engine adhering to State/Federal compliance guidelines
-    function getCustomerProfile(email) {
-      const store = JSON.parse(localStorage.getItem('hp_customer_profiles') || '{}');
-      if (!store[email]) {
-        // Default classification engine
-        store[email] = {
-          profileType: email.includes('.gov') || email.includes('state') ? 'government' : (email.includes('corp') ? 'commercial' : 'residential'),
-          tier: 'Silver Tier',
-          department: email.includes('.gov') ? 'State Infrastructure & General Services' : 'Standard Residential',
-          spendTotal: '$3,450.00',
-          frequency: '2 Active Projects',
-          referrals: 1,
-          socialShared: true,
-          showBadge: false
-        };
-        localStorage.setItem('hp_customer_profiles', JSON.stringify(store));
-      }
-      return store[email];
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (!isLoggedIn) {
-        window.location.href = 'login.html';
-      }
-      const email = localStorage.getItem('userEmail') || 'customer@example.com';
-      document.getElementById('user-display-email').innerText = email;
-      document.getElementById('settings-email').value = email;
-      document.getElementById('form-email-input').value = email;
-
-      const profile = getCustomerProfile(email);
-      document.getElementById('show-credential-toggle').checked = profile.showBadge;
-      if (profile.showBadge) {
-        document.getElementById('credential-display-section').classList.remove('hidden');
-        renderCredentialBadge(profile);
-      }
-
-      loadProjectsForTab('active');
-      loadChangeOrders();
-    });
-
-    function toggleCredentialDisplay() {
-      const email = localStorage.getItem('userEmail') || '';
-      const store = JSON.parse(localStorage.getItem('hp_customer_profiles') || '{}');
-      const isChecked = document.getElementById('show-credential-toggle').checked;
-      
-      if (store[email]) {
-        store[email].showBadge = isChecked;
-        localStorage.setItem('hp_customer_profiles', JSON.stringify(store));
-      }
-
-      const credSection = document.getElementById('credential-display-section');
-      if (isChecked) {
-        credSection.classList.remove('hidden');
-        renderCredentialBadge(store[email]);
-      } else {
-        credSection.classList.add('hidden');
-      }
-    }
-
-    function renderCredentialBadge(profile) {
-      let benefits = "Standard client portal access, dedicated project scheduling, and basic warranty coverage.";
-      let badgeTitle = "Residential Verified Tier";
-
-      if (profile.profileType === 'government') {
-        badgeTitle = "State / Federal Agency Credential Clearance";
-        benefits = "Priority dispatch, classified project handling protocols, compliance audit trails, and dedicated municipal account management.";
-      } else if (profile.profileType === 'commercial') {
-        badgeTitle = "Commercial Enterprise Tier";
-        benefits = "Multi-site scheduling preference, net-terms eligibility, dedicated commercial project estimator, and after-hours crew deployment.";
-      } else if (profile.tier === 'Gold Tier') {
-        badgeTitle = "Residential Gold Tier Member";
-        benefits = "Priority weather rescheduling, annual touch-up maintenance discount, and exclusive referral bonuses.";
-      }
-
-      document.getElementById('credential-display-section').innerHTML = `
-        <div class="credential-badge space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-[10px] uppercase tracking-widest bg-amber-500 text-slate-900 px-2 py-0.5 rounded font-extrabold">Official Status Credential</span>
-            <span class="text-xs text-slate-300 font-mono">ID: SEC-${Math.floor(Math.random()*89999+10000)}</span>
-          </div>
-          <h4 class="text-lg font-bold text-white">${badgeTitle}</h4>
-          <p class="text-xs text-slate-200"><strong>Classification Department / Sector:</strong> ${profile.department}</p>
-          <div class="bg-slate-800/80 p-3 rounded border border-slate-700 text-xs text-slate-300 space-y-1">
-            <div class="font-bold text-amber-400">Tier Benefits & Privileges:</div>
-            <p>${benefits}</p>
-          </div>
-          <div class="text-[10px] text-slate-400 pt-1">
-            * Managed in strict compliance with state/federal confidentiality standards and data protection protocols.
-          </div>
-        </div>
-      `;
-    }
-
-    function switchTab(tabId) {
-      ['projects', 'change-orders', 'support', 'settings'].forEach(t => {
-        document.getElementById('tab-' + t).classList.add('hidden');
-        const btn = document.getElementById('nav-' + t);
-        btn.classList.remove('bg-slate-900', 'text-white');
-        btn.classList.add('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
-      });
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-      const activeBtn = document.getElementById('nav-' + tabId);
-      activeBtn.classList.remove('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
-      activeBtn.classList.add('bg-slate-900', 'text-white');
-    }
-
-    let currentStatusFilter = 'active';
-
-    function filterProjects(status) {
-      currentStatusFilter = status;
-      ['active', 'pending', 'completed', 'declined'].forEach(s => {
-        document.getElementById('sub-' + s).classList.remove('border-b-2', 'border-slate-900', 'text-slate-900');
-        document.getElementById('sub-' + s).classList.add('text-slate-500');
-      });
-      document.getElementById('sub-' + status).classList.add('border-b-2', 'border-slate-900', 'text-slate-900');
-      document.getElementById('sub-' + status).classList.remove('text-slate-500');
-      document.getElementById('project-list-title').innerText = status.toUpperCase() + ' PROJECTS';
-      loadProjectsForTab(status);
-    }
-
-    function getUserProjects(email) {
-      const allProjects = JSON.parse(localStorage.getItem('hp_user_projects') || '{}');
-      return allProjects[email] || { active: [], pending: [], completed: [], declined: [], changeOrders: [] };
-    }
-
-    function loadProjectsForTab(status) {
-      const email = localStorage.getItem('userEmail') || '';
-      const userData = getUserProjects(email);
-      const listElem = document.getElementById('dynamic-project-list');
-      const items = userData[status] || [];
-
-      document.getElementById('project-count').innerText = `${items.length} item${items.length === 1 ? '' : 's'}`;
-
-      if (items.length === 0) {
-        listElem.innerHTML = `
-          <div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50">
-            <p class="text-xs text-slate-600 font-medium">No ${status} projects found for your account.</p>
-            <button onclick="window.location.href='bid.html'" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded text-xs transition">
-              Request a New Project Estimate &rarr;
-            </button>
-          </div>
-        `;
-        return;
-      }
-
-      listElem.innerHTML = items.map((p, idx) => `
-        <div onclick="selectProjectFromData('${status}', ${idx})" 
-             class="p-4 border rounded-lg cursor-pointer hover:border-slate-900 hover:shadow-md transition bg-white border-slate-200">
-          <div class="flex justify-between items-start">
-            <h4 class="font-bold text-slate-900 text-sm">${p.title}</h4>
-            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded uppercase">${status}</span>
-          </div>
-          <p class="text-xs text-gray-500 mt-1">${p.location}</p>
-          <div class="mt-3 flex justify-between items-center text-xs">
-            <span class="font-bold text-slate-900">${p.price}</span>
-            <span class="text-blue-600 font-medium">View Details &rarr;</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function selectProjectFromData(status, idx) {
-      const email = localStorage.getItem('userEmail') || '';
-      const userData = getUserProjects(email);
-      const p = userData[status][idx];
-      if (!p) return;
-
-      document.getElementById('project-slider').classList.add('split-view-active');
-      document.getElementById('project-detail-content').innerHTML = `
-        <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded uppercase">${status}</span>
-        <h4 class="font-bold text-slate-900 text-lg mt-1">${p.title}</h4>
-        <p class="text-xs text-gray-600"><strong>Location:</strong> ${p.location}</p>
-        <p class="text-xs text-gray-600"><strong>Total Estimate:</strong> ${p.price}</p>
-        <div class="bg-white p-4 rounded border border-slate-200 mt-2 space-y-2">
-          <h5 class="font-bold text-xs text-slate-800 uppercase">Project Status & Notes</h5>
-          <p class="text-xs text-gray-700">${p.notes}</p>
-        </div>
-        <div class="pt-2">
-          <button onclick="alert('Downloading full project scope PDF report...')" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 rounded text-xs font-bold transition">Download Project Report</button>
-        </div>
-      `;
-    }
-
-    function closeSplitView() {
-      document.getElementById('project-slider').classList.remove('split-view-active');
-    }
-
-    function loadChangeOrders() {
-      const email = localStorage.getItem('userEmail') || '';
-      const userData = getUserProjects(email);
-      const container = document.getElementById('change-orders-container');
-      const cos = userData.changeOrders || [];
-
-      if (cos.length === 0) {
-        container.innerHTML = `
-          <div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50">
-            <p class="text-xs text-slate-600 font-medium">No pending change orders requiring your review.</p>
-            <p class="text-[11px] text-gray-500">Change orders will appear here if our field team requests a scope modification.</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = cos.map((co, idx) => `
-        <div class="border border-amber-200 bg-amber-50 p-4 rounded-lg flex justify-between items-center">
-          <div>
-            <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-200 text-amber-900 rounded">Pending Approval</span>
-            <h4 class="font-bold text-slate-900 text-sm mt-1">${co.title}</h4>
-            <p class="text-xs text-gray-600 mt-0.5">${co.description}</p>
-            <p class="text-xs font-bold text-slate-900 mt-2">Cost Adjustment: ${co.price}</p>
-          </div>
-          <div class="space-x-2">
-            <button onclick="alert('Change Order Approved!')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Approve</button>
-            <button onclick="alert('Change Order Declined.')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold transition">Decline</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function sendChatMessage() {
-      const input = document.getElementById('chat-input');
-      const chatWin = document.getElementById('chat-window');
-      if (!input.value.trim()) return;
-
-      chatWin.innerHTML += `<div class="bg-blue-100 text-blue-900 p-2 rounded max-w-[80%] ml-auto"><strong>You:</strong> ${input.value}</div>`;
-      const userText = input.value.toLowerCase();
-      input.value = '';
-
-      setTimeout(() => {
-        let reply = "I can help connect you with our project managers for specific scheduling inquiries!";
-        if (userText.includes('weather') || userText.includes('rain')) {
-          reply = "Exterior painting is weather-dependent. If rain is forecasted, our crew reschedules to the next clear day without affecting your total labor hours.";
-        } else if (userText.includes('warranty')) {
-          reply = "All our painting projects come with a satisfaction guarantee and professional grade finish warranty.";
+    <script>
+        function getCustomerProfile(email) {
+            const store = JSON.parse(localStorage.getItem('hp_customer_profiles') || '{}');
+            if (!store[email]) {
+                store[email] = {
+                    profileType: email.includes('.gov') || email.includes('state') ? 'government' : (email.includes('corp') ? 'commercial' : 'residential'),
+                    tier: 'Silver Tier',
+                    department: email.includes('.gov') ? 'State Infrastructure & General Services' : 'Standard Residential',
+                    spendTotal: '$3,450.00',
+                    frequency: '2 Active Projects',
+                    referrals: 1,
+                    socialShared: true,
+                    showBadge: false
+                };
+                localStorage.setItem('hp_customer_profiles', JSON.stringify(store));
+            }
+            return store[email];
         }
-        chatWin.innerHTML += `<div class="bg-slate-200 text-slate-800 p-2 rounded max-w-[80%]"><strong>Support Bot:</strong> ${reply}</div>`;
-        chatWin.scrollTop = chatWin.scrollHeight;
-      }, 600);
-    }
 
-    function handleLogout() {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    }
-  </script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                window.location.href = 'login.html';
+            }
+            const email = localStorage.getItem('userEmail') || 'customer@example.com';
+            document.getElementById('user-display-email').innerText = email;
+            document.getElementById('settings-email').value = email;
+
+            const profile = getCustomerProfile(email);
+            document.getElementById('show-credential-toggle').checked = profile.showBadge;
+            if (profile.showBadge) {
+                document.getElementById('credential-display-section').classList.remove('hidden');
+                renderCredentialBadge(profile);
+            }
+
+            loadProjectsForTab('active');
+            loadChangeOrders();
+        });
+
+        function toggleCredentialDisplay() {
+            const email = localStorage.getItem('userEmail') || '';
+            const store = JSON.parse(localStorage.getItem('hp_customer_profiles') || '{}');
+            const isChecked = document.getElementById('show-credential-toggle').checked;
+            if (store[email]) {
+                store[email].showBadge = isChecked;
+                localStorage.setItem('hp_customer_profiles', JSON.stringify(store));
+            }
+            const credSection = document.getElementById('credential-display-section');
+            if (isChecked) {
+                credSection.classList.remove('hidden');
+                renderCredentialBadge(store[email]);
+            } else {
+                credSection.classList.add('hidden');
+            }
+        }
+
+        function renderCredentialBadge(profile) {
+            let benefits = "Standard client portal access, dedicated project scheduling, and basic warranty coverage.";
+            let badgeTitle = "Residential Verified Tier";
+            if (profile.profileType === 'government') {
+                badgeTitle = "State / Federal Agency Credential Clearance";
+                benefits = "Priority dispatch, classified project handling protocols, compliance audit trails, and dedicated municipal account management.";
+            } else if (profile.profileType === 'commercial') {
+                badgeTitle = "Commercial Enterprise Tier";
+                benefits = "Multi-site scheduling preference, net-terms eligibility, dedicated commercial project estimator, and after-hours crew deployment.";
+            }
+            document.getElementById('credential-display-section').innerHTML = `
+                <div class="credential-badge space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] uppercase tracking-widest bg-amber-500 text-slate-900 px-2 py-0.5 rounded font-extrabold">Official Status Credential</span>
+                        <span class="text-xs text-slate-300 font-mono">ID: SEC-${Math.floor(Math.random()*89999+10000)}</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-white">${badgeTitle}</h4>
+                    <p class="text-xs text-slate-200"><strong>Classification Department / Sector:</strong> ${profile.department}</p>
+                    <div class="bg-slate-800/80 p-3 rounded border border-slate-700 text-xs text-slate-300 space-y-1">
+                        <div class="font-bold text-amber-400">Tier Benefits & Privileges:</div>
+                        <p>${benefits}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchTab(tabId) {
+            ['projects', 'change-orders', 'payments', 'support', 'settings'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                const btn = document.getElementById('nav-' + t);
+                btn.classList.remove('bg-slate-900', 'text-white');
+                btn.classList.add('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('nav-' + tabId);
+            activeBtn.classList.remove('text-slate-700', 'bg-white', 'border', 'border-slate-200', 'hover:bg-slate-100');
+            activeBtn.classList.add('bg-slate-900', 'text-white');
+        }
+
+        let currentStatusFilter = 'active';
+
+        function filterProjects(status) {
+            currentStatusFilter = status;
+            ['active', 'pending', 'completed', 'declined'].forEach(s => {
+                document.getElementById('sub-' + s).classList.remove('border-b-2', 'border-slate-900', 'text-slate-900');
+                document.getElementById('sub-' + s).classList.add('text-slate-500');
+            });
+            document.getElementById('sub-' + status).classList.add('border-b-2', 'border-slate-900', 'text-slate-900');
+            document.getElementById('sub-' + status).classList.remove('text-slate-500');
+            document.getElementById('project-list-title').innerText = status.toUpperCase() + ' PROJECTS';
+            loadProjectsForTab(status);
+        }
+
+        function getUserProjects(email) {
+            const allProjects = JSON.parse(localStorage.getItem('hp_user_projects') || '{}');
+            return allProjects[email] || { active: [], pending: [], completed: [], declined: [], changeOrders: [] };
+        }
+
+        function loadProjectsForTab(status) {
+            const email = localStorage.getItem('userEmail') || '';
+            const userData = getUserProjects(email);
+            const listElem = document.getElementById('dynamic-project-list');
+            const items = userData[status] || [];
+            document.getElementById('project-count').innerText = `${items.length} item${items.length === 1 ? '' : 's'}`;
+            if (items.length === 0) {
+                listElem.innerHTML = `<div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50"><p class="text-xs text-slate-600 font-medium">No ${status} projects found.</p></div>`;
+                return;
+            }
+            listElem.innerHTML = items.map((p, idx) => `
+                <div onclick="selectProjectFromData('${status}', ${idx})" class="p-4 border rounded-lg cursor-pointer hover:border-slate-900 hover:shadow-md transition bg-white border-slate-200">
+                    <div class="flex justify-between items-start"><h4 class="font-bold text-slate-900 text-sm">${p.title}</h4><span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-800 rounded uppercase">${status}</span></div>
+                    <p class="text-xs text-gray-500 mt-1">${p.location}</p>
+                    <div class="mt-3 flex justify-between items-center text-xs"><span class="font-bold text-slate-900">${p.price}</span><span class="text-blue-600 font-medium">View Details &rarr;</span></div>
+                </div>
+            `).join('');
+        }
+
+        function selectProjectFromData(status, idx) {
+            const email = localStorage.getItem('userEmail') || '';
+            const userData = getUserProjects(email);
+            const p = userData[status][idx];
+            if (!p) return;
+            document.getElementById('project-slider').classList.add('split-view-active');
+            document.getElementById('project-detail-content').innerHTML = `
+                <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded uppercase">${status}</span>
+                <h4 class="font-bold text-slate-900 text-lg mt-1">${p.title}</h4>
+                <p class="text-xs text-gray-600"><strong>Location:</strong> ${p.location}</p>
+                <p class="text-xs text-gray-600"><strong>Total Estimate:</strong> ${p.price}</p>
+                <div class="bg-white p-4 rounded border border-slate-200 mt-2 space-y-2">
+                    <h5 class="font-bold text-xs text-slate-800 uppercase">Project Status & Notes</h5>
+                    <p class="text-xs text-gray-700">${p.notes}</p>
+                </div>
+            `;
+        }
+
+        function closeSplitView() {
+            document.getElementById('project-slider').classList.remove('split-view-active');
+        }
+
+        function loadChangeOrders() {
+            const email = localStorage.getItem('userEmail') || '';
+            const userData = getUserProjects(email);
+            const container = document.getElementById('change-orders-container');
+            const cos = userData.changeOrders || [];
+            if (cos.length === 0) {
+                container.innerHTML = `<div class="p-6 border border-dashed border-slate-300 rounded-lg text-center space-y-3 bg-slate-50"><p class="text-xs text-slate-600 font-medium">No pending change orders requiring your review.</p></div>`;
+                return;
+            }
+            container.innerHTML = cos.map(co => `
+                <div class="border border-amber-200 bg-amber-50 p-4 rounded-lg flex justify-between items-center">
+                    <div>
+                        <span class="px-2 py-0.5 text-[10px] font-semibold bg-amber-200 text-amber-900 rounded">Pending Approval</span>
+                        <h4 class="font-bold text-slate-900 text-sm mt-1">${co.title}</h4>
+                        <p class="text-xs font-bold text-slate-900 mt-2">Cost Adjustment: ${co.price}</p>
+                    </div>
+                    <div class="space-x-2">
+                        <button onclick="alert('Approved')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs font-bold">Approve</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function initializePlaidLink() {
+            try {
+                const res = await fetch('http://52.2.47.109:3000/api/create_link_token', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ userId: localStorage.getItem('userEmail') || 'client_123' }) 
+                });
+                const data = await res.json();
+                if(data.link_token) {
+                    const handler = Plaid.create({
+                        token: data.link_token,
+                        onSuccess: (public_token) => {
+                            document.getElementById('plaid-status').innerText = 'Bank Linked Successfully';
+                            document.getElementById('plaid-status').className = 'inline-block px-2.5 py-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded';
+                        }
+                    });
+                    handler.open();
+                } else {
+                    alert('Plaid link token generation failed. Verify API keys.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error initializing Plaid.');
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const chatWin = document.getElementById('chat-window');
+            if (!input.value.trim()) return;
+            chatWin.innerHTML += `<div class="bg-blue-100 text-blue-900 p-2 rounded max-w-[80%] ml-auto"><strong>You:</strong> ${input.value}</div>`;
+            input.value = '';
+        }
+
+        function handleLogout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 </html>
