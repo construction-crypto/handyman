@@ -63,12 +63,20 @@
       .emblem-supreme { animation: float-supreme 4s ease-in-out infinite; }
       .emblem-executive { animation: float-executive 4s ease-in-out infinite; }
 
-      /* Paint Swatch Canvas styling */
       .paint-swatch-canvas {
         width: 100%;
         height: 180px;
         border-radius: 0.75rem;
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Slide Transitions */
+      .slide-item {
+        display: none;
+        transition: opacity 0.5s ease-in-out;
+      }
+      .slide-item.active {
+        display: block;
       }
     </style>
 </head>
@@ -86,6 +94,14 @@
         </button>
         <button type="button" onclick="saveLayout()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-lg border border-slate-300 font-medium transition">💾 Save Layout</button>
         <button type="button" onclick="if(window.grid) grid.compact()" class="text-xs text-slate-500 hover:text-slate-800 underline">Auto-Arrange</button>
+        
+        <!-- Red Logout Button -->
+        <button type="button" onclick="handleLogout()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ml-2">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          Logout
+        </button>
       </div>
     </div>
 
@@ -113,38 +129,81 @@
       </div>
     </div>
 
+    <!-- Request New Bid Modal -->
+    <div id="request-bid-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4 border border-slate-200">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Request a Project Estimate / Bid</h3>
+            <p class="text-xs text-slate-500">Tell us what you need painted or upgraded!</p>
+          </div>
+          <button type="button" onclick="closeBidModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        </div>
+
+        <form id="bid-form" onsubmit="submitNewBid(event)" class="space-y-3 text-xs">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Project Title</label>
+            <input type="text" id="bid-title" required placeholder="e.g. Living Room Accent Wall & Trim" class="w-full border rounded-lg p-2 font-medium border-slate-300">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Project Details / Scope</label>
+            <textarea id="bid-desc" rows="3" required placeholder="Describe interior/exterior areas, colors desired, trim preferences..." class="w-full border rounded-lg p-2 font-medium border-slate-300"></textarea>
+          </div>
+          <div class="flex justify-end gap-2 border-t pt-3">
+            <button type="button" onclick="closeBidModal()" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancel</button>
+            <button type="submit" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm">Submit Request</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
+        window.CURRENT_CUSTOMER_ID = 1; 
+
         window.CUSTOMER_DATA = {
-            profile: { name: 'John Doe', phone: '', address: '' },
+            profile: { name: '', phone: '', address: '' },
             spend: 0.00,
             tier: 'Standard',
             projects: { current: [], previous: [] },
-            invoices: [],
-            recommendations: []
+            invoices: []
         };
 
         const TIER_THEMES = {
-            standard: {
-                bgGradient: 'bg-gradient-to-r from-slate-900 via-zinc-900 to-slate-900',
-                accentText: 'text-red-400',
-                badgeBg: 'bg-red-500/10 text-red-400 border-red-500/20'
-            },
-            preferred: {
-                bgGradient: 'bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900',
-                accentText: 'text-blue-400',
-                badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-            },
-            supreme: {
-                bgGradient: 'bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900',
-                accentText: 'text-amber-400',
-                badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-            },
-            executive: {
-                bgGradient: 'bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900',
-                accentText: 'text-purple-400',
-                badgeBg: 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-            }
+            standard: { bgGradient: 'bg-gradient-to-r from-slate-900 via-zinc-900 to-slate-900', accentText: 'text-red-400', badgeBg: 'bg-red-500/10 text-red-400 border-red-500/20' },
+            preferred: { bgGradient: 'bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900', accentText: 'text-blue-400', badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+            supreme: { bgGradient: 'bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900', accentText: 'text-amber-400', badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+            executive: { bgGradient: 'bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900', accentText: 'text-purple-400', badgeBg: 'bg-purple-500/10 text-purple-400 border-purple-500/20' }
         };
+
+        let currentSlideIndex = 0;
+        let slideTimer = null;
+
+        function startShowcaseSlideshow() {
+            if (slideTimer) clearInterval(slideTimer);
+            slideTimer = setInterval(() => {
+                changeShowcaseSlide(1);
+            }, 4000);
+        }
+
+        function changeShowcaseSlide(direction) {
+            const slides = document.querySelectorAll('.slide-item');
+            if (!slides || slides.length === 0) return;
+
+            slides[currentSlideIndex].classList.remove('active');
+            currentSlideIndex = (currentSlideIndex + direction + slides.length) % slides.length;
+            slides[currentSlideIndex].classList.add('active');
+
+            const dots = document.querySelectorAll('.slide-dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlideIndex) {
+                    dot.classList.add('bg-white');
+                    dot.classList.remove('bg-white/40');
+                } else {
+                    dot.classList.remove('bg-white');
+                    dot.classList.add('bg-white/40');
+                }
+            });
+        }
 
         const PREMADE_BLOCKS = {
             tier: {
@@ -161,7 +220,7 @@
                     <div class="grid-stack-item-content !border-slate-800 ${theme.bgGradient} text-white shadow-xl" data-block-id="tier">
                       <div class="widget-header !bg-black/40 !border-white/10">
                         <span class="font-bold text-xs ${theme.accentText} uppercase tracking-wider">🏆 ${tier.toUpperCase()} MEMBER STATUS</span>
-                        <button type="button" onclick="removeBlock('tier')" class="text-slate-400 hover:text-white text-sm font-bold">&times;</button>
+                        <button type="button" onclick="removeBlock('tier', false)" class="text-slate-400 hover:text-white text-sm font-bold">&times;</button>
                       </div>
                       <div class="p-6 flex items-center justify-between gap-6 h-full">
                         <div class="flex items-center gap-6">
@@ -171,46 +230,20 @@
                           <div>
                             <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded border ${theme.badgeBg}">Current Rank</span>
                             <h2 id="tier-name-label" class="text-2xl font-black text-white mt-2">${tier} Member</h2>
-                            <p class="text-xs text-slate-300 mt-1">Lifetime Account Spend: <span id="tier-spend-label" class="font-bold ${theme.accentText}">$${spend.toFixed(2)}</span></p>
+                            <p class="text-xs text-slate-300 mt-1">Lifetime Account Spend: <span id="tier-spend-label" class="font-bold ${theme.accentText}">$${parseFloat(spend).toFixed(2)}</span></p>
                           </div>
                         </div>
                       </div>
                     </div>`;
                 }
             },
-            mixer: {
-                id: 'mixer',
-                title: '🎨 Interactive Paint Mixer Studio',
-                w: 6, h: 5,
-                getContent: () => `
-                <div class="grid-stack-item-content" data-block-id="mixer">
-                  <div class="widget-header">
-                    <span class="font-bold text-xs text-slate-800">🎨 Interactive Paint Mixer Studio</span>
-                    <button type="button" onclick="removeBlock('mixer')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
-                  </div>
-                  <div class="p-4 space-y-3 text-xs overflow-y-auto">
-                    <p class="text-slate-500 text-[11px]">Mix 2 paint colors together to test custom swirl finishes & color blends.</p>
-                    <canvas id="paint-mixer-canvas" class="paint-swatch-canvas"></canvas>
-                    <div class="grid grid-cols-2 gap-3 pt-1">
-                      <div>
-                        <label class="font-bold text-slate-700 block mb-1">Base Paint Color</label>
-                        <input type="color" id="color-picker-1" value="#dc2626" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
-                      </div>
-                      <div>
-                        <label class="font-bold text-slate-700 block mb-1">Secondary Blend</label>
-                        <input type="color" id="color-picker-2" value="#1e3a8a" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
-                      </div>
-                    </div>
-                  </div>
-                </div>`
-            },
             projects: {
                 id: 'projects',
                 title: '📁 Projects & Bid Requests',
                 w: 6, h: 5,
                 getContent: () => {
-                    const currentProjects = window.CUSTOMER_DATA.projects.current;
-                    const hasCurrent = currentProjects && currentProjects.length > 0;
+                    const currentProjects = window.CUSTOMER_DATA.projects.current || [];
+                    const hasCurrent = currentProjects.length > 0;
 
                     let currentHtml = hasCurrent ? currentProjects.map(p => `
                         <div class="p-3 border border-slate-200 rounded-lg bg-white space-y-2">
@@ -234,27 +267,27 @@
                     <div class="grid-stack-item-content" data-block-id="projects">
                       <div class="widget-header">
                         <span class="font-bold text-xs text-slate-800">📁 Projects & Bid Requests</span>
-                        <button type="button" onclick="removeBlock('projects')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                        <button type="button" onclick="removeBlock('projects', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
                       </div>
                       <div class="p-4 text-xs space-y-4 overflow-y-auto">
                         <div class="flex justify-between items-center border-b pb-2">
                           <div class="flex gap-2">
                             <span class="px-2.5 py-1 bg-slate-900 text-white font-bold rounded">Active (${currentProjects.length})</span>
                           </div>
-                          <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded shadow-sm transition">+ Request New Bid</button>
+                          <button type="button" onclick="openBidModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded shadow-sm transition">+ Request New Bid</button>
                         </div>
-                        ${currentHtml}
+                        <div id="project-list-container">${currentHtml}</div>
                       </div>
                     </div>`;
                 }
             },
             invoices: {
                 id: 'invoices',
-                title: '💳 Invoices & Payments',
-                w: 4, h: 5,
+                title: '💳 Invoices & Financials',
+                w: 6, h: 5,
                 getContent: () => {
-                    const invoices = window.CUSTOMER_DATA.invoices;
-                    const hasInvoices = invoices && invoices.length > 0;
+                    const invoices = window.CUSTOMER_DATA.invoices || [];
+                    const hasInvoices = invoices.length > 0;
 
                     let invoiceListHtml = hasInvoices ? invoices.map(inv => `
                         <div class="p-2 border rounded flex justify-between items-center bg-white">
@@ -262,7 +295,7 @@
                             <p class="font-bold text-slate-800">${inv.id}</p>
                             <p class="text-slate-400 text-[10px]">${inv.date}</p>
                           </div>
-                          <span class="font-bold text-slate-700">$${inv.amount.toFixed(2)}</span>
+                          <span class="font-bold text-slate-700">$${parseFloat(inv.amount).toFixed(2)}</span>
                         </div>
                     `).join('') : `
                         <p class="text-slate-400 text-[11px] italic py-2">No past invoice history found.</p>
@@ -271,8 +304,8 @@
                     return `
                     <div class="grid-stack-item-content" data-block-id="invoices">
                       <div class="widget-header">
-                        <span class="font-bold text-xs text-slate-800">💳 Payments & Billing</span>
-                        <button type="button" onclick="removeBlock('invoices')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                        <span class="font-bold text-xs text-slate-800">💳 Payments & Financials</span>
+                        <button type="button" onclick="removeBlock('invoices', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
                       </div>
                       <div class="p-4 text-xs space-y-3 overflow-y-auto">
                         <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
@@ -290,6 +323,94 @@
                     </div>`;
                 }
             },
+            showcase: {
+                id: 'showcase',
+                title: '✨ Premium Showcase & Inspirations Slideshow',
+                w: 12, h: 5,
+                getContent: () => `
+                <div class="grid-stack-item-content bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative flex flex-col justify-between" data-block-id="showcase">
+                  <div class="widget-header !bg-black/60 !border-white/10 z-10">
+                    <span class="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                      ✨ Handyman Painting Showcase & Home Enhancements
+                    </span>
+                    <button type="button" onclick="removeBlock('showcase', false)" class="text-slate-400 hover:text-white text-sm font-bold">&times;</button>
+                  </div>
+
+                  <!-- Slides Container -->
+                  <div class="p-6 relative flex-grow flex items-center justify-center">
+                    
+                    <!-- Slide 1: Paints We Love -->
+                    <div class="slide-item active w-full space-y-3 text-center">
+                      <span class="text-[10px] uppercase tracking-widest bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full font-bold border border-amber-500/30">Paints We Trust & Recommend</span>
+                      <h3 class="text-xl font-black text-white">Sherwin-Williams • Benjamin Moore • Valspar</h3>
+                      <p class="text-xs text-slate-300 max-w-xl mx-auto">We partner exclusively with top-grade paint lines to guarantee rich color retention, scuff resistance, and flawless satin & matte finishes on every home interior or exterior.</p>
+                      <div class="flex justify-center gap-4 pt-1">
+                        <span class="text-[11px] bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-blue-400 font-bold">Sherwin-Williams Emerald®</span>
+                        <span class="text-[11px] bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-amber-400 font-bold">Benjamin Moore Regal® Select</span>
+                        <span class="text-[11px] bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-teal-400 font-bold">Valspar Reserve®</span>
+                      </div>
+                    </div>
+
+                    <!-- Slide 2: Luxury Trim & Molding -->
+                    <div class="slide-item w-full space-y-3 text-center">
+                      <span class="text-[10px] uppercase tracking-widest bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full font-bold border border-blue-500/30">Interior Craftsman Work</span>
+                      <h3 class="text-xl font-black text-white">👑 Crown Molding, Wainscoting & Custom Trim</h3>
+                      <p class="text-xs text-slate-300 max-w-xl mx-auto">Framing fresh paint with precision crown molding or classic board-and-batten instantly adds architectural elegance and increases property appraisal value.</p>
+                      <div class="flex justify-center gap-3 pt-1">
+                        <button type="button" onclick="openBidModal()" class="text-xs bg-amber-500 text-slate-950 font-bold px-4 py-1.5 rounded-lg hover:bg-amber-400 transition">Request Trim Estimate</button>
+                      </div>
+                    </div>
+
+                    <!-- Slide 3: Luxury Flooring Pairing -->
+                    <div class="slide-item w-full space-y-3 text-center">
+                      <span class="text-[10px] uppercase tracking-widest bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-bold border border-emerald-500/30">Complete Room Transformations</span>
+                      <h3 class="text-xl font-black text-white">🪵 Premium Hardwood & Luxury Vinyl Plank</h3>
+                      <p class="text-xs text-slate-300 max-w-xl mx-auto">Match your vibrant new paint scheme with waterproof LVP or stain-finished natural oak hardwood flooring for a stunning modern look.</p>
+                      <div class="flex justify-center gap-3 pt-1">
+                        <button type="button" onclick="openBidModal()" class="text-xs bg-emerald-500 text-slate-950 font-bold px-4 py-1.5 rounded-lg hover:bg-emerald-400 transition">Inquire About Flooring</button>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <!-- Controls & Navigation Bar -->
+                  <div class="bg-black/40 border-t border-white/10 px-4 py-2 flex justify-between items-center z-10">
+                    <button type="button" onclick="changeShowcaseSlide(-1)" class="text-xs font-bold text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/60">❮ Previous</button>
+                    <div class="flex gap-1.5">
+                      <span class="slide-dot w-2 h-2 rounded-full bg-white transition-all"></span>
+                      <span class="slide-dot w-2 h-2 rounded-full bg-white/40 transition-all"></span>
+                      <span class="slide-dot w-2 h-2 rounded-full bg-white/40 transition-all"></span>
+                    </div>
+                    <button type="button" onclick="changeShowcaseSlide(1)" class="text-xs font-bold text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/60">Next ❯</button>
+                  </div>
+                </div>`
+            },
+            mixer: {
+                id: 'mixer',
+                title: '🎨 Interactive Paint Mixer Studio',
+                w: 6, h: 5,
+                getContent: () => `
+                <div class="grid-stack-item-content" data-block-id="mixer">
+                  <div class="widget-header">
+                    <span class="font-bold text-xs text-slate-800">🎨 Interactive Paint Mixer Studio</span>
+                    <button type="button" onclick="removeBlock('mixer', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                  </div>
+                  <div class="p-4 space-y-3 text-xs overflow-y-auto">
+                    <p class="text-slate-500 text-[11px]">Mix 2 paint colors together to test custom swirl finishes & color blends.</p>
+                    <canvas id="paint-mixer-canvas" class="paint-swatch-canvas"></canvas>
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label class="font-bold text-slate-700 block mb-1">Base Paint Color</label>
+                        <input type="color" id="color-picker-1" value="#dc2626" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
+                      </div>
+                      <div>
+                        <label class="font-bold text-slate-700 block mb-1">Secondary Blend</label>
+                        <input type="color" id="color-picker-2" value="#1e3a8a" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
+                      </div>
+                    </div>
+                  </div>
+                </div>`
+            },
             settings: {
                 id: 'settings',
                 title: '⚙️ Account & Profile Settings',
@@ -300,24 +421,24 @@
                     <div class="grid-stack-item-content" data-block-id="settings">
                       <div class="widget-header">
                         <span class="font-bold text-xs text-slate-800">⚙️ Account Settings</span>
-                        <button type="button" onclick="removeBlock('settings')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                        <button type="button" onclick="removeBlock('settings', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
                       </div>
                       <div class="p-4 text-xs space-y-3 overflow-y-auto">
                         <div class="grid grid-cols-2 gap-2">
                           <div>
                             <label class="font-bold text-slate-600 block mb-1">Full Name</label>
-                            <input type="text" id="prof-name" placeholder="No name on file" value="${prof.name}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
+                            <input type="text" id="prof-name" placeholder="No name on file" value="${prof.name || ''}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
                           </div>
                           <div>
                             <label class="font-bold text-slate-600 block mb-1">Phone Number</label>
-                            <input type="text" id="prof-phone" placeholder="No phone on file" value="${prof.phone}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
+                            <input type="text" id="prof-phone" placeholder="No phone on file" value="${prof.phone || ''}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
                           </div>
                         </div>
                         <div>
                           <label class="font-bold text-slate-600 block mb-1">Property Address</label>
-                          <input type="text" id="prof-address" placeholder="No property address specified" value="${prof.address}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
+                          <input type="text" id="prof-address" placeholder="No property address specified" value="${prof.address || ''}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
                         </div>
-                        <button type="button" onclick="saveProfileDetails()" class="bg-slate-900 text-white font-bold px-3 py-1.5 rounded">Save Account Details</button>
+                        <button type="button" onclick="saveProfileDetails()" class="bg-slate-900 text-white font-bold px-3 py-1.5 rounded hover:bg-slate-800 transition">Save Account Details</button>
                       </div>
                     </div>`;
                 }
@@ -330,7 +451,7 @@
                 <div class="grid-stack-item-content" data-block-id="budget">
                   <div class="widget-header">
                     <span class="font-bold text-xs text-slate-800">📊 Project Cost Estimator</span>
-                    <button type="button" onclick="removeBlock('budget')" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
+                    <button type="button" onclick="removeBlock('budget', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
                   </div>
                   <div class="p-4 text-xs space-y-3 overflow-y-auto">
                     <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Est. Labor Hours:</span><input id="calc-hours" type="number" placeholder="0" class="w-20 border rounded p-1 text-right font-bold" oninput="recalcBudget()"></div>
@@ -344,77 +465,7 @@
         let activeBlocks = new Set();
         let grid;
 
-        /* INTERACTIVE PAINT MIXER STUDIO CANVAS ENGINE */
-        let mixerTime = 0;
-        let mixerAnimId = null;
-
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : { r: 220, g: 38, b: 38 };
-        }
-
-        function animatePaintMixer() {
-            const canvas = document.getElementById('paint-mixer-canvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            const parent = canvas.parentElement;
-            if (parent && (canvas.width !== parent.clientWidth / 2)) {
-                canvas.width = Math.max(120, Math.floor(parent.clientWidth / 2));
-                canvas.height = 90;
-            }
-
-            const w = canvas.width;
-            const h = canvas.height;
-            if (w === 0 || h === 0) return;
-
-            const color1Hex = document.getElementById('color-picker-1')?.value || '#dc2626';
-            const color2Hex = document.getElementById('color-picker-2')?.value || '#1e3a8a';
-
-            const c1 = hexToRgb(color1Hex);
-            const c2 = hexToRgb(color2Hex);
-
-            mixerTime += 0.018;
-            const imgData = ctx.createImageData(w, h);
-            const data = imgData.data;
-
-            let index = 0;
-            for (let y = 0; y < h; y++) {
-                const ny = y / h;
-                for (let x = 0; x < w; x++) {
-                    const nx = x / w;
-
-                    const swirl1 = Math.sin(nx * 5 + mixerTime + Math.cos(ny * 4 - mixerTime));
-                    const swirl2 = Math.cos(ny * 6 - mixerTime * 1.2 + Math.sin(nx * 3 + mixerTime));
-                    const swirl3 = Math.sin((nx + ny) * 4 + swirl1 * 1.8);
-
-                    let factor = (swirl1 + swirl2 + swirl3 + 3) / 6;
-                    factor = Math.max(0, Math.min(1, factor));
-
-                    data[index]     = Math.round(c1.r * (1 - factor) + c2.r * factor);
-                    data[index + 1] = Math.round(c1.g * (1 - factor) + c2.g * factor);
-                    data[index + 2] = Math.round(c1.b * (1 - factor) + c2.b * factor);
-                    data[index + 3] = 255;
-                    index += 4;
-                }
-            }
-
-            ctx.putImageData(imgData, 0, 0);
-            mixerAnimId = requestAnimationFrame(animatePaintMixer);
-        }
-
-        function updatePaintMixer() {
-            if (mixerAnimId) cancelAnimationFrame(mixerAnimId);
-            animatePaintMixer();
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateDashboardHeader();
-
+        document.addEventListener('DOMContentLoaded', async () => {
             grid = GridStack.init({
                 cellHeight: 80,
                 margin: 12,
@@ -422,15 +473,56 @@
                 resizable: { handles: 'se, sw' }
             });
 
-            addBlock('tier');
-            addBlock('mixer');
-            addBlock('projects');
-            addBlock('invoices');
-            addBlock('budget');
-            addBlock('settings');
-
-            setTimeout(updatePaintMixer, 100);
+            await loadCustomerDataAndLayout();
+            startShowcaseSlideshow();
         });
+
+        async function loadCustomerDataAndLayout() {
+            const STOCK_DEFAULT_BLOCKS = ['tier', 'projects', 'invoices', 'showcase'];
+
+            try {
+                const response = await fetch(`/api/customer/dashboard-data/${window.CURRENT_CUSTOMER_ID}`);
+                if (!response.ok) throw new Error('Network error loading data');
+                
+                const data = await response.json();
+                
+                if (data.profile) {
+                    window.CUSTOMER_DATA.profile = {
+                        name: data.profile.name || '',
+                        phone: data.profile.phone || '',
+                        address: data.profile.address || ''
+                    };
+                    window.CUSTOMER_DATA.spend = parseFloat(data.profile.spend) || 0;
+                    window.CUSTOMER_DATA.tier = data.profile.tier || 'Standard';
+                }
+
+                updateDashboardHeader();
+
+                if (data.layout && data.layout.length > 0) {
+                    grid.removeAll();
+                    activeBlocks.clear();
+                    
+                    data.layout.forEach(item => {
+                        const blockId = item.id || item.content?.match(/data-block-id="([^"]+)"/)?.[1];
+                        if (blockId && PREMADE_BLOCKS[blockId]) {
+                            grid.addWidget({
+                                w: item.w,
+                                h: item.h,
+                                x: item.x,
+                                y: item.y,
+                                content: PREMADE_BLOCKS[blockId].getContent()
+                            });
+                            activeBlocks.add(blockId);
+                        }
+                    });
+                } else {
+                    STOCK_DEFAULT_BLOCKS.forEach(id => addBlock(id, false));
+                }
+            } catch (err) {
+                console.warn('Unable to load server layout, initializing default stock layout:', err);
+                STOCK_DEFAULT_BLOCKS.forEach(id => addBlock(id, false));
+            }
+        }
 
         function updateDashboardHeader() {
             const name = window.CUSTOMER_DATA?.profile?.name;
@@ -438,6 +530,54 @@
             if (greetingEl) {
                 greetingEl.innerText = name ? `Welcome back, ${name}!` : 'Welcome back!';
             }
+        }
+
+        function openBidModal() {
+            document.getElementById('request-bid-modal')?.classList.remove('hidden');
+        }
+
+        function closeBidModal() {
+            document.getElementById('request-bid-modal')?.classList.add('hidden');
+        }
+
+        function submitNewBid(e) {
+            e.preventDefault();
+            const title = document.getElementById('bid-title').value;
+            const desc = document.getElementById('bid-desc').value;
+
+            const newProject = {
+                title: title,
+                description: desc,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                status: 'Under Review'
+            };
+
+            window.CUSTOMER_DATA.projects.current.unshift(newProject);
+
+            const container = document.getElementById('project-list-container');
+            if (container) {
+                const itemHtml = `
+                    <div class="p-3 border border-slate-200 rounded-lg bg-white space-y-2 mb-2">
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <p class="font-bold text-slate-900 text-sm">${newProject.title}</p>
+                          <p class="text-slate-500 text-[11px]">Submitted: ${newProject.date}</p>
+                        </div>
+                        <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">${newProject.status}</span>
+                      </div>
+                      <p class="text-slate-600">${newProject.description}</p>
+                    </div>`;
+                
+                if (container.innerText.includes('No active projects')) {
+                    container.innerHTML = itemHtml;
+                } else {
+                    container.insertAdjacentHTML('afterbegin', itemHtml);
+                }
+            }
+
+            closeBidModal();
+            document.getElementById('bid-form').reset();
+            alert('Your bid request was submitted successfully! Our team will review it shortly.');
         }
 
         function openBlockCatalog() {
@@ -454,7 +594,7 @@
                         <p class="font-bold text-xs text-slate-800">${block.title}</p>
                         <p class="text-[10px] text-slate-500">${isActive ? 'On Dashboard' : 'Available in Catalog'}</p>
                     </div>
-                    <button type="button" onclick="${isActive ? `removeBlock('${block.id}')` : `addBlock('${block.id}')`}" 
+                    <button type="button" onclick="${isActive ? `removeBlock('${block.id}', true)` : `addBlock('${block.id}', true)`}" 
                       class="text-xs px-2.5 py-1 rounded font-bold ${isActive ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-slate-900 text-white hover:bg-slate-800'}">
                       ${isActive ? 'Remove' : '+ Add'}
                     </button>
@@ -469,58 +609,35 @@
             document.getElementById('block-catalog-modal')?.classList.add('hidden');
         }
 
-        function addBlock(blockId) {
+        function addBlock(blockId, refreshCatalog = false) {
             const block = PREMADE_BLOCKS[blockId];
             if (!block || !grid || activeBlocks.has(blockId)) return;
 
             grid.addWidget({ w: block.w, h: block.h, content: block.getContent() });
             activeBlocks.add(blockId);
-            openBlockCatalog();
+            if (refreshCatalog) openBlockCatalog();
 
-            if (blockId === 'mixer') {
-                setTimeout(updatePaintMixer, 50);
+            if (blockId === 'showcase') {
+                startShowcaseSlideshow();
             }
         }
 
-        function removeBlock(blockId) {
+        function removeBlock(blockId, refreshCatalog = false) {
             if (!grid) return;
             const el = document.querySelector(`[data-block-id="${blockId}"]`)?.closest('.grid-stack-item');
             if (el) {
                 grid.removeWidget(el);
                 activeBlocks.delete(blockId);
-                openBlockCatalog();
+                if (refreshCatalog) openBlockCatalog();
             }
         }
 
-        function recalcBudget() {
-            const hrs = parseFloat(document.getElementById('calc-hours')?.value || 0);
-            const mat = parseFloat(document.getElementById('calc-mat')?.value || 0);
-            const total = (hrs * 65) + mat;
-            const el = document.getElementById('calc-total');
-            if (el) {
-                el.innerText = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                if (total > 0) {
-                    el.className = 'text-emerald-700 font-bold';
-                } else {
-                    el.className = 'text-slate-900 font-bold';
-                }
+        function handleLogout() {
+            if (confirm("Are you sure you want to log out?")) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login.html';
             }
-        }
-
-        function saveProfileDetails() {
-            const nameVal = document.getElementById('prof-name')?.value || '';
-            window.CUSTOMER_DATA.profile.name = nameVal;
-            window.CUSTOMER_DATA.profile.phone = document.getElementById('prof-phone')?.value || '';
-            window.CUSTOMER_DATA.profile.address = document.getElementById('prof-address')?.value || '';
-            
-            updateDashboardHeader();
-            alert('Account details saved!');
-        }
-
-        function saveLayout() {
-            if (!grid) return;
-            localStorage.setItem('hp_dashboard_layout', JSON.stringify(grid.save()));
-            alert('Layout configuration saved!');
         }
     </script>
 </body>
