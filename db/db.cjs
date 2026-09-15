@@ -45,3 +45,48 @@ async function initDb() {
 }
 
 module.exports = { pool, initDb };
+// Append to db/db.cjs - Admin Unified Search & Lazy Account Binding
+const { pool } = require('./db.cjs');
+
+/**
+ * Fetch all business data for Admin Dashboard
+ */
+async function getAdminOverviewData() {
+  const usersCount = await pool.query('SELECT COUNT(*) FROM users;');
+  const okrsCount = await pool.query('SELECT COUNT(*) FROM okrs;');
+  
+  return {
+    totalUsers: parseInt(usersCount.rows[0].count, 10),
+    totalOkrs: parseInt(okrsCount.rows[0].count, 10)
+  };
+}
+
+/**
+ * Fetch customer dashboard data linked by user email (works for new accounts matching past business records)
+ * @param {string} customerEmail 
+ */
+async function getCustomerDataByEmail(customerEmail) {
+  const normalizedEmail = customerEmail.toLowerCase().trim();
+
+  // Queries match by email regardless of when the account was created
+  const userProfile = await pool.query(
+    'SELECT id, email, created_at FROM users WHERE LOWER(email) = $1;',
+    [normalizedEmail]
+  );
+
+  const customerOkrs = await pool.query(
+    'SELECT * FROM okrs WHERE LOWER(owner_email) = $1;',
+    [normalizedEmail]
+  );
+
+  return {
+    isRegistered: userProfile.rows.length > 0,
+    profile: userProfile.rows[0] || null,
+    records: customerOkrs.rows
+  };
+}
+
+module.exports = {
+  getAdminOverviewData,
+  getCustomerDataByEmail
+};
