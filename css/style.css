@@ -1,3 +1,23 @@
 @import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
 .bg-brand-black { background-color: #0d0d0d; }
 .bg-brand-red, .brand-red { color: #dc2626; }
+
+/* Supplier Partner CTA Styles */
+.btn-supplier-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #003366;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-supplier-link:hover {
+  background-color: #002244;
+  color: #ffffff;
+}
