@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /login.html
 
 Sitemap: https://construction.seemoneyproductions.com/sitemap.xml
