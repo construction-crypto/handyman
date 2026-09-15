@@ -1,0 +1,25 @@
+<div class="p-2 flex flex-col md:flex-row items-center justify-between gap-4 h-full bg-gradient-to-r from-slate-900 via-zinc-900 to-slate-900 text-white rounded-xl">
+  <div class="flex items-center gap-4">
+    <div class="w-20 h-20 flex-shrink-0 flex items-center justify-center p-1 bg-black/40 rounded-2xl border border-white/10 shadow-inner">
+      <img id="tier-emblem-img" src="/Standard.jpg" alt="Tier Emblem" class="w-16 h-16 object-contain" onerror="this.src='/Standard.jpg'" />
+    </div>
+    <div>
+      <div class="flex items-center gap-2">
+        <span id="tier-badge" class="text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded border bg-red-500/20 text-red-400 border-red-500/30">Current Rank</span>
+        <span class="text-[10px] text-amber-400 font-bold">15% Discount Active</span>
+      </div>
+      <h2 id="tier-name-title" class="text-xl font-black text-white mt-1">Standard Member</h2>
+      <p class="text-xs text-slate-300">Lifetime Account Spend: <span id="tier-spend-text" class="font-bold text-red-400">$0.00</span></p>
+    </div>
+  </div>
+  <div class="w-full md:w-64 space-y-1.5 bg-black/30 p-3 rounded-xl border border-white/10">
+    <div class="flex justify-between text-[11px] font-bold">
+      <span class="text-slate-300">Tier Upgrade Progress</span>
+      <span class="text-amber-400" id="tier-progress-pct">25% to Preferred</span>
+    </div>
+    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-white/10">
+      <div class="bg-gradient-to-r from-red-600 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 25%"></div>
+    </div>
+    <p class="text-[10px] text-slate-400 italic">Spend $1,000 to unlock 5-Yr Warranty & Priority Crew Scheduling.</p>
+  </div>
+</div>

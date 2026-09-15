@@ -1,0 +1,44 @@
+{
+  "customers": {
+    "1": {
+      "id": 1,
+      "profile": {
+        "name": "John Doe",
+        "address": "123 Main St"
+      },
+      "spend": 4250,
+      "tier": "Gold",
+      "layout": [
+        "projects",
+        "invoices",
+        "settings"
+      ],
+      "projects": [
+        {
+          "id": "PRJ-8166",
+          "title": "basement",
+          "status": "Pending Review",
+          "type": "Interior Painting",
+          "color": "Kendall Charcoal - HC-166",
+          "sqft": 0,
+          "notes": ""
+        },
+        {
+          "id": "PRJ-101",
+          "title": "Living Room Repaint",
+          "status": "In Progress",
+          "type": "Interior Painting",
+          "color": "Naval - SW 6244"
+        }
+      ],
+      "invoices": [
+        {
+          "id": "INV-2024-01",
+          "amount": "$1,200.00",
+          "status": "Paid",
+          "date": "2026-08-15"
+        }
+      ]
+    }
+  }
+}

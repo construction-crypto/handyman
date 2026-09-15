@@ -11,7 +11,7 @@ export function DashboardContainer({ token }) {
   useEffect(() => {
     async function fetchProjectData() {
       try {
-        const res = await fetch(\/api/dashboard/session?token=\\);
+        const res = await fetch(`/api/dashboard/session?token=${encodeURIComponent(token)}`);
         if (!res.ok) {
           throw new Error('Failed to authorize or retrieve project data.');
         }

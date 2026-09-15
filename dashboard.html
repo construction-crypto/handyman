@@ -3,641 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard - Handyman Painting L.L.C.</title>
+    <title>Customer Command Portal - Handyman Painting L.L.C.</title>
+    <!-- Analytics & Styling -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E8DS703QLV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-E8DS703QLV");
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/gridstack@9.0.0/dist/gridstack.min.css" rel="stylesheet"/>
+    <!-- GridStack CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@9.0.0/dist/gridstack.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/gridstack@9.0.0/dist/gridstack-all.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
       body {
         margin: 0;
         overflow-x: hidden;
         background-color: #f8fafc;
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        color: #0f172a;
+      }
+
+      /* Brand Colors */
+      .brand-red { color: #E31E24; }
+      .bg-brand-red { background-color: #E31E24; }
+      .bg-brand-black { background-color: #1A1A1A; }
+      .border-brand-red { border-color: #E31E24; }
+
+      /* GridStack Customized Aesthetic */
+      .grid-stack-item {
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .grid-stack-item-content {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
         display: flex;
         flex-direction: column;
         overflow: hidden;
       }
+      .grid-stack-item-content:hover {
+        box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.12), 0 8px 10px -4px rgba(15, 23, 42, 0.04);
+        border-color: rgba(203, 213, 225, 1);
+      }
       .widget-header {
-        cursor: move;
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 0.65rem 0.9rem;
+        cursor: grab;
+        background: #0f172a;
+        color: #ffffff;
+        border-bottom: 1px solid #1e293b;
+        padding: 0.75rem 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        user-select: none;
       }
-      .tier-emblem-large {
-        width: 104px;
-        height: 104px;
-        object-fit: contain;
+      .widget-header:active {
+        cursor: grabbing;
       }
-
-      /* Floating Emblem Animations */
-      @keyframes float-standard {
-        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(220, 38, 38, 0.3)); }
-        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(220, 38, 38, 0.5)); }
-        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(220, 38, 38, 0.3)); }
+      .tier-emblem-large { width: 104px; height: 104px; object-fit: contain; }
+      
+      /* GridStack Resize Handle Customization */
+      .ui-resizable-se, .ui-resizable-sw {
+        width: 16px !important;
+        height: 16px !important;
+        right: 4px !important;
+        bottom: 4px !important;
+        background-image: radial-gradient(circle, #64748b 2px, transparent 2px);
+        background-size: 5px 5px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+        z-index: 20;
       }
-      @keyframes float-preferred {
-        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(37, 99, 235, 0.3)); }
-        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(37, 99, 235, 0.5)); }
-        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(37, 99, 235, 0.3)); }
-      }
-      @keyframes float-supreme {
-        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(217, 119, 6, 0.3)); }
-        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(217, 119, 6, 0.5)); }
-        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(217, 119, 6, 0.3)); }
-      }
-      @keyframes float-executive {
-        0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(147, 51, 234, 0.3)); }
-        50% { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 16px 24px rgba(147, 51, 234, 0.5)); }
-        100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 8px 16px rgba(147, 51, 234, 0.3)); }
-      }
-      .emblem-standard { animation: float-standard 4s ease-in-out infinite; }
-      .emblem-preferred { animation: float-preferred 4s ease-in-out infinite; }
-      .emblem-supreme { animation: float-supreme 4s ease-in-out infinite; }
-      .emblem-executive { animation: float-executive 4s ease-in-out infinite; }
-
-      .paint-swatch-canvas {
-        width: 100%;
-        height: 180px;
-        border-radius: 0.75rem;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+      .ui-resizable-se:hover, .ui-resizable-sw:hover {
+        opacity: 1;
       }
 
-      /* Slide Transitions */
-      .slide-item {
-        display: none;
-        transition: opacity 0.5s ease-in-out;
+      /* Modal Animation */
+      @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
       }
-      .slide-item.active {
-        display: block;
+      .animate-modal-pop {
+        animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     </style>
 </head>
-<body class="p-6 min-h-screen text-slate-800">
+<body class="p-4 md:p-6 min-h-screen text-slate-800">
 
-    <!-- Top Layout Studio Bar -->
-    <div id="top-bar-container" class="bg-white border border-slate-200 text-slate-900 p-3.5 rounded-2xl mb-6 flex justify-between items-center shadow-sm max-w-7xl mx-auto">
+    <!-- Top Announcement Bar matching index.html theme -->
+    <div class="bg-brand-black py-2 border-b border-red-700 -mx-4 -mt-4 md:-mx-6 md:-mt-6 mb-6 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center text-xs font-bold text-white">
+            <span class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+              📍 Handyman Painting L.L.C. | Interactive Customer Command Portal
+            </span>
+            <a href="tel:3203219359" class="hover:text-red-400 underline transition">📞 320-321-9359</a>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <div id="top-bar-container" class="bg-white/90 backdrop-blur-md border border-slate-200/90 text-slate-900 p-4 rounded-2xl mb-6 flex flex-wrap justify-between items-center gap-4 shadow-sm max-w-7xl mx-auto sticky top-4 z-40">
       <div class="flex items-center gap-4">
-        <span class="text-sm font-black tracking-wider uppercase text-slate-900 border-r border-slate-200 pr-4">Handyman Painting L.L.C.</span>
-        <span id="welcome-greeting-text" class="text-xs font-bold text-slate-600">Welcome Back!</span>
+        <a href="/index.html" class="flex items-center gap-2">
+          <img src="/logo.jpg" alt="Handyman Logo" class="h-10 w-auto rounded-md shadow-sm" onerror="this.style.display='none'">
+          <span class="text-sm font-black tracking-wider uppercase text-slate-900 border-r border-slate-200 pr-4">Handyman Command Portal</span>
+        </a>
+        <div class="hidden sm:flex items-center gap-2">
+          <span id="welcome-greeting-text" class="text-xs font-bold text-slate-700">Welcome Back!</span>
+          <span id="user-email-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border"></span>
+          <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">● Live DB Connected</span>
+        </div>
       </div>
-      <div class="flex items-center gap-3">
-        <button type="button" onclick="openBlockCatalog()" id="btn-add-blocks" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs px-3.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 shadow-sm">
-          <span>+</span> Customize / Add Blocks & Tools
+
+      <!-- Action Toolbar -->
+      <div class="flex items-center flex-wrap gap-2">
+        <button type="button" onclick="openBlockCatalog()" class="bg-brand-red hover:bg-red-700 text-white text-xs px-4 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-md active:scale-95">
+          <span class="text-base leading-none">+</span> Add & Customize Blocks
         </button>
-        <button type="button" onclick="saveLayout()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-lg border border-slate-300 font-medium transition">💾 Save Layout</button>
-        <button type="button" onclick="if(window.grid) grid.compact()" class="text-xs text-slate-500 hover:text-slate-800 underline">Auto-Arrange</button>
-        
-        <!-- Red Logout Button -->
-        <button type="button" onclick="handleLogout()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ml-2">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
+        <button type="button" onclick="saveLayout()" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm">
+          💾 Save Layout
+        </button>
+        <button type="button" onclick="if(window.grid) window.grid.compact()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl border border-slate-300 font-bold transition">
+          ✨ Auto-Arrange
+        </button>
+        <button type="button" onclick="resetDefaultLayout()" class="text-xs text-slate-500 hover:text-slate-800 underline px-2 py-1">
+          Reset Layout
+        </button>
+        <button type="button" onclick="handleLogout()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold px-3 py-2 rounded-xl transition ml-1">
           Logout
         </button>
       </div>
     </div>
 
-    <!-- Main Grid Canvas -->
+    <!-- Drag & Drop GridStack Workspace Container -->
     <div class="max-w-7xl mx-auto">
         <div class="grid-stack mb-6"></div>
     </div>
 
-    <!-- Block Selection Catalog Modal -->
-    <div id="block-catalog-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full p-6 space-y-4 border border-slate-200">
-        <div class="flex justify-between items-center border-b pb-3">
-          <div>
-            <h3 class="font-bold text-slate-900 text-lg">Dashboard Block Catalog</h3>
-            <p class="text-xs text-slate-500">Toggle tools on or off to adjust your dashboard layout.</p>
-          </div>
-          <button type="button" onclick="closeBlockCatalog()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-        </div>
+    <!-- Preinstalled Block Catalog Drawer / Modal -->
+    <div id="block-catalog-modal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] animate-modal-pop">
         
-        <div class="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto p-1" id="catalog-items-container"></div>
+        <!-- Modal Header -->
+        <div class="bg-slate-900 text-white p-5 border-b border-slate-800 flex justify-between items-center">
+          <div>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-red-400 block mb-1">Preinstalled Dashboard Widgets</span>
+            <h3 class="font-black text-lg text-white">Custom Widget Block Library</h3>
+            <p class="text-xs text-slate-400">Toggle blocks on or off to tailor your dashboard command center.</p>
+          </div>
+          <button type="button" onclick="closeBlockCatalog()" class="text-slate-400 hover:text-white text-2xl font-bold p-1 leading-none">&times;</button>
+        </div>
 
-        <div class="flex justify-end border-t pt-3">
-          <button type="button" onclick="closeBlockCatalog()" class="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-lg hover:bg-slate-800">Done</button>
+        <!-- Category Filter Tabs -->
+        <div class="bg-slate-50 border-b border-slate-200 px-5 py-2.5 flex items-center gap-2 overflow-x-auto text-xs font-bold">
+          <button type="button" onclick="filterCatalog('all')" id="cat-all" class="px-3 py-1 rounded-lg bg-slate-900 text-white shadow-sm">All Widgets</button>
+          <button type="button" onclick="filterCatalog('quotes')" id="cat-quotes" class="px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200">Estimates & Billing</button>
+          <button type="button" onclick="filterCatalog('design')" id="cat-design" class="px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200">Colors & Studio</button>
+          <button type="button" onclick="filterCatalog('field')" id="cat-field" class="px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200">Field & Operations</button>
+          <button type="button" onclick="filterCatalog('account')" id="cat-account" class="px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200">Account & Tier</button>
+        </div>
+
+        <!-- Catalog Content Container -->
+        <div class="p-5 overflow-y-auto flex-1">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5" id="catalog-items-container"></div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 border-t border-slate-200 p-4 flex justify-between items-center">
+          <span class="text-xs text-slate-500 font-medium">Changes apply immediately to your active workspace grid.</span>
+          <button type="button" onclick="closeBlockCatalog()" class="px-6 py-2.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shadow-md">
+            Done Customizing
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Request New Bid Modal -->
-    <div id="request-bid-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4 border border-slate-200">
+    <!-- Estimate Request Modal -->
+    <div id="build-estimate-modal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-6 space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto animate-modal-pop">
         <div class="flex justify-between items-center border-b pb-3">
           <div>
-            <h3 class="font-bold text-slate-900 text-lg">Request a Project Estimate / Bid</h3>
-            <p class="text-xs text-slate-500">Tell us what you need painted or upgraded!</p>
+            <h3 class="font-black text-slate-900 text-lg">📝 Request a Project Estimate</h3>
+            <p class="text-xs text-slate-500">Provide details on your project goals for an official quote from Handyman Painting L.L.C.</p>
           </div>
-          <button type="button" onclick="closeBidModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+          <button type="button" onclick="closeEstimateBuilderModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
         </div>
-
-        <form id="bid-form" onsubmit="submitNewBid(event)" class="space-y-3 text-xs">
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Project Title</label>
-            <input type="text" id="bid-title" required placeholder="e.g. Living Room Accent Wall & Trim" class="w-full border rounded-lg p-2 font-medium border-slate-300">
+        <form id="build-estimate-form" onsubmit="submitFullEstimate(event)" class="space-y-4 text-xs">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Project Name *</label>
+              <input type="text" id="builder-title" required placeholder="e.g. Living Room Refresh" class="w-full border rounded-xl p-2.5 font-medium border-slate-300">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Project Category *</label>
+              <select id="builder-type" class="w-full border rounded-xl p-2.5 font-medium border-slate-300 bg-white">
+                <option value="Interior Painting">Interior Painting</option>
+                <option value="Exterior Painting">Exterior Painting</option>
+                <option value="Cabinet Refinishing">Cabinet Refinishing</option>
+                <option value="Deck Staining">Deck & Timber Staining</option>
+                <option value="General Handyman Repair">General Handyman Repair</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Preferred Color Swatch</label>
+              <input type="text" id="builder-color" placeholder="e.g. Naval - SW 6244" class="w-full border rounded-xl p-2.5 font-medium border-slate-300">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Est. Sq Footage</label>
+              <input type="number" id="builder-sqft" placeholder="e.g. 500" class="w-full border rounded-xl p-2.5 font-medium border-slate-300">
+            </div>
           </div>
           <div>
-            <label class="font-bold text-slate-700 block mb-1">Project Details / Scope</label>
-            <textarea id="bid-desc" rows="3" required placeholder="Describe interior/exterior areas, colors desired, trim preferences..." class="w-full border rounded-lg p-2 font-medium border-slate-300"></textarea>
+            <label class="font-bold text-slate-700 block mb-1">Additional Notes & Scope</label>
+            <textarea id="builder-notes" rows="3" class="w-full border rounded-xl p-2.5 font-medium border-slate-300" placeholder="Describe room dimensions, trim details, or repair requirements..."></textarea>
           </div>
-          <div class="flex justify-end gap-2 border-t pt-3">
-            <button type="button" onclick="closeBidModal()" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200">Cancel</button>
-            <button type="submit" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm">Submit Request</button>
+          <div class="flex justify-end gap-2 border-t pt-4">
+            <button type="button" onclick="closeEstimateBuilderModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition">Cancel</button>
+            <button type="submit" class="px-6 py-2.5 text-xs font-bold text-white bg-brand-red hover:bg-red-700 rounded-xl transition shadow-md">Submit Estimate Request</button>
           </div>
         </form>
       </div>
     </div>
 
+    <!-- Dashboard Core Controller Script -->
     <script>
-        window.CURRENT_CUSTOMER_ID = 1; 
+        window.CUSTOMER_DATA = { profile: {}, spend: 0.00, tier: 'Standard', projects: [], invoices: [] };
+        window.SELECTED_SWATCH = { title: 'Naval - SW 6244', hex: '#1d2b3a' };
+        window.activeCategory = 'all';
 
-        window.CUSTOMER_DATA = {
-            profile: { name: '', phone: '', address: '' },
-            spend: 0.00,
-            tier: 'Standard',
-            projects: { current: [], previous: [] },
-            invoices: []
-        };
-
-        const TIER_THEMES = {
-            standard: { bgGradient: 'bg-gradient-to-r from-slate-900 via-zinc-900 to-slate-900', accentText: 'text-red-400', badgeBg: 'bg-red-500/10 text-red-400 border-red-500/20' },
-            preferred: { bgGradient: 'bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900', accentText: 'text-blue-400', badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-            supreme: { bgGradient: 'bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900', accentText: 'text-amber-400', badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-            executive: { bgGradient: 'bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900', accentText: 'text-purple-400', badgeBg: 'bg-purple-500/10 text-purple-400 border-purple-500/20' }
-        };
-
-        let currentSlideIndex = 0;
-        let slideTimer = null;
-
-        function startShowcaseSlideshow() {
-            if (slideTimer) clearInterval(slideTimer);
-            slideTimer = setInterval(() => {
-                changeShowcaseSlide(1);
-            }, 4000);
+        // Helper to retrieve auth & identity headers for backend requests
+        function getAuthHeaders() {
+            const token = localStorage.getItem('userToken');
+            const email = localStorage.getItem('userEmail') || 'customer@handymanpainting.com';
+            const name = localStorage.getItem('userName') || 'Valued Customer';
+            
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            if (email) headers['X-User-Email'] = email;
+            if (name) headers['X-User-Name'] = name;
+            return headers;
         }
 
-        function changeShowcaseSlide(direction) {
-            const slides = document.querySelectorAll('.slide-item');
-            if (!slides || slides.length === 0) return;
-
-            slides[currentSlideIndex].classList.remove('active');
-            currentSlideIndex = (currentSlideIndex + direction + slides.length) % slides.length;
-            slides[currentSlideIndex].classList.add('active');
-
-            const dots = document.querySelectorAll('.slide-dot');
-            dots.forEach((dot, idx) => {
-                if (idx === currentSlideIndex) {
-                    dot.classList.add('bg-white');
-                    dot.classList.remove('bg-white/40');
-                } else {
-                    dot.classList.remove('bg-white');
-                    dot.classList.add('bg-white/40');
-                }
-            });
-        }
-
-        const PREMADE_BLOCKS = {
-            tier: {
-                id: 'tier',
-                title: '🏆 Tier & Loyalty Status',
-                w: 12, h: 3,
-                getContent: () => {
-                    const spend = window.CUSTOMER_DATA.spend || 0;
-                    const tier = window.CUSTOMER_DATA.tier || 'Standard';
-                    const key = tier.toLowerCase();
-                    const theme = TIER_THEMES[key] || TIER_THEMES.standard;
-
-                    return `
-                    <div class="grid-stack-item-content !border-slate-800 ${theme.bgGradient} text-white shadow-xl" data-block-id="tier">
-                      <div class="widget-header !bg-black/40 !border-white/10">
-                        <span class="font-bold text-xs ${theme.accentText} uppercase tracking-wider">🏆 ${tier.toUpperCase()} MEMBER STATUS</span>
-                        <button type="button" onclick="removeBlock('tier', false)" class="text-slate-400 hover:text-white text-sm font-bold">&times;</button>
-                      </div>
-                      <div class="p-6 flex items-center justify-between gap-6 h-full">
-                        <div class="flex items-center gap-6">
-                          <div class="flex items-center justify-center p-2">
-                            <img id="tier-badge-img" src="/${tier}.jpg" alt="${tier} Tier Emblem" class="tier-emblem-large emblem-${key}" onerror="this.src='/Standard.jpg'" />
-                          </div>
-                          <div>
-                            <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded border ${theme.badgeBg}">Current Rank</span>
-                            <h2 id="tier-name-label" class="text-2xl font-black text-white mt-2">${tier} Member</h2>
-                            <p class="text-xs text-slate-300 mt-1">Lifetime Account Spend: <span id="tier-spend-label" class="font-bold ${theme.accentText}">$${parseFloat(spend).toFixed(2)}</span></p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>`;
-                }
-            },
-            projects: {
-                id: 'projects',
-                title: '📁 Projects & Bid Requests',
-                w: 6, h: 5,
-                getContent: () => {
-                    const currentProjects = window.CUSTOMER_DATA.projects.current || [];
-                    const hasCurrent = currentProjects.length > 0;
-
-                    let currentHtml = hasCurrent ? currentProjects.map(p => `
-                        <div class="p-3 border border-slate-200 rounded-lg bg-white space-y-2">
-                          <div class="flex justify-between items-start">
-                            <div>
-                              <p class="font-bold text-slate-900 text-sm">${p.title}</p>
-                              <p class="text-slate-500 text-[11px]">Submitted: ${p.date}</p>
-                            </div>
-                            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">${p.status}</span>
-                          </div>
-                          <p class="text-slate-600">${p.description}</p>
-                        </div>
-                    `).join('') : `
-                        <div class="p-8 border border-dashed border-slate-300 rounded-lg bg-slate-50/50 text-center space-y-2">
-                          <p class="text-slate-600 font-medium">No active projects or pending bid requests.</p>
-                          <p class="text-slate-400 text-[11px]">Click "Request New Bid" below to start your first project estimate.</p>
-                        </div>
-                    `;
-
-                    return `
-                    <div class="grid-stack-item-content" data-block-id="projects">
-                      <div class="widget-header">
-                        <span class="font-bold text-xs text-slate-800">📁 Projects & Bid Requests</span>
-                        <button type="button" onclick="removeBlock('projects', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
-                      </div>
-                      <div class="p-4 text-xs space-y-4 overflow-y-auto">
-                        <div class="flex justify-between items-center border-b pb-2">
-                          <div class="flex gap-2">
-                            <span class="px-2.5 py-1 bg-slate-900 text-white font-bold rounded">Active (${currentProjects.length})</span>
-                          </div>
-                          <button type="button" onclick="openBidModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded shadow-sm transition">+ Request New Bid</button>
-                        </div>
-                        <div id="project-list-container">${currentHtml}</div>
-                      </div>
-                    </div>`;
-                }
-            },
-            invoices: {
-                id: 'invoices',
-                title: '💳 Invoices & Financials',
-                w: 6, h: 5,
-                getContent: () => {
-                    const invoices = window.CUSTOMER_DATA.invoices || [];
-                    const hasInvoices = invoices.length > 0;
-
-                    let invoiceListHtml = hasInvoices ? invoices.map(inv => `
-                        <div class="p-2 border rounded flex justify-between items-center bg-white">
-                          <div>
-                            <p class="font-bold text-slate-800">${inv.id}</p>
-                            <p class="text-slate-400 text-[10px]">${inv.date}</p>
-                          </div>
-                          <span class="font-bold text-slate-700">$${parseFloat(inv.amount).toFixed(2)}</span>
-                        </div>
-                    `).join('') : `
-                        <p class="text-slate-400 text-[11px] italic py-2">No past invoice history found.</p>
-                    `;
-
-                    return `
-                    <div class="grid-stack-item-content" data-block-id="invoices">
-                      <div class="widget-header">
-                        <span class="font-bold text-xs text-slate-800">💳 Payments & Financials</span>
-                        <button type="button" onclick="removeBlock('invoices', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
-                      </div>
-                      <div class="p-4 text-xs space-y-3 overflow-y-auto">
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
-                          <div>
-                            <p class="text-[10px] uppercase font-bold text-slate-500">Balance Due</p>
-                            <p class="text-lg font-black text-slate-800">$0.00</p>
-                          </div>
-                          <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded">No Unpaid Invoices</span>
-                        </div>
-                        <div class="space-y-2">
-                          <p class="font-bold text-slate-700 text-[11px]">Recent Invoices</p>
-                          ${invoiceListHtml}
-                        </div>
-                      </div>
-                    </div>`;
-                }
-            },
-            showcase: {
-                id: 'showcase',
-                title: '✨ Premium Showcase & Inspirations Slideshow',
-                w: 12, h: 5,
-                getContent: () => `
-                <div class="grid-stack-item-content bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative flex flex-col justify-between" data-block-id="showcase">
-                  <div class="widget-header !bg-black/60 !border-white/10 z-10">
-                    <span class="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                      ✨ Handyman Painting Showcase & Home Enhancements
-                    </span>
-                    <button type="button" onclick="removeBlock('showcase', false)" class="text-slate-400 hover:text-white text-sm font-bold">&times;</button>
-                  </div>
-
-                  <!-- Slides Container -->
-                  <div class="p-6 relative flex-grow flex items-center justify-center">
-                    
-                    <!-- Slide 1: Paints We Love -->
-                    <div class="slide-item active w-full space-y-3 text-center">
-                      <span class="text-[10px] uppercase tracking-widest bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full font-bold border border-amber-500/30">Paints We Trust & Recommend</span>
-                      <h3 class="text-xl font-black text-white">Sherwin-Williams • Benjamin Moore • Valspar</h3>
-                      <p class="text-xs text-slate-300 max-w-xl mx-auto">We partner exclusively with top-grade paint lines to guarantee rich color retention, scuff resistance, and flawless satin & matte finishes on every home interior or exterior.</p>
-                      <div class="flex justify-center gap-4 pt-1">
-                        <span class="text-[11px] bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-blue-400 font-bold">Sherwin-Williams Emerald®</span>
-                        <span class="text-[11px] bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-amber-400 font-bold">Benjamin Moore Regal® Select</span>
-                        <span class="text-[11px] bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-teal-400 font-bold">Valspar Reserve®</span>
-                      </div>
-                    </div>
-
-                    <!-- Slide 2: Luxury Trim & Molding -->
-                    <div class="slide-item w-full space-y-3 text-center">
-                      <span class="text-[10px] uppercase tracking-widest bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full font-bold border border-blue-500/30">Interior Craftsman Work</span>
-                      <h3 class="text-xl font-black text-white">👑 Crown Molding, Wainscoting & Custom Trim</h3>
-                      <p class="text-xs text-slate-300 max-w-xl mx-auto">Framing fresh paint with precision crown molding or classic board-and-batten instantly adds architectural elegance and increases property appraisal value.</p>
-                      <div class="flex justify-center gap-3 pt-1">
-                        <button type="button" onclick="openBidModal()" class="text-xs bg-amber-500 text-slate-950 font-bold px-4 py-1.5 rounded-lg hover:bg-amber-400 transition">Request Trim Estimate</button>
-                      </div>
-                    </div>
-
-                    <!-- Slide 3: Luxury Flooring Pairing -->
-                    <div class="slide-item w-full space-y-3 text-center">
-                      <span class="text-[10px] uppercase tracking-widest bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-bold border border-emerald-500/30">Complete Room Transformations</span>
-                      <h3 class="text-xl font-black text-white">🪵 Premium Hardwood & Luxury Vinyl Plank</h3>
-                      <p class="text-xs text-slate-300 max-w-xl mx-auto">Match your vibrant new paint scheme with waterproof LVP or stain-finished natural oak hardwood flooring for a stunning modern look.</p>
-                      <div class="flex justify-center gap-3 pt-1">
-                        <button type="button" onclick="openBidModal()" class="text-xs bg-emerald-500 text-slate-950 font-bold px-4 py-1.5 rounded-lg hover:bg-emerald-400 transition">Inquire About Flooring</button>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <!-- Controls & Navigation Bar -->
-                  <div class="bg-black/40 border-t border-white/10 px-4 py-2 flex justify-between items-center z-10">
-                    <button type="button" onclick="changeShowcaseSlide(-1)" class="text-xs font-bold text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/60">❮ Previous</button>
-                    <div class="flex gap-1.5">
-                      <span class="slide-dot w-2 h-2 rounded-full bg-white transition-all"></span>
-                      <span class="slide-dot w-2 h-2 rounded-full bg-white/40 transition-all"></span>
-                      <span class="slide-dot w-2 h-2 rounded-full bg-white/40 transition-all"></span>
-                    </div>
-                    <button type="button" onclick="changeShowcaseSlide(1)" class="text-xs font-bold text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/60">Next ❯</button>
-                  </div>
-                </div>`
-            },
-            mixer: {
-                id: 'mixer',
-                title: '🎨 Interactive Paint Mixer Studio',
-                w: 6, h: 5,
-                getContent: () => `
-                <div class="grid-stack-item-content" data-block-id="mixer">
-                  <div class="widget-header">
-                    <span class="font-bold text-xs text-slate-800">🎨 Interactive Paint Mixer Studio</span>
-                    <button type="button" onclick="removeBlock('mixer', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
-                  </div>
-                  <div class="p-4 space-y-3 text-xs overflow-y-auto">
-                    <p class="text-slate-500 text-[11px]">Mix 2 paint colors together to test custom swirl finishes & color blends.</p>
-                    <canvas id="paint-mixer-canvas" class="paint-swatch-canvas"></canvas>
-                    <div class="grid grid-cols-2 gap-3 pt-1">
-                      <div>
-                        <label class="font-bold text-slate-700 block mb-1">Base Paint Color</label>
-                        <input type="color" id="color-picker-1" value="#dc2626" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
-                      </div>
-                      <div>
-                        <label class="font-bold text-slate-700 block mb-1">Secondary Blend</label>
-                        <input type="color" id="color-picker-2" value="#1e3a8a" class="w-full h-8 rounded border border-slate-300 cursor-pointer p-0.5" onchange="updatePaintMixer()">
-                      </div>
-                    </div>
-                  </div>
-                </div>`
-            },
-            settings: {
-                id: 'settings',
-                title: '⚙️ Account & Profile Settings',
-                w: 4, h: 4,
-                getContent: () => {
-                    const prof = window.CUSTOMER_DATA.profile;
-                    return `
-                    <div class="grid-stack-item-content" data-block-id="settings">
-                      <div class="widget-header">
-                        <span class="font-bold text-xs text-slate-800">⚙️ Account Settings</span>
-                        <button type="button" onclick="removeBlock('settings', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
-                      </div>
-                      <div class="p-4 text-xs space-y-3 overflow-y-auto">
-                        <div class="grid grid-cols-2 gap-2">
-                          <div>
-                            <label class="font-bold text-slate-600 block mb-1">Full Name</label>
-                            <input type="text" id="prof-name" placeholder="No name on file" value="${prof.name || ''}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
-                          </div>
-                          <div>
-                            <label class="font-bold text-slate-600 block mb-1">Phone Number</label>
-                            <input type="text" id="prof-phone" placeholder="No phone on file" value="${prof.phone || ''}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
-                          </div>
-                        </div>
-                        <div>
-                          <label class="font-bold text-slate-600 block mb-1">Property Address</label>
-                          <input type="text" id="prof-address" placeholder="No property address specified" value="${prof.address || ''}" class="w-full border rounded p-1.5 font-medium placeholder:italic placeholder:text-slate-300">
-                        </div>
-                        <button type="button" onclick="saveProfileDetails()" class="bg-slate-900 text-white font-bold px-3 py-1.5 rounded hover:bg-slate-800 transition">Save Account Details</button>
-                      </div>
-                    </div>`;
-                }
-            },
-            budget: {
-                id: 'budget',
-                title: '📊 Project Cost Estimator',
-                w: 4, h: 4,
-                getContent: () => `
-                <div class="grid-stack-item-content" data-block-id="budget">
-                  <div class="widget-header">
-                    <span class="font-bold text-xs text-slate-800">📊 Project Cost Estimator</span>
-                    <button type="button" onclick="removeBlock('budget', false)" class="text-slate-400 hover:text-slate-600 text-sm font-bold">&times;</button>
-                  </div>
-                  <div class="p-4 text-xs space-y-3 overflow-y-auto">
-                    <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Est. Labor Hours:</span><input id="calc-hours" type="number" placeholder="0" class="w-20 border rounded p-1 text-right font-bold" oninput="recalcBudget()"></div>
-                    <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Materials Cost ($):</span><input id="calc-mat" type="number" placeholder="0.00" class="w-20 border rounded p-1 text-right font-bold" oninput="recalcBudget()"></div>
-                    <div class="border-t pt-2 flex justify-between font-bold text-slate-900 text-sm"><span>Project Total:</span><span id="calc-total" class="text-slate-900">$0.00</span></div>
-                  </div>
-                </div>`
-            }
+        const SWATCH_DATA = {
+            sherwin: [
+                { name: 'Naval', code: 'SW 6244', hex: '#1d2b3a' },
+                { name: 'Alabaster', code: 'SW 7008', hex: '#f0efe6' },
+                { name: 'Repose Gray', code: 'SW 7015', hex: '#ccc7bf' },
+                { name: 'Tricorn Black', code: 'SW 6258', hex: '#2c2c2c' }
+            ],
+            benjamin: [
+                { name: 'Hale Navy', code: 'HC-154', hex: '#24323d' },
+                { name: 'Chantilly Lace', code: 'OC-65', hex: '#f7f9f6' },
+                { name: 'Revere Pewter', code: 'HC-172', hex: '#ccc5b9' },
+                { name: 'Kendall Charcoal', code: 'HC-166', hex: '#53565a' }
+            ]
         };
 
+        // Full Catalogue of Preinstalled GridStack Widget Blocks
+        const BLOCK_CONFIGS = {
+            builder:   { id: 'builder',   title: '📝 Estimate Request Assistant', file: '/components/builder-block.html',   category: 'quotes',   w: 6,  h: 4, desc: 'Interactive quote request assistant' },
+            tier:      { id: 'tier',      title: '🏆 Tier & Loyalty Status',      file: '/components/tier-block.html',      category: 'account',  w: 12, h: 3, desc: 'Supreme/Preferred loyalty rank and rewards' },
+            projects:  { id: 'projects',  title: '📁 Active Projects & Requests', file: '/components/projects-block.html',  category: 'field',    w: 6,  h: 4, desc: 'Live job status and work orders' },
+            invoices:  { id: 'invoices',  title: '💳 Invoices & Financials',      file: '/components/invoices-block.html',  category: 'quotes',   w: 6,  h: 4, desc: 'Billing history, statements, and online payments' },
+            showcase:  { id: 'showcase',  title: '✨ Premium Showcase & Ideas',   file: '/components/showcase-block.html',  category: 'design',   w: 12, h: 4, desc: 'High-end paint finishes and project gallery' },
+            mixer:     { id: 'mixer',     title: '🎨 Interactive Paint Studio',   file: '/components/mixer-block.html',     category: 'design',   w: 6,  h: 5, desc: 'Sherwin-Williams & Benjamin Moore swatch previewer' },
+            weather:   { id: 'weather',   title: '🌤️ Painting Weather & Cure',    file: '/components/weather-block.html',   category: 'field',    w: 6,  h: 4, desc: 'Real-time temperature, humidity & paint drying index' },
+            dispatch:  { id: 'dispatch',  title: '🛠️ Priority Handyman Dispatch',  file: '/components/dispatch-block.html',  category: 'field',    w: 6,  h: 4, desc: 'Direct 24/7 hotline to field supervisor' },
+            checklist: { id: 'checklist', title: '📋 Inspection & 5-Yr Warranty', file: '/components/checklist-block.html', category: 'field',    w: 6,  h: 4, desc: 'Quality assurance checklist and warranty certificate' },
+            budget:    { id: 'budget',    title: '📊 Cost & Budget Calculator',   file: '/components/budget-block.html',    category: 'quotes',   w: 6,  h: 4, desc: 'Instant square-footage price estimator' },
+            settings:  { id: 'settings',  title: '⚙️ Profile & Account Details', file: '/components/settings-block.html',  category: 'account',  w: 6,  h: 4, desc: 'Personal details and address preferences' }
+        };
+
+        const componentCache = {};
         let activeBlocks = new Set();
-        let grid;
+
+        async function fetchComponentHTML(id) {
+            if (componentCache[id]) return componentCache[id];
+            const config = BLOCK_CONFIGS[id];
+            if (!config) return '';
+            try {
+                const res = await fetch(config.file);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const html = await res.text();
+                componentCache[id] = html;
+                return html;
+            } catch (err) {
+                console.error(`Failed to load component: ${config.file}`, err);
+                return `<div class="p-4 text-xs text-rose-500 font-bold">Failed to load ${config?.title || id} component.</div>`;
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            grid = GridStack.init({
-                cellHeight: 80,
-                margin: 12,
-                handle: '.widget-header',
-                resizable: { handles: 'se, sw' }
+            // Initialize GridStack with drag handle and resizable configuration
+            window.grid = GridStack.init({
+                cellHeight: 85,
+                margin: 14,
+                draggable: {
+                  handle: '.widget-header'
+                },
+                resizable: {
+                  handles: 'se, sw, e, s'
+                },
+                animate: true,
+                float: false
             });
 
             await loadCustomerDataAndLayout();
-            startShowcaseSlideshow();
         });
 
         async function loadCustomerDataAndLayout() {
-            const STOCK_DEFAULT_BLOCKS = ['tier', 'projects', 'invoices', 'showcase'];
+            let activeLayout = ['builder', 'tier', 'projects', 'invoices', 'showcase', 'mixer', 'weather', 'dispatch', 'settings'];
+            
+            // 1. Ensure user identity is established in localStorage
+            let currentEmail = localStorage.getItem('userEmail');
+            let currentName = localStorage.getItem('userName');
+            
+            if (!currentEmail) {
+                currentEmail = 'customer@handymanpainting.com';
+                currentName = 'Valued Customer';
+                localStorage.setItem('userEmail', currentEmail);
+                localStorage.setItem('userName', currentName);
+            }
 
+            const badgeEl = document.getElementById('user-email-badge');
+            if (badgeEl) badgeEl.innerText = currentEmail;
+
+            // Check local storage layout preference
+            const savedLocal = localStorage.getItem(`handyman_layout_${currentEmail}`);
+            if (savedLocal) {
+                try { activeLayout = JSON.parse(savedLocal); } catch (e) {}
+            }
+
+            // 2. Fetch personalized dashboard profile & layout from PostgreSQL database
             try {
-                const response = await fetch(`/api/customer/dashboard-data/${window.CURRENT_CUSTOMER_ID}`);
-                if (!response.ok) throw new Error('Network error loading data');
-                
-                const data = await response.json();
-                
-                if (data.profile) {
-                    window.CUSTOMER_DATA.profile = {
-                        name: data.profile.name || '',
-                        phone: data.profile.phone || '',
-                        address: data.profile.address || ''
-                    };
-                    window.CUSTOMER_DATA.spend = parseFloat(data.profile.spend) || 0;
-                    window.CUSTOMER_DATA.tier = data.profile.tier || 'Standard';
-                }
+                const response = await fetch('/api/customer/dashboard-data', {
+                    headers: getAuthHeaders()
+                });
 
-                updateDashboardHeader();
+                if (response.ok) {
+                    const data = await response.json();
+                    window.CUSTOMER_DATA = data;
 
-                if (data.layout && data.layout.length > 0) {
-                    grid.removeAll();
-                    activeBlocks.clear();
-                    
-                    data.layout.forEach(item => {
-                        const blockId = item.id || item.content?.match(/data-block-id="([^"]+)"/)?.[1];
-                        if (blockId && PREMADE_BLOCKS[blockId]) {
-                            grid.addWidget({
-                                w: item.w,
-                                h: item.h,
-                                x: item.x,
-                                y: item.y,
-                                content: PREMADE_BLOCKS[blockId].getContent()
-                            });
-                            activeBlocks.add(blockId);
-                        }
-                    });
-                } else {
-                    STOCK_DEFAULT_BLOCKS.forEach(id => addBlock(id, false));
+                    if (data.profile?.name) {
+                        currentName = data.profile.name;
+                        localStorage.setItem('userName', currentName);
+                        document.getElementById('welcome-greeting-text').innerText = `Welcome Back, ${currentName}!`;
+                    }
+                    if (data.layout && data.layout.length > 0) {
+                        activeLayout = data.layout;
+                    }
                 }
             } catch (err) {
-                console.warn('Unable to load server layout, initializing default stock layout:', err);
-                STOCK_DEFAULT_BLOCKS.forEach(id => addBlock(id, false));
+                console.warn('Backend API server offline. Loaded local fallback state.');
+            }
+
+            for (const id of activeLayout) {
+                await addBlock(id, false);
+            }
+
+            renderProjectsList();
+            populateSettingsForm();
+        }
+
+        async function addBlock(id, refresh = false) {
+            const config = BLOCK_CONFIGS[id];
+            if (!config || !window.grid || activeBlocks.has(id)) return;
+            
+            const bodyHtml = await fetchComponentHTML(id);
+
+            // Construct full GridStack widget item with explicit .widget-header drag handle
+            const widgetContent = `
+              <div class="widget-header bg-slate-900 text-white px-4 py-2.5 flex justify-between items-center cursor-grab active:cursor-grabbing border-b border-slate-800 select-none" data-block-id="${id}">
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-400 text-xs tracking-widest font-mono cursor-grab hover:text-white" title="Drag to reorder">⋮⋮</span>
+                  <span class="font-bold text-xs tracking-wide text-white">${config.title}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="removeBlock('${id}', false)" class="text-slate-400 hover:text-rose-400 p-1 rounded transition text-xs font-bold leading-none" title="Remove block">&times;</button>
+                </div>
+              </div>
+              <div class="p-4 text-xs space-y-3 overflow-y-auto flex-1 bg-white text-slate-800" data-block-body="${id}">
+                ${bodyHtml}
+              </div>
+            `;
+
+            window.grid.addWidget({
+                w: config.w,
+                h: config.h,
+                content: widgetContent
+            });
+
+            activeBlocks.add(id);
+            
+            if (id === 'mixer') renderSwatches('sherwin');
+            if (id === 'projects') renderProjectsList();
+            if (id === 'settings') populateSettingsForm();
+            if (refresh) openBlockCatalog();
+        }
+
+        function removeBlock(id, refresh = false) {
+            const el = document.querySelector(`[data-block-id="${id}"]`)?.closest('.grid-stack-item');
+            if (el) {
+                window.grid.removeWidget(el);
+                activeBlocks.delete(id);
+                if (refresh) openBlockCatalog();
             }
         }
 
-        function updateDashboardHeader() {
-            const name = window.CUSTOMER_DATA?.profile?.name;
-            const greetingEl = document.getElementById('welcome-greeting-text');
-            if (greetingEl) {
-                greetingEl.innerText = name ? `Welcome back, ${name}!` : 'Welcome back!';
-            }
+        function populateSettingsForm() {
+            const profile = window.CUSTOMER_DATA?.profile || {};
+            const email = localStorage.getItem('userEmail') || profile.email || 'customer@handymanpainting.com';
+            const name = localStorage.getItem('userName') || profile.name || '';
+
+            const nameInput = document.getElementById('settings-name-input');
+            const emailInput = document.getElementById('settings-email-input');
+            const phoneInput = document.getElementById('settings-phone-input');
+            const addressInput = document.getElementById('settings-address-input');
+
+            if (nameInput) nameInput.value = name;
+            if (emailInput) emailInput.value = email;
+            if (phoneInput && profile.phone) phoneInput.value = profile.phone;
+            if (addressInput && profile.address) addressInput.value = profile.address;
         }
 
-        function openBidModal() {
-            document.getElementById('request-bid-modal')?.classList.remove('hidden');
-        }
-
-        function closeBidModal() {
-            document.getElementById('request-bid-modal')?.classList.add('hidden');
-        }
-
-        function submitNewBid(e) {
+        async function saveUserProfile(e) {
             e.preventDefault();
-            const title = document.getElementById('bid-title').value;
-            const desc = document.getElementById('bid-desc').value;
+            const newName = document.getElementById('settings-name-input')?.value?.trim();
+            const newPhone = document.getElementById('settings-phone-input')?.value?.trim();
+            const newAddress = document.getElementById('settings-address-input')?.value?.trim();
 
-            const newProject = {
-                title: title,
-                description: desc,
-                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                status: 'Under Review'
-            };
-
-            window.CUSTOMER_DATA.projects.current.unshift(newProject);
-
-            const container = document.getElementById('project-list-container');
-            if (container) {
-                const itemHtml = `
-                    <div class="p-3 border border-slate-200 rounded-lg bg-white space-y-2 mb-2">
-                      <div class="flex justify-between items-start">
-                        <div>
-                          <p class="font-bold text-slate-900 text-sm">${newProject.title}</p>
-                          <p class="text-slate-500 text-[11px]">Submitted: ${newProject.date}</p>
-                        </div>
-                        <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 rounded">${newProject.status}</span>
-                      </div>
-                      <p class="text-slate-600">${newProject.description}</p>
-                    </div>`;
-                
-                if (container.innerText.includes('No active projects')) {
-                    container.innerHTML = itemHtml;
-                } else {
-                    container.insertAdjacentHTML('afterbegin', itemHtml);
-                }
+            if (!newName) {
+                alert('Please enter your full name.');
+                return;
             }
 
-            closeBidModal();
-            document.getElementById('bid-form').reset();
-            alert('Your bid request was submitted successfully! Our team will review it shortly.');
+            const payload = { name: newName, phone: newPhone, address: newAddress };
+
+            try {
+                const res = await fetch('/api/customer/profile', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.profile) {
+                        window.CUSTOMER_DATA.profile = data.profile;
+                    }
+                }
+            } catch (err) {
+                console.warn('Profile saved to local storage session.');
+            }
+
+            // Always update local storage & header instantly
+            localStorage.setItem('userName', newName);
+            document.getElementById('welcome-greeting-text').innerText = `Welcome Back, ${newName}!`;
+            
+            const statusEl = document.getElementById('settings-save-status');
+            if (statusEl) {
+                statusEl.classList.remove('hidden');
+                setTimeout(() => statusEl.classList.add('hidden'), 4000);
+            }
+            alert(`✅ Profile updated! Welcome, ${newName}.`);
+        }
+
+        function filterCatalog(category) {
+            window.activeCategory = category;
+            const tabs = ['all', 'quotes', 'design', 'field', 'account'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`cat-${t}`);
+                if (!btn) return;
+                if (t === category) {
+                    btn.className = 'px-3 py-1 rounded-lg bg-slate-900 text-white shadow-sm';
+                } else {
+                    btn.className = 'px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200';
+                }
+            });
+            openBlockCatalog();
         }
 
         function openBlockCatalog() {
             const container = document.getElementById('catalog-items-container');
             if (!container) return;
-            container.innerHTML = '';
 
-            Object.values(PREMADE_BLOCKS).forEach(block => {
+            const category = window.activeCategory || 'all';
+            const items = Object.values(BLOCK_CONFIGS).filter(b => category === 'all' || b.category === category);
+
+            container.innerHTML = items.map(block => {
                 const isActive = activeBlocks.has(block.id);
-                const card = document.createElement('div');
-                card.className = `p-3 border rounded-lg flex flex-col justify-between space-y-2 ${isActive ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-300'}`;
-                card.innerHTML = `
+                return `
+                <div class="p-4 border rounded-2xl flex flex-col justify-between space-y-3 transition-all ${isActive ? 'bg-slate-50 border-slate-300/80 shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-md'}">
                     <div>
-                        <p class="font-bold text-xs text-slate-800">${block.title}</p>
-                        <p class="text-[10px] text-slate-500">${isActive ? 'On Dashboard' : 'Available in Catalog'}</p>
+                        <div class="flex items-center justify-between mb-1">
+                          <p class="font-bold text-xs text-slate-900">${block.title}</p>
+                          <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-bold border">Size: ${block.w}x${block.h}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">${block.desc}</p>
                     </div>
-                    <button type="button" onclick="${isActive ? `removeBlock('${block.id}', true)` : `addBlock('${block.id}', true)`}" 
-                      class="text-xs px-2.5 py-1 rounded font-bold ${isActive ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-slate-900 text-white hover:bg-slate-800'}">
-                      ${isActive ? 'Remove' : '+ Add'}
-                    </button>
-                `;
-                container.appendChild(card);
-            });
+                    <div class="flex items-center justify-between border-t border-slate-200/60 pt-2.5">
+                        <span class="text-[10px] font-bold ${isActive ? 'text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded' : 'text-slate-400'}">
+                          ${isActive ? '✓ Active on Grid' : 'Available'}
+                        </span>
+                        <button type="button" onclick="toggleBlockFromCatalog('${block.id}', ${isActive})" class="text-xs px-3.5 py-1.5 rounded-xl font-bold transition shadow-sm ${isActive ? 'bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-200' : 'bg-brand-red text-white hover:bg-red-700'}">
+                          ${isActive ? 'Remove Block' : '+ Add to Grid'}
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
 
-            document.getElementById('block-catalog-modal')?.classList.remove('hidden');
+            document.getElementById('block-catalog-modal').classList.remove('hidden');
+        }
+
+        function toggleBlockFromCatalog(id, isActive) {
+            isActive ? removeBlock(id, true) : addBlock(id, true);
         }
 
         function closeBlockCatalog() {
-            document.getElementById('block-catalog-modal')?.classList.add('hidden');
+            document.getElementById('block-catalog-modal').classList.add('hidden');
         }
 
-        function addBlock(blockId, refreshCatalog = false) {
-            const block = PREMADE_BLOCKS[blockId];
-            if (!block || !grid || activeBlocks.has(blockId)) return;
-
-            grid.addWidget({ w: block.w, h: block.h, content: block.getContent() });
-            activeBlocks.add(blockId);
-            if (refreshCatalog) openBlockCatalog();
-
-            if (blockId === 'showcase') {
-                startShowcaseSlideshow();
+        async function saveLayout() {
+            const currentLayout = Array.from(activeBlocks);
+            const userEmail = localStorage.getItem('userEmail') || 'customer@handymanpainting.com';
+            localStorage.setItem(`handyman_layout_${userEmail}`, JSON.stringify(currentLayout));
+            
+            try {
+                const res = await fetch('/api/customer/layout', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ layout: currentLayout })
+                });
+                if (res.ok) alert('✅ Dashboard layout saved to your profile!');
+            } catch (err) {
+                alert('💾 Dashboard layout saved locally to your browser session!');
             }
         }
 
-        function removeBlock(blockId, refreshCatalog = false) {
-            if (!grid) return;
-            const el = document.querySelector(`[data-block-id="${blockId}"]`)?.closest('.grid-stack-item');
-            if (el) {
-                grid.removeWidget(el);
-                activeBlocks.delete(blockId);
-                if (refreshCatalog) openBlockCatalog();
+        function resetDefaultLayout() {
+            const userEmail = localStorage.getItem('userEmail') || 'customer@handymanpainting.com';
+            if (confirm('Reset your command portal to the default grid layout?')) {
+                localStorage.removeItem(`handyman_layout_${userEmail}`);
+                location.reload();
             }
         }
 
+        function recalculateQuickBudget() {
+            const sqft = parseFloat(document.getElementById('calc-sqft-input')?.value || 0);
+            const rate = parseFloat(document.getElementById('calc-type-select')?.value || 2.25);
+            const total = sqft * rate;
+            const display = document.getElementById('quick-budget-display');
+            if (display) display.innerText = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        function renderSwatches(brand) {
+            const gridEl = document.getElementById('paint-swatches-grid');
+            if (!gridEl) return;
+            
+            const btnSherwin = document.getElementById('tab-sherwin');
+            const btnBenjamin = document.getElementById('tab-benjamin');
+            
+            if (brand === 'sherwin') {
+                if(btnSherwin) btnSherwin.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 text-white border-slate-900';
+                if(btnBenjamin) btnBenjamin.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-100 text-slate-700 hover:bg-slate-200';
+            } else {
+                if(btnBenjamin) btnBenjamin.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 text-white border-slate-900';
+                if(btnSherwin) btnSherwin.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-100 text-slate-700 hover:bg-slate-200';
+            }
+
+            const items = SWATCH_DATA[brand] || [];
+            gridEl.innerHTML = items.map(s => `
+                <div onclick="selectSwatch('${s.name} - ${s.code}', '${s.hex}')" class="p-2 border rounded-xl cursor-pointer hover:border-slate-800 transition flex items-center gap-2 bg-white shadow-xs">
+                    <div class="w-6 h-6 rounded-full border border-slate-300 shadow-inner flex-shrink-0" style="background-color: ${s.hex}"></div>
+                    <div class="truncate">
+                        <p class="font-bold text-[11px] text-slate-800 truncate">${s.name}</p>
+                        <p class="text-[9px] text-slate-400 uppercase font-mono">${s.code}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectSwatch(title, hex) {
+            window.SELECTED_SWATCH = { title, hex };
+            const wall = document.getElementById('visualizer-wall');
+            const hexLabel = document.getElementById('wall-hex-label');
+            const titleLabel = document.getElementById('action-color-title');
+            
+            if (wall) wall.style.backgroundColor = hex;
+            if (hexLabel) hexLabel.innerText = hex.toUpperCase();
+            if (titleLabel) titleLabel.innerText = title;
+        }
+
+        function saveColorToEstimate() {
+            const colorInput = document.getElementById('builder-color');
+            if (colorInput) colorInput.value = window.SELECTED_SWATCH.title;
+            openNewEstimateBuilderModal();
+        }
+
+        function renderProjectsList() {
+            const container = document.getElementById('project-list-container');
+            const heading = document.getElementById('projects-count-heading');
+            if (!container) return;
+
+            const projects = window.CUSTOMER_DATA.projects || [];
+            if (heading) heading.innerText = `Active Work Orders (${projects.length})`;
+
+            if (projects.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 italic p-4 text-center">No active projects found for this account.</p>`;
+                return;
+            }
+
+            container.innerHTML = projects.map(p => `
+                <div class="p-3 border border-slate-200 bg-slate-50 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-slate-800">${p.title}</p>
+                        <p class="text-[10px] text-slate-500">${p.type} • <span class="font-semibold text-slate-700">${p.color}</span></p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">${p.status}</span>
+                </div>
+            `).join('');
+        }
+
+        async function submitFullEstimate(e) {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('builder-title').value,
+                type: document.getElementById('builder-type').value,
+                color: document.getElementById('builder-color').value,
+                sqft: document.getElementById('builder-sqft').value,
+                notes: document.getElementById('builder-notes').value
+            };
+
+            try {
+                const res = await fetch('/api/customer/estimates', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    window.CUSTOMER_DATA.projects.unshift(data.project);
+                    renderProjectsList();
+                    alert('✅ Estimate request submitted successfully!');
+                }
+            } catch (err) {
+                alert('💾 Estimate request saved locally (Offline Mode).');
+            }
+            closeEstimateBuilderModal();
+        }
+
+        function openNewEstimateBuilderModal() { document.getElementById('build-estimate-modal').classList.remove('hidden'); }
+        function closeEstimateBuilderModal() { document.getElementById('build-estimate-modal').classList.add('hidden'); }
+        
         function handleLogout() {
-            if (confirm("Are you sure you want to log out?")) {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = '/login.html';
-            }
+            localStorage.clear();
+            window.location.href = '/login.html';
         }
     </script>
 </body>

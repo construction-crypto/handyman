@@ -1,0 +1,34 @@
+<div class="grid-stack-item-content bg-white rounded-2xl border border-slate-200/80 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden h-full" data-block-id="budget">
+  <div class="widget-header bg-slate-900 text-white px-4 py-2.5 flex justify-between items-center cursor-move border-b border-slate-800 select-none">
+    <div class="flex items-center gap-2">
+      <span class="text-slate-400 text-xs tracking-widest font-mono cursor-grab hover:text-white" title="Drag to reorder">⋮⋮</span>
+      <span class="font-bold text-xs tracking-wide text-white">📊 Instant Cost & Budget Calculator</span>
+    </div>
+    <button type="button" onclick="removeBlock('budget', false)" class="text-slate-400 hover:text-rose-400 p-1 rounded transition text-xs font-bold leading-none" title="Remove block">&times;</button>
+  </div>
+  <div class="p-4 text-xs space-y-3 overflow-y-auto flex-1 bg-white text-slate-800 flex flex-col justify-between">
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="font-bold text-slate-600 block mb-1 text-[11px]">Est. Sq Footage</label>
+        <input type="number" id="calc-sqft-input" oninput="recalculateQuickBudget()" value="500" class="w-full border border-slate-300 rounded-lg p-2 font-bold text-slate-800">
+      </div>
+      <div>
+        <label class="font-bold text-slate-600 block mb-1 text-[11px]">Surface Type</label>
+        <select id="calc-type-select" onchange="recalculateQuickBudget()" class="w-full border border-slate-300 rounded-lg p-2 font-bold text-slate-800 bg-white">
+          <option value="2.25">Interior Paint ($2.25/sqft)</option>
+          <option value="3.50">Exterior Siding ($3.50/sqft)</option>
+          <option value="4.80">Cabinet Refinish ($4.80/sqft)</option>
+        </select>
+      </div>
+    </div>
+    <div class="p-3 bg-slate-900 text-white rounded-xl flex items-center justify-between">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400">Estimated Project Range</span>
+        <p class="text-lg font-black text-amber-400" id="quick-budget-display">$1,125.00</p>
+      </div>
+      <button type="button" onclick="saveColorToEstimate()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm">
+        Request Quote
+      </button>
+    </div>
+  </div>
+</div>

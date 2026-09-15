@@ -1,0 +1,34 @@
+<div class="grid-stack-item-content bg-white rounded-2xl border border-slate-200/80 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden h-full" data-block-id="weather">
+  <div class="widget-header bg-slate-900 text-white px-4 py-2.5 flex justify-between items-center cursor-move border-b border-slate-800 select-none">
+    <div class="flex items-center gap-2">
+      <span class="text-slate-400 text-xs tracking-widest font-mono cursor-grab hover:text-white" title="Drag to reorder">⋮⋮</span>
+      <span class="font-bold text-xs tracking-wide text-white">🌤️ Painting Weather & Cure Index</span>
+    </div>
+    <button type="button" onclick="removeBlock('weather', false)" class="text-slate-400 hover:text-rose-400 p-1 rounded transition text-xs font-bold leading-none" title="Remove block">&times;</button>
+  </div>
+  <div class="p-4 text-xs space-y-3 overflow-y-auto flex-1 bg-white text-slate-800 flex flex-col justify-between">
+    <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-3 rounded-xl">
+      <div>
+        <p class="text-[10px] uppercase font-bold text-slate-500">Montevideo, MN Site Weather</p>
+        <p class="text-lg font-black text-slate-900" id="weather-temp-val">72°F Sunny</p>
+      </div>
+      <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Optimal Cure
+      </span>
+    </div>
+    <div class="grid grid-cols-2 gap-2 text-[11px]">
+      <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+        <span class="text-slate-500 block">Humidity</span>
+        <span class="font-bold text-slate-800" id="weather-humidity-val">45% (Ideal)</span>
+      </div>
+      <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+        <span class="text-slate-500 block">Wind Speed</span>
+        <span class="font-bold text-slate-800" id="weather-wind-val">8 mph NW</span>
+      </div>
+    </div>
+    <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900">
+      <p class="font-bold flex items-center gap-1">💡 Coating Application Advisory</p>
+      <p class="text-[10px] text-amber-800 mt-0.5">Exterior latex drying conditions are optimal today. Drying window open until 7:30 PM CST.</p>
+    </div>
+  </div>
+</div>

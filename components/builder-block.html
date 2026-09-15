@@ -1,0 +1,20 @@
+<div class="space-y-3">
+  <p class="text-slate-600 text-xs leading-relaxed">Combine room dimensions, paint grade, and prep options to request a fast quote from our certified team.</p>
+  <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+    <div class="flex justify-between items-center text-xs">
+      <span class="font-bold text-slate-700">Paint Quality Grade:</span>
+      <select id="builder-grade-select" class="bg-white border border-slate-300 rounded-md text-[11px] font-bold p-1 text-slate-800">
+        <option value="Emerald">Sherwin Emerald (Premium)</option>
+        <option value="Duration">Sherwin Duration (High Durability)</option>
+        <option value="SuperPaint">Sherwin SuperPaint (Standard)</option>
+      </select>
+    </div>
+    <div class="flex justify-between items-center text-[11px] text-slate-500">
+      <span>Active Pending Quotes:</span>
+      <span id="builder-active-count" class="font-black text-slate-900 bg-amber-100 text-amber-800 px-2 py-0.5 rounded border border-amber-200">0</span>
+    </div>
+  </div>
+  <button type="button" onclick="openNewEstimateBuilderModal()" class="w-full py-2.5 bg-brand-red hover:bg-red-700 text-white font-bold text-xs rounded-xl transition shadow-sm active:scale-95 flex items-center justify-center gap-1.5">
+    <span>+ Start New Estimate Request</span>
+  </button>
+</div>

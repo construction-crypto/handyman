@@ -11,7 +11,7 @@ const dbPath = path.join(apiDir, 'database.sqlite');
 const db = new Database(dbPath);
 
 // Create table if not exists based on project requirements
-db.exec(\
+db.exec(`
   CREATE TABLE IF NOT EXISTS projects (
     id TEXT PRIMARY KEY,
     client_token TEXT UNIQUE NOT NULL,
@@ -20,13 +20,13 @@ db.exec(\
     cure_status TEXT,
     created_at TEXT NOT NULL
   );
-\);
+`);
 
 // Insert test record
-const insert = db.prepare(\
+const insert = db.prepare(`
   INSERT OR REPLACE INTO projects (id, client_token, current_phase, progress, cure_status, created_at)
   VALUES (?, ?, ?, ?, ?, ?)
-\);
+`);
 
 insert.run(
   'proj-001',

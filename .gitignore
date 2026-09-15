@@ -1,8 +1,7 @@
-.vercel
-.env*.local
-
 node_modules/
-
-.next/
 .env
-node_modules/
+.env.*
+!.env.example
+dist/
+build/
+.DS_Store

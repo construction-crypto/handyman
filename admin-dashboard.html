@@ -3,11 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Handyman Painting L.L.C.</title>
+  <title>Admin Executive Portal - Handyman Painting L.L.C.</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN for Metrics, Pie Charts, and Line Graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- OpenStreetMap Leaflet CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background-color: #020617;
+      color: #f8fafc;
+    }
     #paint-canvas {
       position: fixed;
       top: 0;
@@ -16,7 +26,7 @@
       height: 100vh;
       pointer-events: none;
       z-index: -1;
-      opacity: 0.15;
+      opacity: 0.12;
     }
     .leaflet-container {
       background-color: #020617 !important;
@@ -42,48 +52,47 @@
       box-shadow: 0 0 10px #ef4444;
       position: relative;
     }
-    .leaflet-pulse-marker::after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: -6px;
-      right: -6px;
-      bottom: -6px;
-      border-radius: 50%;
-      border: 2px solid #ef4444;
-      animation: pulse-ring 2s infinite;
+    @keyframes fadeInModal {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
     }
-    .fade-in-popup {
-      animation: fadeInPopup 0.3s ease-out forwards;
-    }
-    @keyframes fadeInPopup {
-      from { opacity: 0; transform: translateY(10px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    .animate-modal-pop {
+      animation: fadeInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
   </style>
+
   <script>
-    let activeZoomNode = null;
     let leafletMap = null;
     let markersLayer = null;
+    let revenuePieChart = null;
+    let revenueLineChart = null;
+    let okrBarChart = null;
+    let allOkrsData = [];
+    let currentRoleFilter = 'all';
 
     function switchTab(id) {
-      ['heatmap', 'project-workspace', 'inbox', 'contractors', 'customers', 'employees', 'approvals', 'operations'].forEach(function(t) {
+      ['okr-kpi', 'heatmap', 'project-workspace', 'inbox', 'contractors', 'customers', 'employees', 'approvals', 'operations'].forEach(function(t) {
         var tabEl = document.getElementById('tab-' + t);
         if (tabEl) tabEl.classList.add('hidden');
         var btn = document.getElementById('nav-' + t);
-        if (btn) btn.className = 'w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2';
+        if (btn) btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2';
       });
       var activeTab = document.getElementById('tab-' + id);
       if (activeTab) activeTab.classList.remove('hidden');
       var activeBtn = document.getElementById('nav-' + id);
-      if (activeBtn) activeBtn.className = 'w-full text-left px-3.5 py-2.5 rounded font-bold text-xs bg-red-600 text-white transition flex items-center space-x-2';
+      if (activeBtn) activeBtn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs bg-red-600 text-white transition flex items-center space-x-2 shadow-md';
 
       if (id === 'heatmap' && leafletMap) {
         setTimeout(function() { leafletMap.invalidateSize(); }, 200);
       }
     }
 
-    function initDashboard() {
+    async function initAdminDashboard() {
+      switchTab('okr-kpi');
+      initPaintCanvas();
+      await fetchExecutiveMetrics();
+      await fetchOkrsData();
+      
       var mockLeads = [
         { category: 'Roofing Leads', name: 'Tom Kinman', lat: 44.9778, lng: -93.2650, location: 'Twin Cities Metro', details: 'Full roof replacement estimate & inspection.', date: '2026-07-12' },
         { category: 'Handyman Repairs', name: 'Terri Emery', lat: 44.9444, lng: -95.7233, location: 'Montevideo, MN', details: 'Exterior trim painting & gate reinforcement.', date: '2026-07-28' },
@@ -93,9 +102,287 @@
       localStorage.setItem('enterprise_leads', JSON.stringify(mockLeads));
       renderLeadsTable(mockLeads);
       initOpenStreetMap(mockLeads);
-      loadEnterpriseData();
-      initPaintCanvas();
     }
+
+    async function fetchExecutiveMetrics() {
+      try {
+        const res = await fetch('/api/admin/metrics');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('metric-total-revenue').innerText = data.metrics.totalRevenue;
+          document.getElementById('metric-okr-alignment').innerText = data.metrics.okrAlignmentPct;
+          document.getElementById('metric-active-projects').innerText = data.metrics.activeProjects;
+          document.getElementById('metric-compliance-rate').innerText = data.metrics.complianceScore;
+
+          renderExecutiveCharts(data.charts);
+        }
+      } catch (err) {
+        console.warn('Failed to load live metrics, using local preview data:', err);
+      }
+    }
+
+    function renderExecutiveCharts(chartData) {
+      // 1. Pie Chart: Revenue by Service Category
+      const ctxPie = document.getElementById('chart-revenue-pie')?.getContext('2d');
+      if (ctxPie) {
+        if (revenuePieChart) revenuePieChart.destroy();
+        revenuePieChart = new Chart(ctxPie, {
+          type: 'doughnut',
+          data: {
+            labels: chartData.revenueByService.labels,
+            datasets: [{
+              data: chartData.revenueByService.data,
+              backgroundColor: ['#E31E24', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+              borderWidth: 2,
+              borderColor: '#0f172a'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' } } }
+            }
+          }
+        });
+      }
+
+      // 2. Line Chart: Monthly Revenue vs Target
+      const ctxLine = document.getElementById('chart-revenue-line')?.getContext('2d');
+      if (ctxLine) {
+        if (revenueLineChart) revenueLineChart.destroy();
+        revenueLineChart = new Chart(ctxLine, {
+          type: 'line',
+          data: {
+            labels: chartData.monthlyRevenueTrend.labels,
+            datasets: [
+              {
+                label: 'Actual Revenue ($K)',
+                data: chartData.monthlyRevenueTrend.actual,
+                borderColor: '#E31E24',
+                backgroundColor: 'rgba(227, 30, 36, 0.15)',
+                fill: true,
+                tension: 0.35
+              },
+              {
+                label: 'Projected Target ($K)',
+                data: chartData.monthlyRevenueTrend.target,
+                borderColor: '#94a3b8',
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0.35
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+              y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+            },
+            plugins: {
+              legend: { labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' } } }
+            }
+          }
+        });
+      }
+
+      // 3. Bar Chart: OKR Alignment Progress by Role
+      const ctxBar = document.getElementById('chart-okr-bar')?.getContext('2d');
+      if (ctxBar) {
+        if (okrBarChart) okrBarChart.destroy();
+        okrBarChart = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: chartData.okrRoleBreakdown.labels,
+            datasets: [{
+              label: 'Avg Goal Completion %',
+              data: chartData.okrRoleBreakdown.progress,
+              backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+              y: { min: 0, max: 100, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      }
+    }
+
+    async function fetchOkrsData() {
+      try {
+        const res = await fetch('/api/admin/okrs');
+        if (res.ok) {
+          allOkrsData = await res.json();
+          renderOkrsTable();
+        }
+      } catch (err) {
+        console.warn('Failed to load OKRs from API, using fallback data:', err);
+      }
+    }
+
+    function filterOkrsByRole(role) {
+      currentRoleFilter = role;
+      const roles = ['all', 'customer', 'contractor', 'employee'];
+      roles.forEach(r => {
+        const btn = document.getElementById(`okr-filter-${r}`);
+        if (!btn) return;
+        if (r === role) {
+          btn.className = 'px-3 py-1 rounded-lg bg-red-600 text-white shadow-sm font-bold';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-slate-300 hover:bg-slate-800 font-bold';
+        }
+      });
+      renderOkrsTable();
+    }
+
+    function renderOkrsTable() {
+      const container = document.getElementById('okr-table-body');
+      const searchVal = document.getElementById('okr-search-input')?.value?.toLowerCase() || '';
+
+      if (!container) return;
+
+      const filtered = allOkrsData.filter(o => {
+        const matchesRole = currentRoleFilter === 'all' || o.role === currentRoleFilter;
+        const matchesSearch = !searchVal || 
+          o.user_name.toLowerCase().includes(searchVal) || 
+          o.user_email.toLowerCase().includes(searchVal) || 
+          o.objective.toLowerCase().includes(searchVal);
+        return matchesRole && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500 italic">No customized OKR goals found matching filters.</td></tr>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(o => {
+        const current = parseFloat(o.current_value || 0);
+        const target = parseFloat(o.target_value || 100);
+        const pct = Math.min(100, Math.round((current / (target || 1)) * 100));
+
+        let statusClass = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+        if (o.status === 'Completed' || pct >= 100) statusClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+        if (o.status === 'At Risk') statusClass = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+
+        let roleBadge = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+        if (o.role === 'contractor') roleBadge = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+        if (o.role === 'employee') roleBadge = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+
+        return `
+        <tr class="border-b border-slate-800 hover:bg-slate-800/40 text-xs transition">
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${roleBadge}">${o.role}</span>
+          </td>
+          <td class="p-3 font-bold text-white">
+            <div class="truncate max-w-[150px]">${o.user_name}</div>
+            <div class="text-[10px] text-slate-400 font-mono truncate max-w-[150px]">${o.user_email}</div>
+          </td>
+          <td class="p-3 font-semibold text-slate-200">
+            <div class="max-w-xs">${o.objective}</div>
+            <div class="text-[10px] text-slate-400 font-normal mt-0.5">${o.key_result}</div>
+          </td>
+          <td class="p-3">
+            <div class="flex items-center gap-2">
+              <div class="w-24 bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                <div class="bg-gradient-to-r from-red-600 to-amber-400 h-full rounded-full" style="width: ${pct}%"></div>
+              </div>
+              <span class="font-mono text-slate-300 font-bold">${current} / ${target} ${o.unit || '%'}</span>
+            </div>
+          </td>
+          <td class="p-3">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusClass}">${o.status || 'In Progress'}</span>
+          </td>
+          <td class="p-3 text-slate-400 font-mono text-[11px]">${o.target_date ? new Date(o.target_date).toLocaleDateString() : 'N/A'}</td>
+          <td class="p-3">
+            <div class="flex items-center gap-1.5">
+              <button onclick="quickUpdateOkrProgress('${o.id}', ${current}, ${target})" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded border border-slate-700 font-bold text-[10px]">Update</button>
+              <button onclick="deleteOkrGoal('${o.id}')" class="px-2 py-1 bg-rose-950/60 hover:bg-rose-900 text-rose-300 rounded border border-rose-800 font-bold text-[10px]">&times;</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function submitNewOkr(e) {
+      e.preventDefault();
+      const payload = {
+        role: document.getElementById('okr-role-select').value,
+        user_name: document.getElementById('okr-username-input').value,
+        user_email: document.getElementById('okr-email-input').value,
+        objective: document.getElementById('okr-objective-input').value,
+        key_result: document.getElementById('okr-keyresult-input').value,
+        target_value: parseFloat(document.getElementById('okr-target-input').value || 100),
+        current_value: parseFloat(document.getElementById('okr-current-input').value || 0),
+        unit: document.getElementById('okr-unit-select').value,
+        status: document.getElementById('okr-status-select').value,
+        target_date: document.getElementById('okr-date-input').value
+      };
+
+      try {
+        const res = await fetch('/api/admin/okrs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('✅ OKR Goal assigned successfully!');
+          closeNewOkrModal();
+          await fetchOkrsData();
+          await fetchExecutiveMetrics();
+        }
+      } catch (err) {
+        alert('Failed to connect to backend server.');
+      }
+    }
+
+    async function quickUpdateOkrProgress(id, current, target) {
+      const val = prompt(`Update current progress value (Target: ${target}):`, current);
+      if (val === null) return;
+      const num = parseFloat(val);
+      if (isNaN(num)) return;
+
+      const existing = allOkrsData.find(o => o.id === id);
+      if (!existing) return;
+
+      existing.current_value = num;
+      if (num >= existing.target_value) existing.status = 'Completed';
+
+      try {
+        await fetch('/api/admin/okrs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(existing)
+        });
+        await fetchOkrsData();
+        await fetchExecutiveMetrics();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function deleteOkrGoal(id) {
+      if (!confirm('Are you sure you want to delete this OKR goal?')) return;
+      try {
+        await fetch(`/api/admin/okrs/${id}`, { method: 'DELETE' });
+        await fetchOkrsData();
+        await fetchExecutiveMetrics();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function openNewOkrModal() { document.getElementById('assign-okr-modal').classList.remove('hidden'); }
+    function closeNewOkrModal() { document.getElementById('assign-okr-modal').classList.add('hidden'); }
 
     function renderLeadsTable(leads) {
       var leadsTable = document.getElementById('leads-table-body');
@@ -114,18 +401,13 @@
     function initOpenStreetMap(leads) {
       if (leafletMap) return;
 
-      leafletMap = L.map('openstreetmap-container', {
-        zoomControl: false
-      }).setView([45.6945, -94.1320], 7);
-
-      // Using Esri World Street Map / CartoDB alternative that resolves instantly in local file:// previews without token/referral errors
+      leafletMap = L.map('openstreetmap-container', { zoomControl: false }).setView([45.6945, -94.1320], 7);
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19,
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+        attribution: 'Tiles &copy; Esri'
       }).addTo(leafletMap);
 
       L.control.zoom({ position: 'topright' }).addTo(leafletMap);
-
       markersLayer = L.layerGroup().addTo(leafletMap);
       renderMapMarkers(leads);
     }
@@ -136,17 +418,9 @@
 
       leads.forEach((l, idx) => {
         var pulseHtml = '<div class="leaflet-pulse-marker" style="background:' + getCategoryColor(l.category) + '; box-shadow: 0 0 12px ' + getCategoryColor(l.category) + ';"></div>';
-        var customIcon = L.divIcon({
-          className: 'custom-leaflet-pin',
-          html: pulseHtml,
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
-        });
-
+        var customIcon = L.divIcon({ className: 'custom-leaflet-pin', html: pulseHtml, iconSize: [24, 24], iconAnchor: [12, 12] });
         var marker = L.marker([l.lat, l.lng], { icon: customIcon });
-        marker.on('click', function() {
-          focusOnNode(l.lat, l.lng, idx);
-        });
+        marker.on('click', function() { focusOnNode(l.lat, l.lng, idx); });
         markersLayer.addLayer(marker);
       });
     }
@@ -156,109 +430,6 @@
       if (cat.includes('Handyman')) return '#8b5cf6';
       if (cat.includes('Project')) return '#3b82f6';
       return '#f59e0b';
-    }
-
-    function focusOnNode(lat, lng, leadIdx) {
-      var leads = JSON.parse(localStorage.getItem('enterprise_leads') || '[]');
-      var lead = leads[leadIdx] || { name: 'Sample Project', category: 'General', location: 'Minnesota', details: 'Active telemetry node inspection.' };
-      activeZoomNode = lead;
-
-      if (leafletMap) {
-        leafletMap.setView([lat, lng], 11, { animate: true, duration: 1.0 });
-      }
-
-      var resetBtn = document.getElementById('map-reset-zoom-btn');
-      if (resetBtn) resetBtn.classList.remove('hidden');
-
-      var popup = document.getElementById('map-popup-card');
-      if (popup) {
-        popup.classList.remove('hidden');
-        document.getElementById('popup-client-name').innerText = lead.name + ' (' + lead.category + ')';
-        document.getElementById('popup-client-details').innerText = 'Location: ' + lead.location + ' | Scope: ' + lead.details;
-        document.getElementById('popup-convert-btn').setAttribute('onclick', 'convertToDedicatedWorkspace(' + leadIdx + ')');
-      }
-    }
-
-    function resetMapZoom() {
-      if (leafletMap) {
-        leafletMap.setView([45.6945, -94.1320], 7, { animate: true, duration: 1.0 });
-      }
-      var resetBtn = document.getElementById('map-reset-zoom-btn');
-      if (resetBtn) resetBtn.classList.add('hidden');
-
-      var popup = document.getElementById('map-popup-card');
-      if (popup) popup.classList.add('hidden');
-      activeZoomNode = null;
-    }
-
-    function convertToDedicatedWorkspace(idx) {
-      var leads = JSON.parse(localStorage.getItem('enterprise_leads') || '[]');
-      var lead = leads[idx] || activeZoomNode;
-      if (!lead) return;
-
-      var workspaceEl = document.getElementById('dedicated-workspace-content');
-      if (workspaceEl) {
-        workspaceEl.innerHTML = '<div class="space-y-6">' +
-          '<div class="flex justify-between items-center bg-slate-950 p-5 rounded-xl border border-slate-800 shadow-xl">' +
-            '<div>' +
-              '<span class="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded tracking-wider uppercase">' + lead.category + '</span>' +
-              '<h2 class="text-xl font-extrabold text-white mt-1">' + lead.name + ' - Dedicated Project Workspace</h2>' +
-              '<p class="text-xs text-slate-300 mt-0.5">Location: ' + lead.location + ' | Scope: ' + lead.details + '</p>' +
-            '</div>' +
-            '<button onclick="switchTab(\'heatmap\')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold transition border border-slate-700">← Back to Map</button>' +
-          '</div>' +
-          '<div class="grid grid-cols-1 md:grid-cols-3 gap-6">' +
-            '<div class="bg-slate-950 p-5 rounded-xl border border-slate-800 shadow space-y-3">' +
-              '<h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Competitive Bidding Calculator</h4>' +
-              '<div class="space-y-2 text-xs">' +
-                '<div><label class="text-slate-400">Materials ($)</label><input type="number" id="bid-materials" value="1200" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
-                '<div><label class="text-slate-400">Labor Hours</label><input type="number" id="bid-hours" value="40" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
-                '<div><label class="text-slate-400">Hourly Rate ($)</label><input type="number" id="bid-rate" value="65" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
-                '<div><label class="text-slate-400">Overhead ($)</label><input type="number" id="bid-overhead" value="300" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white mt-1"></div>' +
-                '<button onclick="calculateCompetitiveBid()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded transition mt-2">Compute Total Bid Formula</button>' +
-                '<div id="bid-result-output" class="p-3 bg-slate-900 rounded border border-slate-800 text-emerald-400 font-mono font-bold mt-2">Total Bid = (Materials × 1.15) + (Labor Hours × Rate) + (Overhead)</div>' +
-              '</div>' +
-            '</div>' +
-            '<div class="bg-slate-950 p-5 rounded-xl border border-slate-800 shadow space-y-3">' +
-              '<h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Field Crew & Resource Dispatch</h4>' +
-              '<div class="space-y-2 text-xs text-slate-300">' +
-                '<p>Assign certified crew lead & equipment telemetry to outmaneuver regional competitors.</p>' +
-                '<button onclick="alert(\'Crew dispatched to project location successfully.\')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded transition border border-slate-700">Dispatch 3-Person Painting Crew</button>' +
-              '</div>' +
-            '</div>' +
-            '<div class="bg-slate-950 p-5 rounded-xl border border-slate-800 shadow space-y-3">' +
-              '<h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Client & Document Sign-Off</h4>' +
-              '<div class="space-y-2 text-xs text-slate-300">' +
-                '<p>NIST-standard ML-DSA-65 cryptographic validation available for state and federal contracts.</p>' +
-                '<button onclick="alert(\'Cryptographic signature applied to project contract manifest.\')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded transition border border-slate-700">Sign Contract Manifest</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }
-
-      switchTab('project-workspace');
-    }
-
-    function calculateCompetitiveBid() {
-      var mat = parseFloat(document.getElementById('bid-materials').value) || 0;
-      var hrs = parseFloat(document.getElementById('bid-hours').value) || 0;
-      var rate = parseFloat(document.getElementById('bid-rate').value) || 0;
-      var overhead = parseFloat(document.getElementById('bid-overhead').value) || 0;
-
-      var total = (mat * 1.15) + (hrs * rate) + overhead;
-      document.getElementById('bid-result-output').innerText = 'Total Bid = $' + total.toFixed(2);
-    }
-
-    function loadEnterpriseData() {
-      var inboxContainer = document.getElementById('inbox-messages-container');
-      if (inboxContainer) {
-        inboxContainer.innerHTML = '<div class="p-4 bg-slate-900 border border-slate-800 rounded text-center text-slate-400 text-xs font-medium">No direct messages recorded in local storage.</div>';
-      }
-      var jobBoard = document.getElementById('admin-job-board-list');
-      if (jobBoard) {
-        jobBoard.innerHTML = '<div class="p-4 bg-slate-900 border border-slate-800 rounded text-center text-slate-400 text-xs font-medium">No active jobs posted on the contractor board.</div>';
-      }
     }
 
     function initPaintCanvas() {
@@ -299,139 +470,273 @@
       animate();
     }
 
-    window.addEventListener('DOMContentLoaded', initDashboard);
+    window.addEventListener('DOMContentLoaded', initAdminDashboard);
   </script>
 </head>
 <body class="bg-slate-950 min-h-screen flex flex-col font-sans text-slate-100 relative overflow-x-hidden">
 
   <canvas id="paint-canvas"></canvas>
 
-  <header class="bg-slate-900/95 backdrop-blur border-b border-slate-800 text-white shadow-2xl z-20 sticky top-0">
+  <!-- Navigation Header -->
+  <header class="bg-slate-900/95 backdrop-blur border-b border-slate-800 text-white shadow-2xl z-30 sticky top-0">
     <div class="max-w-[96rem] mx-auto px-6 py-3.5 flex justify-between items-center">
       <div class="flex items-center space-x-3">
-        <span class="bg-red-600 text-white font-black text-xs px-3 py-1 rounded tracking-wider uppercase shadow">Welcome, Chief</span>
-        <h1 class="text-lg font-bold tracking-tight text-white">Handyman Painting L.L.C.</h1>
+        <span class="bg-red-600 text-white font-black text-xs px-3 py-1 rounded tracking-wider uppercase shadow">Admin Command Portal</span>
+        <h1 class="text-lg font-bold tracking-tight text-white">Handyman Painting L.L.C. Executive Suite</h1>
       </div>
       <div class="flex items-center space-x-4">
-        <span class="text-xs text-slate-300 font-mono font-semibold">chief@handymanpaintingllc.co</span>
-        <button onclick="localStorage.clear(); window.location.reload();" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded text-xs font-bold transition shadow">Log Out</button>
+        <span class="text-xs text-slate-300 font-mono font-semibold">admin@handymanpaintingllc.co</span>
+        <button onclick="localStorage.clear(); window.location.reload();" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow">Log Out</button>
       </div>
     </div>
   </header>
 
+  <!-- Sidebar & Main Workspace Grid -->
   <div class="max-w-[96rem] mx-auto px-6 py-8 flex-grow w-full grid grid-cols-1 md:grid-cols-12 gap-8 z-10">
     
+    <!-- Sidebar Navigation -->
     <div class="md:col-span-3 space-y-2">
-      <div class="bg-slate-900/90 backdrop-blur p-4 rounded-xl shadow-xl border border-slate-800 space-y-1.5 sticky top-20">
-        <button onclick="switchTab('heatmap')" id="nav-heatmap" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs bg-red-600 text-white transition flex items-center space-x-2 shadow"><span>🗺️</span><span>Lead Heatmap</span></button>
-        <button onclick="switchTab('project-workspace')" id="nav-project-workspace" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>⚡</span><span>Dedicated Workspace</span></button>
-        <button onclick="switchTab('inbox')" id="nav-inbox" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>💬</span><span>Direct Messages</span></button>
-        <button onclick="switchTab('contractors')" id="nav-contractors" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🤝</span><span>Contractor Workspace</span></button>
-        <button onclick="switchTab('customers')" id="nav-customers" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🏠</span><span>Customer Management</span></button>
-        <button onclick="switchTab('employees')" id="nav-employees" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>👷</span><span>Employee Management</span></button>
-        <button onclick="switchTab('approvals')" id="nav-approvals" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🛡️</span><span>Pending Approvals</span></button>
-        <button onclick="switchTab('operations')" id="nav-operations" class="w-full text-left px-3.5 py-2.5 rounded font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>📊</span><span>Enterprise Metrics</span></button>
+      <div class="bg-slate-900/90 backdrop-blur p-4 rounded-2xl shadow-xl border border-slate-800 space-y-1.5 sticky top-20">
+        <button onclick="switchTab('okr-kpi')" id="nav-okr-kpi" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs bg-red-600 text-white transition flex items-center space-x-2 shadow"><span>🎯</span><span>OKR & KPI Command Hub</span></button>
+        <button onclick="switchTab('heatmap')" id="nav-heatmap" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🗺️</span><span>Lead Heatmap</span></button>
+        <button onclick="switchTab('project-workspace')" id="nav-project-workspace" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>⚡</span><span>Dedicated Workspace</span></button>
+        <button onclick="switchTab('inbox')" id="nav-inbox" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>💬</span><span>Direct Messages</span></button>
+        <button onclick="switchTab('contractors')" id="nav-contractors" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🤝</span><span>Contractor Workspace</span></button>
+        <button onclick="switchTab('customers')" id="nav-customers" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🏠</span><span>Customer Management</span></button>
+        <button onclick="switchTab('employees')" id="nav-employees" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>👷</span><span>Employee Management</span></button>
+        <button onclick="switchTab('approvals')" id="nav-approvals" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>🛡️</span><span>Pending Approvals</span></button>
+        <button onclick="switchTab('operations')" id="nav-operations" class="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2"><span>📊</span><span>Enterprise Metrics</span></button>
       </div>
     </div>
 
+    <!-- Main Content Area -->
     <div class="md:col-span-9 space-y-6">
 
-      <div id="tab-heatmap" class="bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-5">
-        <div class="flex justify-between items-center flex-wrap gap-3">
-          <div>
-            <h3 class="font-extrabold text-white text-lg tracking-tight">OpenStreetMap Minnesota Lead Heatmap & Telemetry</h3>
-            <p class="text-xs text-slate-300 font-medium mt-0.5">Interactive map tiles loaded seamlessly via robust Esri/OSM infrastructure without local file blocks.</p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- TAB 1: OKR & KPI COMMAND HUB -->
+      <div id="tab-okr-kpi" class="space-y-6">
+        
+        <!-- Executive KPI Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          <div class="lg:col-span-4 space-y-4">
-            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 shadow-inner space-y-2">
-              <h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider">Instructions</h4>
-              <p class="text-xs text-slate-300">Click any pulsing node on the interactive OpenStreetMap grid to lock coordinates, view lead specifications, and launch the dedicated project workspace.</p>
+          <div class="bg-slate-900/90 backdrop-blur p-5 rounded-2xl border border-slate-800 shadow-xl space-y-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">Annual Revenue</span>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-black text-white" id="metric-total-revenue">$485,250.00</span>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">+18.4%</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Pacing ahead of Q3 targets.</p>
+          </div>
+
+          <div class="bg-slate-900/90 backdrop-blur p-5 rounded-2xl border border-slate-800 shadow-xl space-y-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">Company OKR Alignment</span>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-black text-amber-400" id="metric-okr-alignment">87.5%</span>
+              <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">On Track</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Aggregate completion across 3 roles.</p>
+          </div>
+
+          <div class="bg-slate-900/90 backdrop-blur p-5 rounded-2xl border border-slate-800 shadow-xl space-y-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">Active Work Orders</span>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-black text-white" id="metric-active-projects">8</span>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">94.2% On-Time</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Zero moisture test delays.</p>
+          </div>
+
+          <div class="bg-slate-900/90 backdrop-blur p-5 rounded-2xl border border-slate-800 shadow-xl space-y-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400 block">Subcontractor Compliance</span>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-black text-emerald-400" id="metric-compliance-rate">98.5%</span>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">COI Verified</span>
+            </div>
+            <p class="text-[11px] text-slate-400">100% field safety compliance.</p>
+          </div>
+
+        </div>
+
+        <!-- Executive Analytics Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Revenue Line Chart -->
+          <div class="lg:col-span-8 bg-slate-900/90 backdrop-blur p-5 rounded-2xl border border-slate-800 shadow-xl space-y-3">
+            <div class="flex justify-between items-center">
+              <div>
+                <h4 class="font-bold text-white text-sm">Monthly Revenue Growth vs. Target ($K)</h4>
+                <p class="text-[11px] text-slate-400">Real-time revenue telemetry from PostgreSQL invoice entries.</p>
+              </div>
+              <span class="text-[10px] font-bold text-slate-400 font-mono bg-slate-800 px-2.5 py-1 rounded border border-slate-700">FY 2026</span>
+            </div>
+            <div class="h-64">
+              <canvas id="chart-revenue-line"></canvas>
             </div>
           </div>
 
-          <div class="lg:col-span-8">
-            <div class="relative w-full h-[520px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-inner flex flex-col">
-              
-              <div class="absolute top-3 left-3 z-[400] flex space-x-2">
-                <button id="map-reset-zoom-btn" onclick="resetMapZoom()" class="hidden bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-xl border border-slate-700 transition">🔍 Reset Map View</button>
-              </div>
-
-              <div id="map-popup-card" class="hidden absolute bottom-4 left-4 right-4 z-[400] bg-slate-900/95 backdrop-blur border border-slate-700 p-4 rounded-xl shadow-2xl fade-in-popup flex justify-between items-center gap-4">
-                <div class="space-y-1">
-                  <div class="font-bold text-white text-sm" id="popup-client-name">Project Title</div>
-                  <div class="text-slate-300 text-xs" id="popup-client-details">Project rundown telemetry...</div>
-                </div>
-                <div class="flex space-x-2">
-                  <button id="popup-convert-btn" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded text-xs font-bold transition shadow whitespace-nowrap">Convert to Dedicated Workspace</button>
-                  <button onclick="document.getElementById('map-popup-card').classList.add('hidden')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded text-xs font-bold">Close</button>
-                </div>
-              </div>
-
-              <div id="openstreetmap-container" class="w-full h-full relative z-10"></div>
-
+          <!-- Pie Chart: Revenue by Service -->
+          <div class="lg:col-span-4 bg-slate-900/90 backdrop-blur p-5 rounded-2xl border border-slate-800 shadow-xl space-y-3 flex flex-col justify-between">
+            <div>
+              <h4 class="font-bold text-white text-sm">Service Revenue Breakdown</h4>
+              <p class="text-[11px] text-slate-400">Share by coating & repair type.</p>
+            </div>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="chart-revenue-pie"></canvas>
             </div>
           </div>
 
         </div>
 
-        <div class="overflow-x-auto border border-slate-800 rounded-lg bg-slate-950 shadow-inner mt-4">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-900 border-b border-slate-800 text-slate-300 font-bold">
-                <th class="p-3">Form Category</th>
-                <th class="p-3">Contact Name</th>
-                <th class="p-3">Location</th>
-                <th class="p-3">Details</th>
-                <th class="p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody id="leads-table-body" class="divide-y divide-slate-800 text-slate-200">
-            </tbody>
-          </table>
+        <!-- Role OKR Alignment Bar & Customized Goals Table -->
+        <div class="bg-slate-900/90 backdrop-blur p-6 rounded-2xl border border-slate-800 shadow-xl space-y-5">
+          
+          <div class="flex flex-wrap justify-between items-center gap-4">
+            <div>
+              <span class="text-[10px] uppercase font-bold tracking-widest text-red-400 block mb-0.5">Individual Goal Oversight</span>
+              <h3 class="text-lg font-black text-white">Customized OKR & KPI Management Center</h3>
+              <p class="text-xs text-slate-400">Track and assign actionable goals for individual customers, contractors, and employees.</p>
+            </div>
+            
+            <button onclick="openNewOkrModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-md flex items-center gap-1.5 active:scale-95">
+              <span>+ Assign New OKR Goal</span>
+            </button>
+          </div>
+
+          <!-- Controls & Filters Bar -->
+          <div class="flex flex-wrap justify-between items-center gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
+            <div class="flex items-center gap-2 overflow-x-auto text-xs">
+              <button onclick="filterOkrsByRole('all')" id="okr-filter-all" class="px-3 py-1 rounded-lg bg-red-600 text-white shadow-sm font-bold">All Roles</button>
+              <button onclick="filterOkrsByRole('customer')" id="okr-filter-customer" class="px-3 py-1 rounded-lg text-slate-300 hover:bg-slate-800 font-bold">🏠 Customers</button>
+              <button onclick="filterOkrsByRole('contractor')" id="okr-filter-contractor" class="px-3 py-1 rounded-lg text-slate-300 hover:bg-slate-800 font-bold">🤝 Subcontractors</button>
+              <button onclick="filterOkrsByRole('employee')" id="okr-filter-employee" class="px-3 py-1 rounded-lg text-slate-300 hover:bg-slate-800 font-bold">👷 Field Crew</button>
+            </div>
+
+            <div class="w-full sm:w-64">
+              <input type="text" id="okr-search-input" oninput="renderOkrsTable()" placeholder="Search user or goal..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 font-medium">
+            </div>
+          </div>
+
+          <!-- OKR Table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-950 text-slate-400 text-[10px] uppercase tracking-wider border-b border-slate-800 font-bold">
+                  <th class="p-3">Role</th>
+                  <th class="p-3">Individual User</th>
+                  <th class="p-3">Objective & Key Result</th>
+                  <th class="p-3">Progress / Target</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3">Target Date</th>
+                  <th class="p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="okr-table-body" class="divide-y divide-slate-800">
+                <!-- Dynamically Rendered by script -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- TAB 2: LEAD HEATMAP -->
+      <div id="tab-heatmap" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-slate-800 space-y-5">
+        <h3 class="font-extrabold text-white text-lg tracking-tight">OpenStreetMap Minnesota Lead Heatmap & Telemetry</h3>
+        <div id="openstreetmap-container" class="h-96 w-full rounded-xl overflow-hidden border border-slate-800"></div>
+      </div>
+
+      <!-- TAB 3: DEDICATED WORKSPACE -->
+      <div id="tab-project-workspace" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-slate-800 space-y-5">
+        <div id="dedicated-workspace-content">
+          <p class="text-slate-400 text-xs italic">Select a project lead from the heatmap to launch a dedicated workspace.</p>
         </div>
       </div>
 
-      <div id="tab-project-workspace" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-5">
-        <div id="dedicated-workspace-content" class="space-y-6">
-          <div class="p-6 bg-slate-950 rounded-xl border border-slate-800 text-center text-slate-400 text-xs font-medium">
-            No project currently selected. Click a node on the map and select "Convert to Dedicated Workspace".
+    </div>
+  </div>
+
+  <!-- Assign New OKR Modal -->
+  <div id="assign-okr-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-white rounded-3xl shadow-2xl max-w-xl w-full border border-slate-800 p-6 space-y-4 animate-modal-pop">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-red-400 block mb-1">Executive OKR Assignment</span>
+          <h3 class="font-black text-lg text-white">Assign Customized Individual Goal</h3>
+        </div>
+        <button onclick="closeNewOkrModal()" class="text-slate-400 hover:text-white text-2xl font-bold">&times;</button>
+      </div>
+
+      <form onsubmit="submitNewOkr(event)" class="space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">Target Account Classification *</label>
+            <select id="okr-role-select" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+              <option value="customer">Customer / Property Owner</option>
+              <option value="contractor">Subcontractor Partner</option>
+              <option value="employee">Field Crew Employee</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">Target Completion Date</label>
+            <input type="date" id="okr-date-input" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
           </div>
         </div>
-      </div>
 
-      <div id="tab-inbox" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
-        <h3 class="font-extrabold text-white text-lg tracking-tight">Direct Communications Inbox</h3>
-        <div id="inbox-messages-container" class="space-y-3"></div>
-      </div>
-
-      <div id="tab-contractors" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-5">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-          <h3 class="font-extrabold text-white text-lg tracking-tight">Contractor Management Workspace</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">User Full Name *</label>
+            <input type="text" id="okr-username-input" required placeholder="e.g. John Doe / Apex Coatings" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+          </div>
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">User Email Address *</label>
+            <input type="email" id="okr-email-input" required placeholder="user@example.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+          </div>
         </div>
-        <div id="admin-job-board-list" class="space-y-2.5"></div>
-      </div>
 
-      <div id="tab-customers" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
-        <h3 class="font-extrabold text-white text-lg tracking-tight">Customer Management Workspace</h3>
-      </div>
+        <div>
+          <label class="font-bold text-slate-300 block mb-1">Objective Title *</label>
+          <input type="text" id="okr-objective-input" required placeholder="e.g. Complete Exterior Coating Phase 1" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+        </div>
 
-      <div id="tab-employees" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
-        <h3 class="font-extrabold text-white text-lg tracking-tight">Employee Management Workspace</h3>
-      </div>
+        <div>
+          <label class="font-bold text-slate-300 block mb-1">Key Result Criteria *</label>
+          <textarea id="okr-keyresult-input" required rows="2" placeholder="e.g. Achieve 100% moisture testing sign-off and 2-coat finish" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white"></textarea>
+        </div>
 
-      <div id="tab-approvals" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
-        <h3 class="font-extrabold text-white text-lg tracking-tight">Pending Approvals</h3>
-      </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">Current Value</label>
+            <input type="number" id="okr-current-input" value="0" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+          </div>
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">Target Value</label>
+            <input type="number" id="okr-target-input" value="100" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+          </div>
+          <div>
+            <label class="font-bold text-slate-300 block mb-1">Unit</label>
+            <select id="okr-unit-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+              <option value="%">% Percentage</option>
+              <option value="Jobs">Jobs</option>
+              <option value="Hours">Hours</option>
+              <option value="$">$ Dollar Value</option>
+            </select>
+          </div>
+        </div>
 
-      <div id="tab-operations" class="hidden bg-slate-900/90 backdrop-blur p-6 rounded-xl shadow-xl border border-slate-800 space-y-4">
-        <h3 class="font-extrabold text-white text-lg tracking-tight">Enterprise Operational Metrics</h3>
-        <p class="text-xs text-slate-300 font-medium">State Registration: DLI #IR815804 | Unique Entity ID: HWYRMVYT2RT6</p>
-      </div>
+        <div>
+          <label class="font-bold text-slate-300 block mb-1">Status</label>
+          <select id="okr-status-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="At Risk">At Risk</option>
+          </select>
+        </div>
 
+        <div class="flex justify-end gap-2 border-t border-slate-800 pt-4">
+          <button type="button" onclick="closeNewOkrModal()" class="px-4 py-2.5 text-xs font-bold text-slate-400 bg-slate-800 rounded-xl hover:bg-slate-700 transition">Cancel</button>
+          <button type="submit" class="px-6 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition shadow-md">Assign Goal</button>
+        </div>
+      </form>
     </div>
   </div>
 
