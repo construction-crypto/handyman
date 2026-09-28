@@ -436,12 +436,33 @@
 
         const slides = [
             `<div class="max-w-xl mx-auto">
+                <div class="flex justify-center text-red-600 text-xl mb-2">★★★★★</div>
+                <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Google Review</p>
+                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-900 leading-snug">"Highly recommend Jesse at Handyman Painting LLC. He was incredibly polite, professional, punctual, right on time. He..."</h3>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mt-4">— Nancy Winkelman, Verified Client</p>
+            </div>`,
+
+            `<div class="max-w-xl mx-auto">
+                <div class="flex justify-center text-red-600 text-xl mb-2">★★★★★</div>
+                <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Reasonable price</p>
+                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-900 leading-snug">"Reasonable price."</h3>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mt-4">— Shawn Winkelman, Verified Client</p>
+            </div>`,
+
+            `<div class="max-w-xl mx-auto">
                 <div class="flex justify-center text-red-600 text-xl mb-2">★★★★☆</div>
                 <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Reasonable price</p>
                 <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-900 leading-snug">"Great work ethic ..very particular..wants it correct. Jesse's the guy for you."</h3>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mt-4">— Mike Ohliger, Verified Client (Metal & Exterior Painting)</p>
             </div>`,
-            
+
+            `<div class="max-w-xl mx-auto">
+                <div class="flex justify-center text-red-600 text-xl mb-2">★★★★★</div>
+                <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Exceeded Expectations</p>
+                <h3 class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-900 leading-snug">"Punctual & Polite... Fast & Efficient... Clean: He took the time to thoroughly clean up after himself once the work was finished."</h3>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mt-3">— Carpet & Padding Tear Out Client (Formspree Feedback)</p>
+            </div>`,
+
             `<div class="max-w-xl mx-auto">
                 <span class="text-xs font-black bg-zinc-900 text-white px-3 py-1 rounded-sm uppercase tracking-wider">Corporate Vendor Accounts</span>
                 <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-4 text-slate-900 leading-snug">Need regional commercial deployment for franchises or large scale facilities?</h3>
@@ -454,29 +475,56 @@
                 <p class="text-slate-600 mt-3 text-sm font-medium leading-relaxed"><strong>Our Solution:</strong> Industrial-grade surface preps and weather-shield acrylic coatings designed for Midwest winters.</p>
             </div>`,
 
+            <!-- Benjamin Moore Slide 1: Main Banner Creative -->
             `<div class="max-w-xl mx-auto">
-                <a rel="sponsored noopener" href="https://www.awin1.com/awclick.php?gid=569543&mid=95853&awinaffid=3072519&linkid=4373392&clickref=hero_rotator" target="_blank" class="block group cursor-pointer">
-                    <div class="flex items-center justify-center gap-2 mb-3">
-                        <span class="text-xs font-black bg-emerald-600 text-white px-2.5 py-1 rounded-sm uppercase tracking-wider">⚡ 3-Hour Store Pickup</span>
-                        <div class="flex items-center gap-1.5 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                            <img src="https://www.benjaminmoore.com/en-us/images/bm-logo.svg" alt="Benjamin Moore Logo" class="h-4 w-auto object-contain" />
-                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Benjamin Moore</span>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-                        <img src="https://www.benjaminmoore.com/en-us/images/bm-logo.svg" alt="Benjamin Moore Logo" class="w-20 h-20 object-contain p-2 rounded-md bg-white border border-slate-200 shadow-sm flex-shrink-0" />
-                        <div>
-                            <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-900 leading-snug group-hover:text-red-600 transition-colors">
-                                Order Your Paint & Supplies Online
-                            </h3>
-                            <p class="text-slate-600 mt-1 text-sm font-medium leading-relaxed">
-                                Order online and pick up at your local Benjamin Moore store in as little as 3 hours. Standard & specialty coatings ready when you are.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="mt-4 inline-block bg-brand-black text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-sm group-hover:bg-brand-red transition-colors">
-                        Shop BenjaminMoore.com &rarr;
-                    </div>
+                <span class="text-xs font-black bg-emerald-600 text-white px-3 py-1 rounded-sm uppercase tracking-wider">BenjaminMoore.com</span>
+                <div class="my-3 bg-white p-2 rounded border border-slate-200 shadow-sm flex justify-center">
+                    <a rel="sponsored" href="https://www.awin1.com/cread.php?s=4373400&v=95853&q=569545&r=3072519" target="_blank">
+                        <img src="https://www.awin1.com/cshow.php?s=4373400&v=95853&q=569545&r=3072519" border="0" alt="Benjamin Moore Paint & Supplies" class="max-h-16 w-auto object-contain mx-auto" />
+                    </a>
+                </div>
+                <a rel="sponsored noopener" href="https://www.awin1.com/cread.php?s=4373400&v=95853&q=569545&r=3072519" target="_blank" class="inline-block bg-brand-black text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-sm hover:bg-brand-red transition">
+                    Shop Premium Paint & Supplies &rarr;
+                </a>
+            </div>`,
+
+            <!-- Benjamin Moore Slide 2: 3-Hour Store Pickup -->
+            `<div class="max-w-xl mx-auto">
+                <span class="text-xs font-black bg-emerald-600 text-white px-3 py-1 rounded-sm uppercase tracking-wider">⚡ 3-Hour Store Pickup</span>
+                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-3 text-slate-900 leading-snug">Order Online & Pick Up In Store</h3>
+                <p class="text-slate-600 mt-2 text-sm font-medium leading-relaxed">Order your paint project needs from home and pick up at your local store in as little as 3 hours available at BenjaminMoore.com today.</p>
+                <a rel="sponsored noopener" href="https://www.awin1.com/awclick.php?gid=569543&mid=95853&awinaffid=3072519&linkid=4373392&clickref=" target="_blank" class="mt-4 inline-block bg-brand-black text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-sm hover:bg-brand-red transition">
+                    Order For 3-Hour Pickup &rarr;
+                </a>
+            </div>`,
+
+            <!-- Benjamin Moore Slide 3: 2026 Color of the Year -->
+            `<div class="max-w-xl mx-auto">
+                <span class="text-xs font-black bg-slate-900 text-white px-3 py-1 rounded-sm uppercase tracking-wider">🎨 Color Inspiration</span>
+                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-3 text-slate-900 leading-snug">Explore Benjamin Moore’s 2026 Color of the Year</h3>
+                <p class="text-slate-600 mt-2 text-sm font-medium leading-relaxed">Discover top color palettes, interior design ideas, and expert color matching for your next home improvement project.</p>
+                <a rel="sponsored noopener" href="https://www.awin1.com/awclick.php?gid=569543&mid=95853&awinaffid=3072519&linkid=4373393&clickref=" target="_blank" class="mt-4 inline-block bg-brand-black text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-sm hover:bg-brand-red transition">
+                    View 2026 Color Trends &rarr;
+                </a>
+            </div>`,
+
+            <!-- Benjamin Moore Slide 4: Paint Swatches & Samples -->
+            `<div class="max-w-xl mx-auto">
+                <span class="text-xs font-black bg-sky-700 text-white px-3 py-1 rounded-sm uppercase tracking-wider">📐 Samples & Swatches</span>
+                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-3 text-slate-900 leading-snug">Order Samples & Color Swatches Online</h3>
+                <p class="text-slate-600 mt-2 text-sm font-medium leading-relaxed">Test your paint colors before starting. Order real paint samples, swatches, and supplies at BenjaminMoore.com today.</p>
+                <a rel="sponsored noopener" href="https://www.awin1.com/awclick.php?gid=569543&mid=95853&awinaffid=3072519&linkid=4373397&clickref=" target="_blank" class="mt-4 inline-block bg-brand-black text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-sm hover:bg-brand-red transition">
+                    Order Swatches & Samples &rarr;
+                </a>
+            </div>`,
+
+            <!-- Benjamin Moore Slide 5: Brushes & Painting Supplies -->
+            `<div class="max-w-xl mx-auto">
+                <span class="text-xs font-black bg-brand-red text-white px-3 py-1 rounded-sm uppercase tracking-wider">🖌️ Professional Supplies</span>
+                <h3 class="text-xl md:text-2xl font-black uppercase tracking-tight mt-3 text-slate-900 leading-snug">High Quality Brushes, Rollers & Supplies</h3>
+                <p class="text-slate-600 mt-2 text-sm font-medium leading-relaxed">Find professional-grade paint brushes, rollers, trays, and application tools directly on BenjaminMoore.com.</p>
+                <a rel="sponsored noopener" href="https://www.awin1.com/awclick.php?gid=569543&mid=95853&awinaffid=3072519&linkid=4373395&clickref=" target="_blank" class="mt-4 inline-block bg-brand-black text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-sm hover:bg-brand-red transition">
+                    Shop Brushes & Supplies &rarr;
                 </a>
             </div>`,
 
@@ -538,3 +586,9 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
